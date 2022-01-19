@@ -1,4 +1,5 @@
 --scan=..\..
+--main
 ..\..\doc\sources_brief.txt
 --verbose=detail
 

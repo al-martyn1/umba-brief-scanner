@@ -280,10 +280,9 @@ int main(int argc, char* argv[])
             //TODO: !!! Add HTML line break here
         }
 
+        printInfo(false);
+
     }
-
-    printInfo(false);
-
 
 
     if (appConfig.getOptHtml())
@@ -291,12 +290,6 @@ int main(int argc, char* argv[])
         infoStream << "<body>\n";
         infoStream << "<html>\n";
     }
-
-
-
-    //appConfig.setOptHtml
-
-
 
 
     return 0;

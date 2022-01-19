@@ -1,6 +1,6 @@
 /*! \file
-    \brief Перетащил всю требуху из другого проекта, лишнее отрежу потом
-*/
+    \brief Утилита umba-brief-scanner
+ */
 
 #include "umba/umba.h"
 #include "umba/simple_formatter.h"
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
     scanFolders(appConfig, foundFiles, excludedFiles, foundExtentions);
 
 
-    if (appConfig.testVerbosity(VerbosityLevel::normal))
+    if (appConfig.testVerbosity(VerbosityLevel::detailed))
     {
         if (!foundFiles.empty())
             printInfoLogSectionHeader(logMsg, "Files for Processing");
@@ -169,7 +169,9 @@ int main(int argc, char* argv[])
     }
 
 
-    printInfoLogSectionHeader(logMsg, "Processing");
+    if (appConfig.testVerbosity(VerbosityLevel::detailed))
+        printInfoLogSectionHeader(logMsg, "Processing");
+
     std::map<std::string, BriefInfo>  briefInfo;
 
 
@@ -252,8 +254,8 @@ int main(int argc, char* argv[])
 
             if (!appConfig.getOptHtml())
             {
-                // uinfoStream << width(20) << left << relName << " - " << info.infoText << "\n";
-                infoStream << relName << " - " << info.infoText << "\n";
+                uinfoStream << width(32) << left << relName << " - " << info.infoText << "\n";
+                //infoStream << relName << " - " << info.infoText << "\n";
             }
             else
             {
@@ -280,10 +282,9 @@ int main(int argc, char* argv[])
             //TODO: !!! Add HTML line break here
         }
 
+        printInfo(false);
+
     }
-
-    printInfo(false);
-
 
 
     if (appConfig.getOptHtml())
@@ -293,10 +294,8 @@ int main(int argc, char* argv[])
     }
 
 
-
-    //appConfig.setOptHtml
-
-
+    if (appConfig.testVerbosity(VerbosityLevel::normal))
+        logMsg << "Done";
 
 
     return 0;
