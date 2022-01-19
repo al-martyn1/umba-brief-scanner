@@ -2,26 +2,3 @@
 ..\..\doc\sources_brief.txt
 --verbose=detail
 
--X=.git/*
--X=.out/*
--X=.vs/*
--X=_prj_msvc2019/*
--X=doc/*
--X=tests/*
-
--X=*/.git/*
--X=*/.out/*
--X=*/.vs/*
--X=*/_prj_msvc2019/*
--X=*/doc/*
--X=*/tests/*
-
--X=*.gitignore^
--X=*.bat^
--X=*.sh^
--X=*.cfg^
--X=*.ini^
--X=*.txt^
--X=*.md^
--X=*.*xml^
--X=*.sln^
