@@ -26,9 +26,9 @@ enum class VerbosityLevel
      normal       = 1,   // normal - print common details
      config       = 2,   // print common details and app config
      detailed     = 3,   // print common details, app config and all declarations, found in user files
-     extra        = 4,    // print common details, app config and all found declarations
+     //extra        = 4,    // print common details, app config and all found declarations
 
-     end          = extra
+     end          = detailed
 
 };
 
@@ -46,27 +46,22 @@ struct AppConfig
 
     //------------------------------
     static const unsigned                    ofEmptyOptionFlags      = 0x0000;
-    static const unsigned                    ofKeepGenerated         = 0x0001; // 
-    static const unsigned                    ofQuotedIncludes        = 0x0002; // 
-    static const unsigned                    ofUsedMacros            = 0x0004; // Write used macros list to $(OutputRoot)\__used_macros.txt
-    static const unsigned                    ofDefinedMacros         = 0x0008; // Write found defined macros list to $(OutputRoot)\__defined_macros.txt
     static const unsigned                    ofNoOutput              = 0x0010; // Do not actually write output files
-    static const unsigned                    ofGenerateClearScript   = 0x0020; // Generate clear script
+    static const unsigned                    ofMain                  = 0x0020; // Print only main files (whish contains main or other entry point)
+    static const unsigned                    ofHtml                  = 0x0040; // Print output in html format
+    static const unsigned                    ofSkipUndocumented      = 0x0080; // Skip undocumented files
 
     //------------------------------
+    std::map<std::string, std::string>       macros; // не используем
 
 
 
     //------------------------------
-    std::map<std::string,std::string>        macros;
-
-    std::vector<std::string>                 clangCompileFlagsTxtFilename; // compile_flags.txt
-
     std::vector<std::string>                 excludeFilesMaskList;
-    std::vector<std::string>                 excludeNamesMaskList;
 
     std::vector<std::string>                 scanPaths;
-    std::string                              outputPath;
+    //std::string                              outputPath;
+    std::string                              outputName;
 
     unsigned                                 optionFlags = 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
 
@@ -75,7 +70,7 @@ struct AppConfig
     //------------------------------
 
     typedef std::string StdString;
-    UMBA_ENUM_CLASS_IMPLEMENT_STRING_CONVERTERS_MEMBER( StdString , VerbosityLevel, "quet", "normal", "config", "verbose", "extra" )
+    UMBA_ENUM_CLASS_IMPLEMENT_STRING_CONVERTERS_MEMBER( StdString , VerbosityLevel, "quet", "normal", "config", "verbose" /* , "extra" */  )
 
     //------------------------------
 
@@ -120,13 +115,10 @@ struct AppConfig
     {
         switch(ofFlag)
         {
-            case ofKeepGenerated         : return "Keep Generated Files";
-            case ofQuotedIncludes        : return "Quoted Includes";
-            case ofUsedMacros            : return "Write '__used_macros.txt'";
-            case ofDefinedMacros         : return "Write '__defined_macros.txt'";
             case ofNoOutput              : return "Disable writting outputs";
-            case ofGenerateClearScript   : return "Generate clear script";
-
+            case ofMain                  : return "Print only main filess";
+            case ofHtml                  : return "Print output in html format";
+            case ofSkipUndocumented      : return "Skip undocumented";
             default                      : return "Multiple flags taken!!!";
         }
     }
@@ -135,15 +127,11 @@ struct AppConfig
                 void setOpt##opt( bool q ) { ofSet(of##opt,q);      }  \
                 bool getOpt##opt( )  const { return ofGet(of##opt); }
 
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(KeepGenerated)
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(QuotedIncludes)
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(UsedMacros)
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(DefinedMacros)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(NoOutput)
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(GenerateClearScript)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Main)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Html)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SkipUndocumented)
     
-    //UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT()
-
 
     void setOptQuet( bool q ) { setVerbosityLevel(VerbosityLevel::quet);  }
     //bool getOptQuet( )  const { return testVerbosity(VerbosityLevel::quet); }
@@ -155,39 +143,31 @@ struct AppConfig
 
 
     //------------------------------
-    std::string getQuotedName(const std::string &n) const
-    {
-        std::string res;
-        res.reserve(n.size()+2);
-        res.append(1,getOptQuotedIncludes()?'\"':'<');
-        res.append(n);
-        res.append(1,getOptQuotedIncludes()?'\"':'>');
-        return res;
-    }
-
-    std::string getIncludeName( std::string incName ) const
+    std::string getScanRelativeName( std::string name ) const
     {
         for(const auto &path : scanPaths)
         {
-            if (umba::filename::isSubPathName(path, incName, &incName, '/'))
+            if (umba::filename::isSubPathName(path, name, &name, '/'))
                 break;
         }
 
-        return incName;
+        return name;
     }
 
+    #if 0
     std::string getOutputRelativePath( std::string path ) const
     {
-        if (umba::filename::isSubPathName(outputPath, path, &path))
-            return path;
+        // if (umba::filename::isSubPathName(outputPath, path, &path))
+        //     return path;
         return std::string();
     }
 
     std::string getOutputPath( std::string path ) const
     {
-        return umba::filename::makeCanonical( umba::filename::appendPath(outputPath, path) );
+        //return umba::filename::makeCanonical( umba::filename::appendPath(outputPath, path) );
+        return std::string();
     }
-
+    #endif
     //------------------------------
 
 
@@ -201,25 +181,6 @@ struct AppConfig
     }
 
     template<typename StreamType>
-    StreamType& printVerbosityTest( StreamType &s, VerbosityLevel lvl ) const
-    {
-        s << VerbosityLevel_toStdString(lvl) << ": " << testVerbosityStringRes(lvl) << "\n";
-        return s;
-    }
-
-    template<typename StreamType>
-    StreamType& printVerbosityTests( StreamType &s ) const
-    {
-        printVerbosityTest( s, VerbosityLevel::invalid   );
-        printVerbosityTest( s, VerbosityLevel::quet      );
-        printVerbosityTest( s, VerbosityLevel::normal    );
-        printVerbosityTest( s, VerbosityLevel::config    );
-        printVerbosityTest( s, VerbosityLevel::detailed  );
-        printVerbosityTest( s, VerbosityLevel::extra     );
-        return s;
-    }
-
-    template<typename StreamType>
     StreamType& print( StreamType &s ) const
     {
         s << "\n";
@@ -227,27 +188,17 @@ struct AppConfig
 
         //------------------------------
 
-        s << "Output Path    : " << outputPath << "\n"; // endl;
+        s << "Output Name    : " << outputName << "\n"; // endl;
 
         s << "\n";
 
         s << "Option Flags   :\n";
-        s << "    " << getOptNameString(ofKeepGenerated)       << ": " << getOptValAsString(optionFlags&ofKeepGenerated) << "\n";
-        s << "    " << getOptNameString(ofQuotedIncludes)      << ": " << getOptValAsString(optionFlags&ofQuotedIncludes) << "\n";
-        s << "    " << getOptNameString(ofUsedMacros)          << ": " << getOptValAsString(optionFlags&ofUsedMacros) << "\n";
-        s << "    " << getOptNameString(ofDefinedMacros)       << ": " << getOptValAsString(optionFlags&ofDefinedMacros) << "\n";
         s << "    " << getOptNameString(ofNoOutput)            << ": " << getOptValAsString(optionFlags&ofNoOutput) << "\n";
-        s << "    " << getOptNameString(ofGenerateClearScript) << ": " << getOptValAsString(optionFlags&ofGenerateClearScript) << "\n";
+        s << "    " << getOptNameString(ofMain)                << ": " << getOptValAsString(optionFlags&ofMain) << "\n";
+        s << "    " << getOptNameString(ofHtml)                << ": " << getOptValAsString(optionFlags&ofHtml) << "\n";
+        s << "    " << getOptNameString(ofSkipUndocumented)    << ": " << getOptValAsString(optionFlags&ofSkipUndocumented) << "\n";
 
         s << "\n";
-
-        //------------------------------
-
-        s << "CLang options files:\n";
-        for(auto inputFilename: clangCompileFlagsTxtFilename)
-        {
-            s << "    " << inputFilename << "\n";
-        }
 
         //------------------------------
 
@@ -262,6 +213,7 @@ struct AppConfig
 
         //------------------------------
 
+        /*
         if (macros.empty())
             s << "Macros : <EMPTY>";
         else
@@ -274,7 +226,7 @@ struct AppConfig
         }
 
         s << "\n";
-        
+        */
         //------------------------------
 
         s << "Exclude File Masks:\n";
@@ -301,30 +253,6 @@ struct AppConfig
         
         //------------------------------
 
-        s << "Exclude Name Masks:\n";
-        for(auto excludeNameMask : excludeNamesMaskList)
-	    {
-            auto regexStr = expandSimpleMaskToEcmaRegex(excludeNameMask);
-            s << "    '" << excludeNameMask;
-
-            bool isRaw = false;
-            if (umba::string_plus::starts_with<std::string>(excludeNameMask,umba::regex_helpers::getRawEcmaRegexPrefix<std::string>()))
-                isRaw = true;
-
-            if (regexStr==excludeNameMask || isRaw)
-                s << "'\n";
-            else
-            {
-                s << "', corresponding mECMA regexp: '"
-                  << regexStr
-                  << "'\n";
-            }
-        }
-
-        s << "\n";
-        
-        //------------------------------
-
         
 
         return s;
@@ -335,14 +263,12 @@ struct AppConfig
     {
         AppConfig appConfig;
 
-        appConfig.macros             = macros;
+        //appConfig.macros             = macros;
         //appConfig.keepGeneratedFiles = keepGeneratedFiles;
         appConfig.scanPaths          = scanPaths;
-        appConfig.outputPath         = outputPath;
+        appConfig.outputName         = outputName;
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
-
-        appConfig.excludeNamesMaskList = excludeNamesMaskList;
 
         if (appConfig.scanPaths.empty())
             appConfig.scanPaths.push_back(umba::filesys::getCurrentDirectory<std::string>());

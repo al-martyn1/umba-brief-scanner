@@ -182,59 +182,23 @@ int operator()( const std::string                               &a           //!
 
         //------------
 
-        else if ( opt.isOption("keep-generated-files") || opt.isOption('K') 
-               // || opt.setParam("VAL",true)
-               || opt.setDescription("Do not delete generated files"))
-        {
-            if (argsParser.hasHelpOption) return 0;
-            appConfig.setOptKeepGenerated(true);
-            return 0;
-        }
-
-        else if ( opt.isOption("quoted-include") || opt.isOption('U')
-               || opt.setDescription("By default, the '#include' directive in generated files uses angle brackets '<>'. This option turns on generating quoted includes with '\"\"' quotation")
-                )
-        {
-            if (argsParser.hasHelpOption) return 0;
-            appConfig.setOptQuotedIncludes(true);
-            return 0;
-        }
-
-        else if ( opt.isOption("exclude-names") || opt.isOption('N') || opt.setParam("MASK,...")
-               || opt.setDescription("Exclude C/C++ names from output. For details about 'MASK' parameter see '--exclude-files' option description.")
-                )
-        {
-            if (argsParser.hasHelpOption) return 0;
-            
-            if (!opt.hasArg())
-            {
-                LOG_ERR_OPT<<"exclude names mask not taken (--exclude-names)\n";
-                return -1;
-            }
-
-            std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
-            appConfig.excludeNamesMaskList.insert(appConfig.excludeNamesMaskList.end(), lst.begin(), lst.end());
-
-            return 0;
-        }
-
-        else if ( opt.isOption("output-path") || opt.isOption("output-root") ||  /* opt.isOption("output") ||  */ opt.isOption('O') || opt.setParam("PATH")
-               || opt.setDescription("Set output root path")
-                )
-        {
-            if (argsParser.hasHelpOption) return 0;
-            
-            if (!opt.hasArg())
-            {
-                LOG_ERR_OPT<<"output path not taken (--output-path)\n";
-                return -1;
-            }
-
-            auto optArg = umba::macros::substMacros(opt.optArg,umba::macros::MacroTextFromMapOrEnv<std::string>(appConfig.macros),umba::macros::keepUnknownVars);
-            appConfig.outputPath = makeAbsPath(optArg);
-            return 0;
-        }
-
+        // else if ( opt.isOption("output-path") || opt.isOption("output-root") ||  /* opt.isOption("output") ||  */ opt.isOption('O') || opt.setParam("PATH")
+        //        || opt.setDescription("Set output root path")
+        //         )
+        // {
+        //     if (argsParser.hasHelpOption) return 0;
+        //     
+        //     if (!opt.hasArg())
+        //     {
+        //         LOG_ERR_OPT<<"output path not taken (--output-path)\n";
+        //         return -1;
+        //     }
+        //  
+        //     auto optArg = umba::macros::substMacros(opt.optArg,umba::macros::MacroTextFromMapOrEnv<std::string>(appConfig.macros),umba::macros::keepUnknownVars);
+        //     appConfig.outputPath = makeAbsPath(optArg);
+        //     return 0;
+        // }
+        //  
         else if ( opt.isOption("exclude-files") || opt.isOption('X') || opt.setParam("MASK,...")
                || opt.setDescription("Exclude files from parsing. The 'MASK' parameter is a simple file mask, where '*' "
                                      "means any number of any chars, and '?' means exact one of any char. In addition, "
@@ -260,27 +224,6 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
-        else if (opt.isOption("generate-clear-script") || opt.isOption('R') || opt.setDescription("Generate clear script - .bat/.sh."))
-            {
-                if (argsParser.hasHelpOption) return 0;
-                appConfig.setOptGenerateClearScript(true);
-                return 0;
-            }
-
-        else if (opt.isOption("used-macros")    || opt.setDescription("Write all found (in PP conditions) macros to file '$(OutputRoot)/__used_macros.txt'."))
-            {
-                if (argsParser.hasHelpOption) return 0;
-                appConfig.setOptUsedMacros(true);
-                return 0;
-            }
-
-        else if (opt.isOption("defined-macros") || opt.setDescription("Write all defined macros to file '$(OutputRoot)/__defined_macros.txt'."))
-            {
-                if (argsParser.hasHelpOption) return 0;
-                appConfig.setOptDefinedMacros(true);
-                return 0;
-            }
-
         else if (opt.isOption("no-output") || opt.isOption("dry-run") || opt.setDescription("Do not actually write output files. Simulation mode. Behave normally, but do not copy/creater/update any files."))
             {
                 if (argsParser.hasHelpOption) return 0;
@@ -288,26 +231,29 @@ int operator()( const std::string                               &a           //!
                 return 0;
             }
 
-        // else if (opt.isOption("XXX") || opt.setDescription("Allow to generate XXX includes"))
-        //     UMBA_PRETTY_HEADERS_HANDLE_KIND_ARG()
-
-        else if ( opt.isOption("set") || opt.isOption('S') || opt.setParam("NAME:VALUE")
-               || opt.setDescription("Set up macro in form: 'NAME:VALUE'"))
-        {
-            if (argsParser.hasHelpOption) return 0;
-            
-            if (!opt.hasArg())
+        else if (opt.isOption("main") || opt.setDescription("Print only main files (whish contains main or other entry point)."))
             {
-                LOG_ERR_OPT<<"Set up macro requires at least macro name (--set)\n";
-                return -1;
+                if (argsParser.hasHelpOption) return 0;
+                appConfig.setOptMain(true);
+                return 0;
             }
 
-            std::string name, val;
-            umba::string_plus::split_to_pair( opt.optArg, name, val, ':' );
-            appConfig.macros[name] = val;
+        else if (opt.isOption("html") || opt.setDescription("Print output in html format."))
+            {
+                if (argsParser.hasHelpOption) return 0;
+                appConfig.setOptHtml(true);
+                return 0;
+            }
+        else if (opt.isOption("skip-undocumented") || opt.isOption('U') || opt.setDescription("Print output in html format."))
+            {
+                if (argsParser.hasHelpOption) return 0;
+                appConfig.setOptSkipUndocumented(true);
+                return 0;
+            }
 
-            return 0;
-        }
+
+        // else if (opt.isOption("XXX") || opt.setDescription("Allow to generate XXX includes"))
+        //     UMBA_PRETTY_HEADERS_HANDLE_KIND_ARG()
 
         else if ( opt.isOption("path") || opt.isOption("scan") || opt.isOption('P') || opt.setParam("PATH")
                || opt.setDescription("Add path to scan path list"))
@@ -447,7 +393,9 @@ int operator()( const std::string                               &a           //!
     
     }
 
-    appConfig.clangCompileFlagsTxtFilename.push_back(makeAbsPath(a));
+    //appConfig.clangCompileFlagsTxtFilename.push_back(makeAbsPath(a));
+
+    appConfig.outputName = makeAbsPath(a);
 
 /*    
     if (inputFilename.empty())

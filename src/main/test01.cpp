@@ -1,5 +1,5 @@
 /*! \file
-    \brief 
+    \brief Перетащил всю требуху из другого проекта, лишнее отрежу потом
 */
 
 #include "umba/umba.h"
@@ -25,6 +25,7 @@
 
 
 #include "utils.h"
+#include "brief_info.h"
 
 
 umba::StdStreamCharWriter coutWriter(std::cout);
@@ -122,9 +123,9 @@ int main(int argc, char* argv[])
         appConfig.print(logMsg) << "\n";
     }
 
-    if (appConfig.outputPath.empty())
+    if (appConfig.outputName.empty())
     {
-        LOG_ERR_OPT << "output path not taken (--output-path)" << endl;
+        LOG_ERR_OPT << "output name not taken" << endl;
         return 1;
     }
 
@@ -166,6 +167,135 @@ int main(int argc, char* argv[])
                 logMsg << "." << ext << endl;
         }
     }
+
+
+    printInfoLogSectionHeader(logMsg, "Processing");
+    std::map<std::string, BriefInfo>  briefInfo;
+
+
+    for(const auto & filename : foundFiles)
+    {
+        // logMsg << name << endl;
+        std::vector<char> filedata;
+        if (!umba::filesys::readFile( filename, filedata ))
+        {
+            LOG_WARN_OPT("open-file-failed") << "failed to open file '" << filename << "'\n";
+            continue;
+        }
+
+        BriefInfo  info;
+        bool bFound = findBriefInfo( filedata, info );
+        briefInfo[filename] = info;
+
+        if (appConfig.testVerbosity(VerbosityLevel::detailed))
+        {
+            logMsg << (info.briefFound ? '+' : '-')
+                   << (info.entryPoint ? 'E' : ' ')
+                   << "    " << filename
+                   << "\n";
+        }
+
+    }
+
+    std::ofstream infoStream;
+    if (!appConfig.getOptNoOutput())
+    {
+
+        // if (!createDirectory(path))
+        // {
+        //     LOG_WARN_OPT("create-dir-failed") << "failed to create directory: " << path << endl;
+        //     continue;
+        // }
+
+        infoStream.open( appConfig.outputName, std::ios_base::out | std::ios_base::trunc );
+        if (!infoStream)
+        {
+            LOG_WARN_OPT("create-file-failed") << "failed to create output file: " << appConfig.outputName << endl;
+            return 1;
+        }
+    }
+
+
+    std::string titleStr = "Brief Description for Project Sources";
+    std::string sepLine  = "-------------------------------------";
+
+    if (!appConfig.getOptHtml())
+    {
+        infoStream << titleStr << "\n" << sepLine << "\n\n";
+    }
+    else
+    {
+        infoStream << "<!DOCTYPE html>\n<html>\n";
+        infoStream << "<head>\n<title>" << titleStr << "</title>\n</head>\n";
+        infoStream << "<body>\n";
+    }
+
+
+    auto printInfo = [&]( bool bMain )
+    {
+        //std::map<std::string, BriefInfo>
+        for( const auto& [name,info] : briefInfo)
+        {
+            if (info.entryPoint!=bMain)
+                continue;
+
+            if (appConfig.getOptSkipUndocumented())
+            {
+                if (!info.briefFound)
+                    continue;
+            }
+
+            umba::StdStreamCharWriter infoWriter(infoStream);
+            umba::SimpleFormatter uinfoStream(&infoWriter);
+
+            auto relName = appConfig.getScanRelativeName(name);
+
+            if (!appConfig.getOptHtml())
+            {
+                // uinfoStream << width(20) << left << relName << " - " << info.infoText << "\n";
+                infoStream << relName << " - " << info.infoText << "\n";
+            }
+            else
+            {
+                //TODO: !!! Add HTML output here
+            }
+        
+        }
+
+    };
+
+
+    printInfo(true);
+        
+    if (!appConfig.getOptMain())
+    {
+        // print all
+
+        if (!appConfig.getOptHtml())
+        {
+            infoStream << "\n";
+        }
+        else
+        {
+            //TODO: !!! Add HTML line break here
+        }
+
+    }
+
+    printInfo(false);
+
+
+
+    if (appConfig.getOptHtml())
+    {
+        infoStream << "<body>\n";
+        infoStream << "<html>\n";
+    }
+
+
+
+    //appConfig.setOptHtml
+
 
 
 

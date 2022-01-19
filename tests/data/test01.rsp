@@ -1,5 +1,5 @@
 --scan=..\..
---output-path=..\..\doc
+..\..\doc\sources_brief.txt
 --verbose=detail
 
 -X=.git/*
