@@ -25,18 +25,80 @@ void makeSingleLineText( IterType b, IterType e )
     }
 }
 
+
+#ifdef LOG_REGEX_MATCH
+
 inline 
-bool findEntryPoint( const std::vector<char> &fileText)
+bool findEntryPoint( std::vector<char> fileText, const std::map< std::string,std::set<std::string> > &entryNames )
 {
-    
+    makeSingleLineText(fileText.begin(), fileText.end());
 
-    //std::string regexStrMain = ".*(void|int).*";
-    std::string regexStrMain = ".*(void|int) \\s*(main|wmain|tmain__tmain)\\s*\\(.*";
+#else
 
-    // https://en.cppreference.com/w/cpp/regex/syntax_option_type
-    std::regex re(regexStrMain, std::regex::ECMAScript  /* | std::regex::multiline */ ); // multiline not supported in MSVC2019
+inline 
+bool findEntryPoint( const std::vector<char> &fileText, const std::map< std::string,std::set<std::string> > &entryNames )
+{
 
-    return umba::regex_helpers::regexMatch(fileText, re);
+#endif
+
+    for(const auto& [name, args] : entryNames)
+    {
+        auto stringifier = [](const std::string &s) { return s; };
+        auto argsAlters = umba::string_plus::merge< std::string, decltype(args.begin()), decltype(stringifier) >( args.begin(), args.end(), '|', stringifier );
+        // if (argsAlters.empty())
+        //     argsAlters = "int";
+
+        if (!argsAlters.empty())
+            argsAlters = std::string("(") + argsAlters + std::string(")") + std::string("[\\s]+?");
+
+        std::string regexStr = std::string(".*") 
+                             + argsAlters
+                             + name
+                             + std::string("\\s*\\(.*")
+                             ;
+
+        #ifdef LOG_REGEX_MATCH
+
+            std::string text = std::string(fileText.begin(), fileText.end());
+
+            //std::string testRegex = ".*(void|int) \\s*(main|wmain|tmain__tmain)\\s*\\(.*";
+            //std::string testRegex = "(void|int) \\s*(main|wmain|tmain__tmain)\\s*\\(";
+            std::string testRegex = ".*main.*";
+
+            std::cout << "test : [" << testRegex << "]\n";
+            std::cout << "regex: [" << regexStr  << "]\n";
+
+        #endif
+
+        try
+        {
+            #ifdef LOG_REGEX_MATCH
+
+                bool testRes = umba::regex_helpers::regexMatch(fileText, std::regex(testRegex, std::regex::ECMAScript));
+                std::cout << "test res: " << testRes << "\n";
+
+            #endif
+
+            //std::regex re(regexStr, std::regex::ECMAScript  /* | std::regex::multiline */ ); // multiline not supported in MSVC2019
+            if (umba::regex_helpers::regexMatch(fileText, regexStr))
+                return true;
+        }
+        catch(...)
+        {
+            // ignore regex errors
+        }
+    }
+
+    return false;
+
+
+    //   std::string regexStrMain = "(void|int) \\s*(main|wmain|tmain__tmain)\\s*\\(";
+    // //std::string regexStrMain = ".*(void|int) \\s*(main|wmain|tmain__tmain)\\s*\\(.*";
+    //  
+    // // https://en.cppreference.com/w/cpp/regex/syntax_option_type
+    // std::regex re(regexStrMain, std::regex::ECMAScript  /* | std::regex::multiline */ ); // multiline not supported in MSVC2019
+    //  
+    // return umba::regex_helpers::regexMatch(fileText, re);
 
     // std::string testText = "int";
     // return umba::regex_helpers::regexMatch(testText, re);
@@ -44,10 +106,10 @@ bool findEntryPoint( const std::vector<char> &fileText)
 }
 
 inline
-bool findBriefInfo( std::vector<char> fileText, BriefInfo &info )
+bool findBriefInfo( std::vector<char> fileText, const std::map< std::string,std::set<std::string> > &entryNames, BriefInfo &info)
 {
     makeSingleLineText(fileText.begin(), fileText.end());
-    info.entryPoint = findEntryPoint(fileText);
+    info.entryPoint = findEntryPoint(fileText, entryNames);
     info.briefFound = false;
 
     // https://en.cppreference.com/w/cpp/regex/ecmascript

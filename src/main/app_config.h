@@ -54,6 +54,8 @@ struct AppConfig
     //------------------------------
     std::map<std::string, std::string>       macros; // не используем
 
+    std::map< std::string,std::set<std::string> >  entryNames; // не используем
+
 
 
     //------------------------------
@@ -269,6 +271,14 @@ struct AppConfig
         appConfig.outputName         = outputName;
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
+
+        appConfig.entryNames         = entryNames;
+        if (appConfig.entryNames.empty())
+        {
+            appConfig.entryNames["main"].insert("int");
+            appConfig.entryNames["main"].insert("void");
+        }
+
 
         if (appConfig.scanPaths.empty())
             appConfig.scanPaths.push_back(umba::filesys::getCurrentDirectory<std::string>());

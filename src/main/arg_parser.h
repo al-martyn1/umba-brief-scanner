@@ -262,12 +262,37 @@ int operator()( const std::string                               &a           //!
             
             if (!opt.hasArg())
             {
-                LOG_ERR_OPT<<"Add path to scan path list requires argument (--path)\n";
+                LOG_ERR_OPT<<"Adding path to scan path list requires argument (--path)\n";
                 return -1;
             }
 
             auto optArg = umba::macros::substMacros(opt.optArg,umba::macros::MacroTextFromMapOrEnv<std::string>(appConfig.macros),umba::macros::keepUnknownVars);
             appConfig.scanPaths.push_back(makeAbsPath(optArg));
+
+            return 0;
+        }
+
+        else if ( opt.isOption("entry-name") || opt.isOption('E') || opt.setParam("NAME")
+               || opt.setDescription("Add name to lookup as entry point"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+            
+            if (!opt.hasArg())
+            {
+                LOG_ERR_OPT<<"Adding entry name requres argument (--entry-name)\n";
+                return -1;
+            }
+
+            std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
+            // if (lst.size()<2)
+            //     lst.push_back("int"); // default return type of entry point is int
+
+            std::vector< std::string >::const_iterator lit = lst.begin();
+            std::string entryName = *lit; ++lit;
+
+            // appConfig.entryNames[entryName].insert(lit, lst.end()); // лень разбираться
+            auto &retTypes = appConfig.entryNames[entryName];
+            for(; lit!=lst.end(); ++lit) retTypes.insert(*lit);
 
             return 0;
         }

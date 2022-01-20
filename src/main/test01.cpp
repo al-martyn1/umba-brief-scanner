@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
         }
 
         BriefInfo  info;
-        bool bFound = findBriefInfo( filedata, info );
+        bool bFound = findBriefInfo( filedata, appConfig.entryNames, info );
         briefInfo[filename] = info;
 
         if (appConfig.testVerbosity(VerbosityLevel::detailed))

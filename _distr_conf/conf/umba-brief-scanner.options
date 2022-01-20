@@ -1,3 +1,15 @@
+--entry-name=main,int,void
+--entry-name=wmain,int,void
+--entry-name=tmain,int,void
+--entry-name=_tmain,int,void
+--entry-name=INVEST_OPENAPI_MAIN
+--entry-name=DllMain,BOOL WINAPI,BOOL
+--entry-name=DLLEntryPoint,BOOL WINAPI,BOOL
+
+#https://rtfm.co.ua/c-sozdanie-i-primenenie-shared-library-v-linux/
+
+
+
 -X=^.?*/*
 -X=^_prj_msvc2019/*
 -X=^doc/*
@@ -16,4 +28,25 @@
 -X=*.txt^
 -X=*.md^
 -X=*.*xml^
+-X=*.yml^
 -X=*.sln^
+
+-X=*.bazel^
+-X=*.clang-format^
+-X=*.cmake^
+-X=*.codedocs^
+-X=*.in^
+-X=*.json^
+-X=*.natvis^
+-X=*.openapi-generator-ignore^
+-X=*.png^
+-X=*.bmp^
+-X=*.jpg^
+-X=*.pri^
+-X=*.pump^
+-X=*.py^
+-X=*.qrc^
+-X=*.svg^
+-X=*.template^
+#-X=*.^
+

@@ -69,7 +69,8 @@ umba::program_location::ProgramLocation<std::string>   programLocationInfo;
 int main(int argc, char* argv[])
 {
 
-    std::string filename = "..\\src\\main\\test02.cpp";
+    std::string filename = "..\\src\\main\\main.cpp";
+    //std::string filename = "..\\src\\main\\test02.cpp";
     //std::string filename = "..\\src\\main\\brief_info.h";
 
     std::vector<char> fileData;
@@ -79,13 +80,18 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    //std::map< std::string,std::set<std::string> > entryNames;
+    appConfig.entryNames["main"].insert("int");
+    appConfig.entryNames["main"].insert("void");
+
     std::string fileText = std::string(fileData.begin(), fileData.end());
 
     bool matchRes = false;
     try
     {
         BriefInfo info;
-        matchRes = findBriefInfo( fileData, info );
+        //matchRes = findBriefInfo( fileData, appConfig.entryNames, info );
+        matchRes = findEntryPoint( fileData, appConfig.entryNames );
         //logMsg << "Text:\n" << fileText << "\n";
         logMsg << "Match res: " << matchRes << "\n";
     }
