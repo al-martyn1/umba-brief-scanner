@@ -1,6 +1,7 @@
 Brief Description for Project Sources
 -------------------------------------
 
+src/main/main.cpp                - Для тестирования, файл с описанием и main'ом
 src/main/qt_stub.cpp             - Стаб, для того, чтобы windeployqt подсосал нужный рантайм для MSVC - а то совсем без Qt он не работает
 src/main/test01.cpp              - Перетащил всю требуху из другого проекта, лишнее отрежу потом
 src/main/test02.cpp              - Простой тест регулярок по поиску точки входа и brief'а
