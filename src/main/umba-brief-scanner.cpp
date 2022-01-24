@@ -252,6 +252,9 @@ int main(int argc, char* argv[])
 
             auto relName = appConfig.getScanRelativeName(name);
 
+            if (appConfig.getOptRemovePath())
+                relName = umba::filename::getFileName( relName );
+
             if (!appConfig.getOptHtml())
             {
                 uinfoStream << width(32) << left << relName << " - " << info.infoText << "\n";

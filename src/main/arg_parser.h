@@ -238,6 +238,13 @@ int operator()( const std::string                               &a           //!
                 return 0;
             }
 
+        else if (opt.isOption("remove-path") || opt.setDescription("Remove path from file names while ghenerating output."))
+            {
+                if (argsParser.hasHelpOption) return 0;
+                appConfig.setOptRemovePath(true);
+                return 0;
+            }
+
         else if (opt.isOption("html") || opt.setDescription("Print output in html format."))
             {
                 if (argsParser.hasHelpOption) return 0;

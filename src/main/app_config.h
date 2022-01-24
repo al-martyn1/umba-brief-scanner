@@ -50,6 +50,7 @@ struct AppConfig
     static const unsigned                    ofMain                  = 0x0020; // Print only main files (whish contains main or other entry point)
     static const unsigned                    ofHtml                  = 0x0040; // Print output in html format
     static const unsigned                    ofSkipUndocumented      = 0x0080; // Skip undocumented files
+    static const unsigned                    ofRemovePath            = 0x0100; // Remove path from output names
 
     //------------------------------
     std::map<std::string, std::string>       macros; // не используем
@@ -121,6 +122,8 @@ struct AppConfig
             case ofMain                  : return "Print only main filess";
             case ofHtml                  : return "Print output in html format";
             case ofSkipUndocumented      : return "Skip undocumented";
+            case ofRemovePath            : return "Remove path from file names in output";
+
             default                      : return "Multiple flags taken!!!";
         }
     }
@@ -133,6 +136,7 @@ struct AppConfig
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Main)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Html)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SkipUndocumented)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(RemovePath)
     
 
     void setOptQuet( bool q ) { setVerbosityLevel(VerbosityLevel::quet);  }
@@ -199,6 +203,7 @@ struct AppConfig
         s << "    " << getOptNameString(ofMain)                << ": " << getOptValAsString(optionFlags&ofMain) << "\n";
         s << "    " << getOptNameString(ofHtml)                << ": " << getOptValAsString(optionFlags&ofHtml) << "\n";
         s << "    " << getOptNameString(ofSkipUndocumented)    << ": " << getOptValAsString(optionFlags&ofSkipUndocumented) << "\n";
+        s << "    " << getOptNameString(ofRemovePath)          << ": " << getOptValAsString(optionFlags&ofRemovePath) << "\n";
 
         s << "\n";
 
