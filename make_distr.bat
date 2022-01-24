@@ -29,7 +29,7 @@
 
 :TRY_X64_DEBUG
 @if not exist %BUILD_OUTPUT_ROOT%\x64\Debug\%MAIN_EXE_NAME%.exe goto TRY_X64_RELEASE
-@call :MK_DISTR x64 Debug msvc2019_64
+@rem call :MK_DISTR x64 Debug msvc2019_64
 
 
 :TRY_X64_RELEASE
@@ -39,7 +39,7 @@
 
 :TRY_X86_DEBUG
 @if not exist %BUILD_OUTPUT_ROOT%\x86\Debug\%MAIN_EXE_NAME%.exe goto TRY_X86_RELEASE
-@call :MK_DISTR x86 Debug msvc2019
+@rem call :MK_DISTR x86 Debug msvc2019
 
 :TRY_X86_RELEASE
 @if not exist %BUILD_OUTPUT_ROOT%\x86\Release\%MAIN_EXE_NAME%.exe goto END

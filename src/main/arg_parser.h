@@ -251,10 +251,6 @@ int operator()( const std::string                               &a           //!
                 return 0;
             }
 
-
-        // else if (opt.isOption("XXX") || opt.setDescription("Allow to generate XXX includes"))
-        //     UMBA_PRETTY_HEADERS_HANDLE_KIND_ARG()
-
         else if ( opt.isOption("path") || opt.isOption("scan") || opt.isOption('P') || opt.setParam("PATH")
                || opt.setDescription("Add path to scan path list"))
         {
