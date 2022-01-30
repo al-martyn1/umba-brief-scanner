@@ -1,5 +1,5 @@
 /*! \file
-    \brief Утилита umba-brief-scanner
+    \brief Утилита umba-brief-scanner - сканирование исходных текстов на C++ и получение списка описаний
  */
 
 #include "umba/umba.h"
