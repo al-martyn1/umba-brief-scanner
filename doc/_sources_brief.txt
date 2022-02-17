@@ -6,4 +6,4 @@ qt_stub.cpp                      - Стаб, для того, чтобы windepl
 test01.cpp                       - Перетащил всю требуху из другого проекта, лишнее отрежу потом
 test02.cpp                       - Простой тест регулярок по поиску точки входа и brief'а
 test03.cpp                       - Тест arithmetic_strong_typedef - просто присунул тут по случаю
-umba-brief-scanner.cpp           - Утилита umba-brief-scanner
+umba-brief-scanner.cpp           - Утилита umba-brief-scanner - сканирование исходных текстов на C++ и получение списка описаний
