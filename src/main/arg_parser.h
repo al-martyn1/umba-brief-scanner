@@ -352,7 +352,8 @@ int operator()( const std::string                               &a           //!
                 if (pCol && pCol->isNormalPrintHelpStyle() && argsParser.argsNeedHelp.empty())
                 {
                     auto helpText = opt.getHelpOptionsString();
-                    std::cout<<"Usage: " << programLocationInfo.exeFullName << " [OPTIONS] input_file [output_file]\n\nOptions:\n\n"<<helpText;
+                    std::cout << "Usage: " << programLocationInfo.exeName
+                              << " [OPTIONS] input_file [output_file]\n\nOptions:\n\n"<<helpText;
                 }
                 
                 if (pCol) // argsNeedHelp
