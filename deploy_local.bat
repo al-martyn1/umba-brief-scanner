@@ -16,3 +16,6 @@
 @copy /Y .out\msvc2019\x64\Release\umba-brief-scanner.exe    %UMBA_TOOLS%\bin\
 
 @xcopy /Y /S /E /I /F /R _distr_conf\conf\*                  %UMBA_TOOLS%\conf
+
+
+umba-brief-scanner --help > help.txt

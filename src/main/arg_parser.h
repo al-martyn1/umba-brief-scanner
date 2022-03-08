@@ -252,7 +252,7 @@ int operator()( const std::string                               &a           //!
                 appConfig.setOptHtml(true);
                 return 0;
             }
-        else if (opt.isOption("skip-undocumented") || opt.isOption('U') || opt.setDescription("Print output in html format."))
+        else if (opt.isOption("skip-undocumented") || opt.isOption('U') || opt.setDescription("Skip undocumented files. By default, all files will be added to report, also with empty description."))
             {
                 if (argsParser.hasHelpOption) return 0;
                 appConfig.setOptSkipUndocumented(true);
