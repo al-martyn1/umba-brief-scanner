@@ -39,7 +39,8 @@ std::string textAddIndent(const std::string &text, const std::string &indent)
     // (text.size()/40) - кол-во строк навскидку
     res.reserve( text.size() + (text.size()/40) * indent.size());
 
-    res = indent;
+    if (!text.empty())
+        res = indent;
 
     for( char ch : text)
     {
@@ -49,14 +50,28 @@ std::string textAddIndent(const std::string &text, const std::string &indent)
     }
 
     return res;
-/*
-    std::vector< std::string > lines;
-    splitToVector( text, lines, '\n' );
-    for( auto &ln : lines )
+}
+
+//-----------------------------------------------------------------------------
+inline
+std::string textAddIndent(const std::string &text, const std::string &indent, const std::string &firstIndent)
+{
+    std::string res;
+
+    // (text.size()/40) - кол-во строк навскидку
+    res.reserve( text.size() + (text.size()/40) * indent.size());
+
+    if (!text.empty())
+        res = firstIndent;
+
+    for( char ch : text)
     {
-        ln = indent + ln;
+        res.append(1,ch);
+        if (ch=='\n')
+            res.append(indent);
     }
-*/
+
+    return res;
 }
 
 //-----------------------------------------------------------------------------

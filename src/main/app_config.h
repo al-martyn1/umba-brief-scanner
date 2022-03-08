@@ -66,6 +66,9 @@ struct AppConfig
     //std::string                              outputPath;
     std::string                              outputName;
 
+    unsigned                                 filenameWidth    = 0;
+    unsigned                                 descriptionWidth = 0;
+
     unsigned                                 optionFlags = 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
 
     VerbosityLevel                           verbosityLevel = VerbosityLevel::normal;
@@ -194,11 +197,26 @@ struct AppConfig
 
         //------------------------------
 
-        s << "Output Name    : " << outputName << "\n"; // endl;
+        s << "Output Name       : " << outputName << "\n"; // endl;
+        s << "\n";
+
+        s << "Filename width    : ";
+        if (filenameWidth)
+           s << filenameWidth;
+        else
+           s << "default";
+        s << "\n"; // endl;
+
+        s << "Description width : ";
+        if (descriptionWidth)
+           s << "format to " << descriptionWidth << " columns";
+        else
+           s << "format to single line";
+        s << "\n"; // endl;
 
         s << "\n";
 
-        s << "Option Flags   :\n";
+        s << "Option Flags      :\n";
         s << "    " << getOptNameString(ofNoOutput)            << ": " << getOptValAsString(optionFlags&ofNoOutput) << "\n";
         s << "    " << getOptNameString(ofMain)                << ": " << getOptValAsString(optionFlags&ofMain) << "\n";
         s << "    " << getOptNameString(ofHtml)                << ": " << getOptValAsString(optionFlags&ofHtml) << "\n";
@@ -276,6 +294,27 @@ struct AppConfig
         appConfig.outputName         = outputName;
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
+
+        appConfig.filenameWidth      = filenameWidth   ;
+        appConfig.descriptionWidth   = descriptionWidth;
+
+        if (appConfig.filenameWidth==0)
+        {
+            if (optionFlags&ofRemovePath)
+                appConfig.filenameWidth = 16;
+            else
+                appConfig.filenameWidth = 32;
+        }
+
+        if (appConfig.filenameWidth > 48)
+            appConfig.filenameWidth = 48;
+
+        if (appConfig.descriptionWidth > 160)
+            appConfig.descriptionWidth = 160;
+
+        if (appConfig.descriptionWidth < 40)
+            appConfig.descriptionWidth = 40;
+
 
         appConfig.entryNames         = entryNames;
         if (appConfig.entryNames.empty())

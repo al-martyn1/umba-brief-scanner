@@ -199,7 +199,8 @@ int operator()( const std::string                               &a           //!
         //     return 0;
         // }
         //  
-        else if ( opt.isOption("exclude-files") || opt.isOption('X') || opt.setParam("MASK,...")
+        else if ( opt.setParam("MASK,...")
+               || opt.isOption("exclude-files") || opt.isOption('X')
                || opt.setDescription("Exclude files from parsing. The 'MASK' parameter is a simple file mask, where '*' "
                                      "means any number of any chars, and '?' means exact one of any char. In addition, "
                                      "symbol '^' in front and/or back of the mask means that the mask will be bound to beginning/ending "
@@ -258,7 +259,8 @@ int operator()( const std::string                               &a           //!
                 return 0;
             }
 
-        else if ( opt.isOption("path") || opt.isOption("scan") || opt.isOption('P') || opt.setParam("PATH")
+        else if ( opt.setParam("PATH")
+               || opt.isOption("path") || opt.isOption("scan") || opt.isOption('P')
                || opt.setDescription("Add path to scan path list"))
         {
             if (argsParser.hasHelpOption) return 0;
@@ -275,7 +277,8 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
-        else if ( opt.isOption("entry-name") || opt.isOption('E') || opt.setParam("NAME")
+        else if ( opt.setParam("NAME")
+               || opt.isOption("entry-name") || opt.isOption('E')
                || opt.setDescription("Add name to lookup as entry point"))
         {
             if (argsParser.hasHelpOption) return 0;
@@ -300,6 +303,39 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
+        else if ( opt.setParam("WIDTH", -1, 8, 48)
+               || opt.isOption("width") || opt.isOption("filename-width") || opt.isOption('W') 
+               || opt.setDescription("Set width for filename report column"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( intVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+
+            appConfig.filenameWidth = (unsigned)intVal;
+
+            return 0;
+        }
+
+        else if ( opt.setParam("WIDTH", -1, 32, 160) 
+               || opt.isOption("text-width") || opt.isOption("description-width") || opt.isOption('D')
+               || opt.setDescription("Set width for description text report column"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( intVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+
+            appConfig.descriptionWidth = (unsigned)intVal;
+
+            return 0;
+        }
 
         //------------
 

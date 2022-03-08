@@ -22,6 +22,7 @@
 #include "umba/macros.h"
 
 #include "umba/time_service.h"
+#include "umba/text_utils.h"
 
 
 #include "utils.h"
@@ -86,6 +87,7 @@ int main(int argc, char* argv[])
     {
         argsParser.args.clear();
         argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
+        //argsParser.args.push_back("@..\\make_sources_brief.rsp");
         // argsParser.args.push_back(umba::string_plus::make_string(""));
         // argsParser.args.push_back(umba::string_plus::make_string(""));
         // argsParser.args.push_back(umba::string_plus::make_string(""));
@@ -257,7 +259,36 @@ int main(int argc, char* argv[])
 
             if (!appConfig.getOptHtml())
             {
-                uinfoStream << width(32) << left << relName << " - " << info.infoText << "\n";
+                int fnw = (int)appConfig.filenameWidth;
+
+                if (appConfig.descriptionWidth==0)
+                    uinfoStream << width(fnw) << left << relName << " - " << info.infoText << "\n";
+                else
+                {
+                    auto formattedParas = umba::text_utils::formatTextParas( info.infoText, appConfig.descriptionWidth );
+
+                    // Не будем париться - первая строка может свисать справа, ну и фик с ним
+
+                    //TODO: !!! Не корректно определяется длина строк в многобайтной кодировке
+                    //          Мой поток вывода (umba::SimpleFormatter) - также некорректно работает с многобайтной кодировкой,
+                    //          но это обычно не проблема, если имена файлов  исходников используют только английский алфавит.
+                    //          При форматировании же текста кодировка зависит от кодировки исходника - может быть как однобайтной,
+                    //          так и многобайтной (UTF-8, например, и в линуксе это обычно уже стандарт)
+                    //          Поэтому, если где-то используются русскоязычные описания и используется форматирование, то лучше
+                    //          сделать его побольше - не 80, а 120 символов шириной, например.
+
+                    auto textWithIndent = umba::text_utils::textAddIndent( formattedParas, std::string(fnw+3, ' '), std::string() );
+
+                    uinfoStream << width(fnw) << left << relName << " - " 
+                                << textWithIndent
+                                << "\n";
+                }
+
+                // descriptionWidth
+                // umba::text_utils::  
+                // std::string textAddIndent(const std::string &text, const std::string &indent)
+                // std::string formatTextParas( std::string text, std::string::size_type paraWidth )
+                // std::string textAddIndent(const std::string &text, const std::string &indent, const std::string &firstIndent)
                 //infoStream << relName << " - " << info.infoText << "\n";
             }
             else
