@@ -265,7 +265,7 @@ int main(int argc, char* argv[])
                     uinfoStream << width(fnw) << left << relName << " - " << info.infoText << "\n";
                 else
                 {
-                    auto formattedParas = umba::text_utils::formatTextParas( info.infoText, appConfig.descriptionWidth );
+                    auto formattedParas = umba::text_utils::formatTextParas( info.infoText, appConfig.descriptionWidth, umba::text_utils::TextAlignment::left );
 
                     // Не будем париться - первая строка может свисать справа, ну и фик с ним
 

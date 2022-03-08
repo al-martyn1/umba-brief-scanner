@@ -2,10 +2,10 @@ Brief Description for Project Sources
 -------------------------------------
 
 main.cpp                 - Для тестирования, файл с описанием и main'ом.
-qt_stub.cpp              - Стаб,  для  того,  чтобы  windeployqt  подсосал  нужный  рантайм  для  MSVC  -  а  то
+qt_stub.cpp              - Стаб, для того, чтобы windeployqt подсосал нужный рантайм для MSVC - а то
                            совсем без Qt он не работает.
 test01.cpp               - Перетащил всю требуху из другого проекта, лишнее отрежу потом.
 test02.cpp               - Простой тест регулярок по поиску точки входа и brief'а.
 test03.cpp               - Тест arithmetic_strong_typedef - просто присунул тут по случаю.
-umba-brief-scanner.cpp   - Утилита  umba-brief-scanner  -  сканирование  исходных  текстов на C++ и получение
+umba-brief-scanner.cpp   - Утилита umba-brief-scanner - сканирование исходных текстов на C++ и получение
                            списка описаний.
