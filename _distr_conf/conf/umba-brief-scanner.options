@@ -18,7 +18,7 @@
 -X=*/.?*/*
 -X=*/_prj_msvc2019/*
 -X=*/doc/*
--X=*/tests/*
+#-X=*/tests/*
 
 -X=*.gitignore^
 -X=*.bat^
