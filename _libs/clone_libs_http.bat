@@ -1,1 +1,1 @@
-@call clone_libs.bat HTTP
+@call %~dp0\clone_libs.bat HTTP
