@@ -60,6 +60,27 @@ umba::program_location::ProgramLocation<std::string>   programLocationInfo;
 #include "arg_parser.h"
 
 
+std::string htmlEscape(const std::string &s)
+{
+    std::string resStr; resStr.reserve(s.size());
+
+    for(auto ch: s)
+    {
+        switch(ch)
+        {
+            case '<' : resStr.append("&lt;"  ); break;
+            case '>' : resStr.append("&gt;"  ); break;
+            case '\'': resStr.append("&apos;"); break;
+            case '\"': resStr.append("&quot;"); break;
+            case '&' : resStr.append("&amp;" ); break;
+            // case '': resStr.append(""); break;
+            default: resStr.append(1, ch);
+        }
+    }
+
+    return resStr;
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -237,6 +258,14 @@ int main(int argc, char* argv[])
 
     auto printInfo = [&]( bool bMain )
     {
+        umba::StdStreamCharWriter infoWriter(infoStream);
+        umba::SimpleFormatter uinfoStream(&infoWriter);
+
+        if (appConfig.getOptHtml())
+        {
+            uinfoStream << "<table><tbody>\n";
+        }
+
         //std::map<std::string, BriefInfo>
         for( const auto& [name,info] : briefInfo)
         {
@@ -249,8 +278,8 @@ int main(int argc, char* argv[])
                     continue;
             }
 
-            umba::StdStreamCharWriter infoWriter(infoStream);
-            umba::SimpleFormatter uinfoStream(&infoWriter);
+            // umba::StdStreamCharWriter infoWriter(infoStream);
+            // umba::SimpleFormatter uinfoStream(&infoWriter);
 
             auto relName = appConfig.getScanRelativeName(name);
 
@@ -262,7 +291,9 @@ int main(int argc, char* argv[])
                 int fnw = (int)appConfig.filenameWidth;
 
                 if (appConfig.descriptionWidth==0)
+                {
                     uinfoStream << width(fnw) << left << relName << " - " << info.infoText << "\n";
+                }
                 else
                 {
                     auto formattedParas = umba::text_utils::formatTextParas( info.infoText, appConfig.descriptionWidth, umba::text_utils::TextAlignment::left );
@@ -291,12 +322,20 @@ int main(int argc, char* argv[])
                 // std::string textAddIndent(const std::string &text, const std::string &indent, const std::string &firstIndent)
                 //infoStream << relName << " - " << info.infoText << "\n";
             }
-            else
+            else // Html
             {
                 //TODO: !!! Add HTML output here
+                uinfoStream << "<tr><td>" << htmlEscape(relName) << "</td><td>" << htmlEscape(info.infoText) << "</td></tr>\n";
             }
         
+        } // for
+
+
+        if (appConfig.getOptHtml())
+        {
+            uinfoStream << "</tbody></table>\n";
         }
+
 
     };
 
@@ -323,8 +362,8 @@ int main(int argc, char* argv[])
 
     if (appConfig.getOptHtml())
     {
-        infoStream << "<body>\n";
-        infoStream << "<html>\n";
+        infoStream << "</body>\n";
+        infoStream << "</html>\n";
     }
 
 
