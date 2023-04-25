@@ -126,7 +126,9 @@ bool findBriefInfo( std::vector<char> fileText, const std::map< std::string,std:
     //std::string regexStr = R"!!!(/\*(?:!|\*).*\\file.*\\brief\s(.*)(?=\*/))!!!";
     // std::string regexStr = R"!!!(/\*(?:!|\*).*\\file.*\\brief\s(.*)\*/(.*))!!!";
     //std::string regexStr = R"!!!(/\*(?:!|\*).*\\file.*\\brief\s(.*)\*/)!!!";
-    std::string regexStr = R"!!!(/\*(?:!|\*)[\s\S]*?\\file[\s\S]*?\\brief\s([\s\S]*?)\*/)!!!";
+
+    //std::string regexStr = R"!!!(/\*(?:!|\*)[\s\S]*?\\file[\s\S]*?\\brief\s([\s\S]*?)\*/)!!!";
+    std::string regexStr = R"!!!(/\*(?:!|\*)[\s\S]*?(?:\\|@)file[\s\S]*?(?:\\|@)brief\s([\s\S]*?)\*/)!!!";
 
     // [\s\S]*?\*\/
 
@@ -166,6 +168,12 @@ bool findBriefInfo( std::vector<char> fileText, const std::map< std::string,std:
     {
         info.briefFound = true;
         info.infoText   = m[1]; // m[0] - содержит всю строку, соответствующую выражению, m[1] - первому захвату, и тп
+
+        // std::cout << "Matches found: " << m.size() << "\n";
+        // for(std::size_t mI=0; mI!=m.size(); ++mI)
+        // {
+        //     std::cout << "  match[" << mI << "]: {" << m[mI] << "}\n";
+        // }
 
         // Костыль - regexp получился кривоватый, не силён я в них, и он захватывает что-то лишнее.
         // Обычно это что-то из продолжения описания, которое отделено двумя (или даже больше) переводами строки.
