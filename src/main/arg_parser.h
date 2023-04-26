@@ -389,7 +389,8 @@ int operator()( const std::string                               &a           //!
                 {
                     auto helpText = opt.getHelpOptionsString();
                     std::cout << "Usage: " << programLocationInfo.exeName
-                              << " [OPTIONS] input_file [output_file]\n\nOptions:\n\n"<<helpText;
+                              //<< " [OPTIONS] input_file [output_file]\n\nOptions:\n\n"<<helpText;
+                              << " [OPTIONS] output_file\n\nOptions:\n\n"<<helpText;
                 }
                 
                 if (pCol) // argsNeedHelp
