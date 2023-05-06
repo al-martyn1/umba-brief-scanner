@@ -133,7 +133,7 @@ int operator()( const std::string                               &a           //!
 
             if (!ignoreInfos)
             {
-                printOnlyVersion();
+                umba::app_helpers::printOnlyVersion(umbaLogStreamMsg);
                 return 1;
             }
         }
@@ -379,8 +379,8 @@ int operator()( const std::string                               &a           //!
                 //printNameVersion();
                 if (!argsParser.quet)
                 {
-                    printBuildDateTime();
-                    printCommitHash();
+                    umba::app_helpers::printBuildDateTime(umbaLogStreamMsg);
+                    umba::app_helpers::printCommitHash(umbaLogStreamMsg);
                     std::cout<<"\n";
                 //printHelp();
                 }
