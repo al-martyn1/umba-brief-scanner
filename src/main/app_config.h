@@ -8,7 +8,8 @@
 #include "umba/enum_helpers.h"
 #include "umba/flag_helpers.h"
 
-#include "regex_helpers.h"
+#include "umba/regex_helpers.h"
+
 
 //----------------------------------------------------------------------------
 
@@ -60,6 +61,8 @@ struct AppConfig
 
 
     //------------------------------
+    std::vector<std::string>                 includeFilesMaskList;
+
     std::vector<std::string>                 excludeFilesMaskList;
 
     std::vector<std::string>                 scanPaths;
@@ -252,12 +255,40 @@ struct AppConfig
 
         s << "\n";
         */
+
+        //------------------------------
+
+        s << "Include File Masks:\n";
+        for(auto includeFileMask : includeFilesMaskList)
+	    {
+            //auto regexStr = expandSimpleMaskToEcmaRegex(includeFileMask);
+            auto regexStr = umba::regex_helpers::expandSimpleMaskToEcmaRegex(includeFileMask, true /* useAnchoring */, true /* allowRawRegexes */);
+            s << "    '" << includeFileMask;
+
+            bool isRaw = false;
+            if (umba::string_plus::starts_with<std::string>(includeFileMask,umba::regex_helpers::getRawEcmaRegexPrefix<std::string>()))
+                isRaw = true;
+
+            if (regexStr==includeFileMask || isRaw)
+                s << "'\n";
+            else
+            {
+                s << "', corresponding mECMA regexp: '"
+                  << regexStr
+                  << "'\n";
+            }
+        }
+
+        s << "\n";
+        
         //------------------------------
 
         s << "Exclude File Masks:\n";
         for(auto excludeFileMask : excludeFilesMaskList)
 	    {
-            auto regexStr = expandSimpleMaskToEcmaRegex(excludeFileMask);
+            // auto regexStr = expandSimpleMaskToEcmaRegex(excludeFileMask);
+            auto regexStr = umba::regex_helpers::expandSimpleMaskToEcmaRegex( excludeFileMask, true /* useAnchoring */, true /* allowRawRegexes */ );
+
             s << "    '" << excludeFileMask;
 
             bool isRaw = false;
@@ -326,6 +357,14 @@ struct AppConfig
 
         if (appConfig.scanPaths.empty())
             appConfig.scanPaths.push_back(umba::filesys::getCurrentDirectory<std::string>());
+
+        for(auto includeFileMask: includeFilesMaskList)
+        {
+            if (umba::string_plus::starts_with(includeFileMask,umba::regex_helpers::getRawEcmaRegexPrefix<std::string>()))
+                appConfig.includeFilesMaskList.push_back(includeFileMask); // keep regex as is
+            else
+                appConfig.includeFilesMaskList.push_back( umba::filename::normalizePathSeparators(includeFileMask,'/') );
+        }
 
         for(auto excludeFileMask: excludeFilesMaskList)
         {

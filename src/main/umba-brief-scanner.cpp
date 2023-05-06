@@ -20,6 +20,8 @@
 #include "umba/scope_exec.h"
 #include "umba/macro_helpers.h"
 #include "umba/macros.h"
+#include "umba/info_log.h"
+#include "umba/scanners.h"
 
 #include "umba/time_service.h"
 #include "umba/text_utils.h"
@@ -44,7 +46,7 @@ bool logSourceInfo = false;
 
 #include "log.h"
 #include "utils.h"
-#include "scan_folders.h"
+// #include "scan_folders.h"
 
 //#include "scan_sources.h"
 
@@ -141,7 +143,7 @@ int main(int argc, char* argv[])
 
     if (appConfig.getOptShowConfig())
     {
-        printInfoLogSectionHeader(logMsg, "Actual Config");
+        umba::info_log::printSectionHeader(logMsg, "Actual Config");
         // logMsg << appConfig;
         appConfig.print(logMsg) << "\n";
     }
@@ -156,13 +158,13 @@ int main(int argc, char* argv[])
 
     std::vector<std::string> foundFiles, excludedFiles;
     std::set<std::string>    foundExtentions;
-    scanFolders(appConfig, foundFiles, excludedFiles, foundExtentions);
+    umba::scanners::scanFolders(appConfig, logMsg, foundFiles, excludedFiles, foundExtentions);
 
 
     if (appConfig.testVerbosity(VerbosityLevel::detailed))
     {
         if (!foundFiles.empty())
-            printInfoLogSectionHeader(logMsg, "Files for Processing");
+            umba::info_log::printSectionHeader(logMsg, "Files for Processing");
 
         for(const auto & name : foundFiles)
         {
@@ -171,7 +173,7 @@ int main(int argc, char* argv[])
 
 
         if (!excludedFiles.empty())
-            printInfoLogSectionHeader(logMsg, "Files Excluded from Processing");
+            umba::info_log::printSectionHeader(logMsg, "Files Excluded from Processing");
 
         for(const auto & name : excludedFiles)
         {
@@ -180,7 +182,7 @@ int main(int argc, char* argv[])
 
 
         if (!foundExtentions.empty())
-            printInfoLogSectionHeader(logMsg, "Found File Extentions");
+            umba::info_log::printSectionHeader(logMsg, "Found File Extentions");
 
         for(const auto & ext : foundExtentions)
         {
@@ -193,7 +195,7 @@ int main(int argc, char* argv[])
 
 
     if (appConfig.testVerbosity(VerbosityLevel::detailed))
-        printInfoLogSectionHeader(logMsg, "Processing");
+        umba::info_log::printSectionHeader(logMsg, "Processing");
 
     std::map<std::string, BriefInfo>  briefInfo;
 

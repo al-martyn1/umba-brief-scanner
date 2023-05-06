@@ -7,46 +7,14 @@
 #include <string>
 
 
-//----------------------------------------------------------------------------
-static const char *infoLogSectionSeparator = // "--------------------------------------"; // 38
-"------------------------------------------------------------------------------"; // 78
-
 
 //----------------------------------------------------------------------------
-template<typename StreamType> inline
-StreamType& printInfoLogSectionHeader( StreamType &s, std::string secCaption )
-{
-    using namespace umba::omanip;
-
-    secCaption += ":";
-
-    s << "\n";
-    s << infoLogSectionSeparator << "\n";
-    s << caption << secCaption << normal << "\n";
-    s << std::string(secCaption.size(), '-');
-    s << "\n";
-
-    return s;
-}
-
-//----------------------------------------------------------------------------
-template<typename StreamType> inline
-StreamType& printInfoLogSectionHeader( StreamType &s, const char* secCaption )
-{
-    return printInfoLogSectionHeader( s, std::string(secCaption) );
-}
-
-//----------------------------------------------------------------------------
-
-
-
-
-//----------------------------------------------------------------------------
+/*
 bool isCppSpecialName( const std::string &s )
 {
     return s.find_first_of( "<=>?!~[]&|+-/*%.(){}" )!=s.npos;
 }
-
+*/
 //----------------------------------------------------------------------------
 std::string cppNameToFileName( std::string name )
 {
