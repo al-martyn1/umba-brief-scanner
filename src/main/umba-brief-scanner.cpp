@@ -27,7 +27,6 @@
 #include "umba/text_utils.h"
 
 
-#include "utils.h"
 #include "brief_info.h"
 
 
@@ -45,7 +44,6 @@ bool logSourceInfo = false;
 
 
 #include "log.h"
-#include "utils.h"
 // #include "scan_folders.h"
 
 //#include "scan_sources.h"
