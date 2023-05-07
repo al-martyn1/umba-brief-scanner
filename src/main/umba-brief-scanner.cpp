@@ -57,7 +57,7 @@ umba::program_location::ProgramLocation<std::string>   programLocationInfo;
 
 
 #include "app_ver_config.h"
-#include "umba/app_helpers.h"
+#include "umba/cli_tool_helpers.h"
 
 #include "arg_parser.h"
 
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
 
     if (!argsParser.quet)
     {
-        umba::app_helpers::printNameVersion(umbaLogStreamMsg);
+        umba::cli_tool_helpers::printNameVersion(umbaLogStreamMsg);
     }
 
     if (!argsParser.parseStdBuiltins())
