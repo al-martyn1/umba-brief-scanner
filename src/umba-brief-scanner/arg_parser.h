@@ -199,15 +199,31 @@ int operator()( const std::string                               &a           //!
         //     return 0;
         // }
         //  
-        else if ( opt.setParam("MASK,...")
-               || opt.isOption("include-files") || opt.isOption('X')
-               || opt.setDescription("Include files to parsing. The 'MASK' parameter is a simple file mask, where '*' "
-                                     "means any number of any chars, and '?' means exact one of any char. In addition, "
-                                     "symbol '^' in front and/or back of the mask means that the mask will be bound to beginning/ending "
-                                     "of the tested file name.\n"
-                                     "Also, regular expresion syntax allowed in form '" + 
-                                     umba::regex_helpers::getRawEcmaRegexPrefix<std::string>() + "YOURREGEX'. The regular expresions supports\n"
-                                     "See also: C++ Modified ECMA Script regular expression grammar - https://en.cppreference.com/w/cpp/regex/ecmascript"
+
+        else if ( opt.setParam("?FILENAME")
+               || opt.isOption("update") || opt.isOption('T')
+               || opt.setDescription(""
+                                    )
+                )
+        {
+            if (argsParser.hasHelpOption) return 0;
+            
+            appConfig.updateMode = true;
+
+            if (!opt.hasArg())
+            {
+                return 0;
+            }
+
+            appConfig.updateFromFile = makeAbsPath(opt.optArg);
+
+            return 0;
+        }
+
+        else if ( opt.isOption("include-files") || opt.isOption('I') || opt.setParam("MASK,...")
+               || opt.setDescription("Include C/C++ names for output. Only files which file name matched any of taken masks, will be added to output.\n"
+                                     "Note: exclude masks also performed on included names\n"
+                                     "For details about 'MASK' parameter see '--exclude-files' option description."
                                     )
                 )
         {

@@ -5,4 +5,5 @@
 --remove-path
 --filename-width=24
 --text-width=128
+--update
 doc/_sources_brief.txt

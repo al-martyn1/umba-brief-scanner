@@ -25,6 +25,7 @@
 
 #include "umba/time_service.h"
 #include "umba/text_utils.h"
+#include "marty_cpp/src_normalization.h"
 
 
 #include "brief_info.h"
@@ -109,7 +110,9 @@ int main(int argc, char* argv[])
     if (umba::isDebuggerPresent())
     {
         argsParser.args.clear();
-        argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
+        argsParser.args.push_back("@..\\umba-brief-scanner.rsp");
+        // argsParser.args.clear();
+        // argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
         //argsParser.args.push_back("@..\\make_sources_brief.rsp");
         // argsParser.args.push_back(umba::string_plus::make_string(""));
         // argsParser.args.push_back(umba::string_plus::make_string(""));
@@ -153,6 +156,101 @@ int main(int argc, char* argv[])
         LOG_ERR_OPT << "output name not taken" << endl;
         return 1;
     }
+
+
+    std::map<std::string, std::string>  originalFileInfo;
+    if (appConfig.updateMode)
+    {
+        if (appConfig.updateFromFile.empty())
+        {
+            using namespace umba::filename;
+            std::string ext = getFileExtention(appConfig.outputName);
+            if (ext=="txt" || ext==".txt" || ext=="TXT" || ext==".TXT")
+            {
+                appConfig.updateFromFile = appConfig.outputName;
+            }
+            else
+            {
+                appConfig.updateFromFile = appendExtention(appendPath(getPath(appConfig.outputName), getName(appConfig.outputName)), std::string("txt"));
+            }
+        }
+
+        std::vector<char> fileData;
+        if (umba::filesys::readFile(appConfig.updateFromFile,fileData))
+        {
+            std::string updateFromText = marty_cpp::normalizeCrLfToLf(std::string(fileData.begin(), fileData.end()), false);
+            std::vector<std::string> updateFromLines = marty_cpp::splitToLinesSimple(updateFromText, false);
+
+            std::string curName;
+            std::string curText;
+
+            auto addFileInfo = [&]()
+            {
+                if (!curName.empty() && !curText.empty())
+                {
+                    originalFileInfo[curName] = curText;
+                }
+
+                curName.clear();
+                curText.clear();
+            };
+
+            bool skip = true;
+            for(const auto &line : updateFromLines)
+            {
+                if (umba::string_plus::starts_with(line, "--------"))
+                {
+                    skip = false;
+                    continue;
+                }
+
+                if (skip)
+                {
+                    continue;
+                }
+
+                if (umba::string_plus::trim_copy(line).empty())
+                {
+                    addFileInfo(); // если было что-то
+                    continue;
+                }
+
+                // строка не пустая
+
+                if (line[0]==' ' || line[0]=='\t')
+                {
+                    // это продолжение описания
+                    if (!curText.empty())
+                    {
+                        curText.append(1, ' ');
+                    }
+
+                    curText.append(umba::string_plus::trim_copy(line));
+                }
+                else
+                {
+                    // Новое описание
+                    addFileInfo(); // если было что-то
+
+                    std::vector<std::string> nameAndText = marty_cpp::simple_string_split(line, " - ", 1 /* nSplits */);
+                    if (nameAndText.size()>0)
+                    {
+                        curName = umba::string_plus::trim_copy(nameAndText[0]);
+                    }
+
+                    if (nameAndText.size()>1)
+                    {
+                        curText = umba::string_plus::trim_copy(nameAndText[1]);
+                    }
+                }
+
+            } // for
+
+            addFileInfo(); // если было что-то
+
+        } // if readFile
+
+    } // if (appConfig.updateMode)
 
 
 
@@ -288,17 +386,28 @@ int main(int argc, char* argv[])
             if (appConfig.getOptRemovePath())
                 relName = umba::filename::getFileName( relName );
 
+            std::string infoText = info.infoText;
+
+            std::map<std::string, std::string>::const_iterator uit = originalFileInfo.find(relName);
+            if (uit!=originalFileInfo.end())
+            {
+                if (/* !info.briefFound || */ infoText.empty())
+                {
+                    infoText = uit->second;
+                }
+            }
+
             if (!appConfig.getOptHtml())
             {
                 int fnw = (int)appConfig.filenameWidth;
 
                 if (appConfig.descriptionWidth==0)
                 {
-                    uinfoStream << width(fnw) << left << relName << " - " << info.infoText << "\n";
+                    uinfoStream << width(fnw) << left << relName << " - " << infoText << "\n";
                 }
                 else
                 {
-                    auto formattedParas = umba::text_utils::formatTextParas( info.infoText, appConfig.descriptionWidth, umba::text_utils::TextAlignment::left );
+                    auto formattedParas = umba::text_utils::formatTextParas( infoText, appConfig.descriptionWidth, umba::text_utils::TextAlignment::left );
 
                     // Не будем париться - первая строка может свисать справа, ну и фик с ним
 

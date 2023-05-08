@@ -1,9 +1,15 @@
 Brief Description for Project Sources
 -------------------------------------
 
+enums.cpp                - Генерация enum и сериализации для различных перечислений.
+01_normalization_and_tabs.cpp - Тестируем cEscapeString, нормализацию CR LF, нормализацию trailing spaces,
+                           condenseSpacesToTabs, normalizeIndents.
+02_enum_generator.cpp    - Тестирование генератора enum'ов marty_cpp::enum_generate_*.
+03_sort_includes.cpp     - Тестируем sort_includes.
 main.cpp                 - Для тестирования, файл с описанием и main'ом.
 qt_stub.cpp              - Стаб, для того, чтобы windeployqt подсосал нужный рантайм для MSVC - а то
                            совсем без Qt он не работает.
+test0.cpp                - Добавил описание ручками.
 test00.cpp               - 
 test01.cpp               - Перетащил всю требуху из другого проекта, лишнее отрежу потом.
 test02.cpp               - Простой тест регулярок по поиску точки входа и brief'а.

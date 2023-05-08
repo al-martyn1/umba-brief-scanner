@@ -54,6 +54,8 @@ struct AppConfig
     static const unsigned                    ofRemovePath            = 0x0100; // Remove path from output names
 
     //------------------------------
+    // !!! Не забывать копировать и/или подготавливать поля класса в функции getAdjustedConfig
+    //------------------------------
     std::map<std::string, std::string>       macros; // не используем
 
     std::map< std::string,std::set<std::string> >  entryNames; // не используем
@@ -68,6 +70,9 @@ struct AppConfig
     std::vector<std::string>                 scanPaths;
     //std::string                              outputPath;
     std::string                              outputName;
+    bool                                     updateMode;
+    std::string                              updateFromFile;
+
 
     unsigned                                 filenameWidth    = 0;
     unsigned                                 descriptionWidth = 0;
@@ -202,6 +207,9 @@ struct AppConfig
 
         s << "Output Name       : " << outputName << "\n"; // endl;
         s << "\n";
+        s << "Update            : " << (updateMode?"true":"false") << "\n"; // endl;
+        s << "Update from       : " << updateFromFile << "\n"; // endl;
+        s << "\n";
 
         s << "Filename width    : ";
         if (filenameWidth)
@@ -323,6 +331,8 @@ struct AppConfig
         //appConfig.keepGeneratedFiles = keepGeneratedFiles;
         appConfig.scanPaths          = scanPaths;
         appConfig.outputName         = outputName;
+        appConfig.updateMode         = updateMode    ;
+        appConfig.updateFromFile     = updateFromFile;
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
 
