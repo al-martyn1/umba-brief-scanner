@@ -345,8 +345,8 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
-        else if ( opt.setParam("WIDTH", -1, 8, 48)
-               || opt.isOption("width") || opt.isOption("filename-width") || opt.isOption('W') 
+        else if ( opt.setParam("WIDTH", -1, 8, 64)
+               || opt.isOption("filename-width") || opt.isOption('W') 
                || opt.setDescription("Set width for filename report column"))
         {
             if (argsParser.hasHelpOption) return 0;
@@ -362,8 +362,8 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
-        else if ( opt.setParam("WIDTH", -1, 32, 160) 
-               || opt.isOption("text-width") || opt.isOption("description-width") || opt.isOption('D')
+        else if ( opt.setParam("WIDTH", -1, 64, 160) 
+               || opt.isOption("text-width") || opt.isOption("description-width") || opt.isOption("width") || opt.isOption('D')
                || opt.setDescription("Set width for description text report column"))
         {
             if (argsParser.hasHelpOption) return 0;

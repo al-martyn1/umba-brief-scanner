@@ -347,14 +347,14 @@ struct AppConfig
                 appConfig.filenameWidth = 32;
         }
 
-        if (appConfig.filenameWidth > 48)
-            appConfig.filenameWidth = 48;
+        if (appConfig.filenameWidth > 64)
+            appConfig.filenameWidth = 64;
 
         if (appConfig.descriptionWidth > 160)
             appConfig.descriptionWidth = 160;
 
-        if (appConfig.descriptionWidth < 40)
-            appConfig.descriptionWidth = 40;
+        if (appConfig.descriptionWidth < 1)
+            appConfig.descriptionWidth = 64;
 
 
         appConfig.entryNames         = entryNames;
