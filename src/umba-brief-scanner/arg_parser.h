@@ -142,7 +142,7 @@ int operator()( const std::string                               &a           //!
         {
             if (argsParser.hasHelpOption) return 0;
 
-            LOG_MSG_OPT << programLocationInfo.exeFullName << "\n";
+            LOG_MSG_OPT << argsParser.programLocationInfo.exeFullName << "\n";
             return 0;
         }
 
@@ -199,6 +199,32 @@ int operator()( const std::string                               &a           //!
         //     return 0;
         // }
         //  
+        else if ( opt.setParam("MASK,...")
+               || opt.isOption("include-files") || opt.isOption('X')
+               || opt.setDescription("Include files to parsing. The 'MASK' parameter is a simple file mask, where '*' "
+                                     "means any number of any chars, and '?' means exact one of any char. In addition, "
+                                     "symbol '^' in front and/or back of the mask means that the mask will be bound to beginning/ending "
+                                     "of the tested file name.\n"
+                                     "Also, regular expresion syntax allowed in form '" + 
+                                     umba::regex_helpers::getRawEcmaRegexPrefix<std::string>() + "YOURREGEX'. The regular expresions supports\n"
+                                     "See also: C++ Modified ECMA Script regular expression grammar - https://en.cppreference.com/w/cpp/regex/ecmascript"
+                                    )
+                )
+        {
+            if (argsParser.hasHelpOption) return 0;
+            
+            if (!opt.hasArg())
+            {
+                LOG_ERR_OPT<<"include files mask not taken (--exclude-files)\n";
+                return -1;
+            }
+
+            std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
+            appConfig.includeFilesMaskList.insert(appConfig.includeFilesMaskList.end(), lst.begin(), lst.end());
+
+            return 0;
+        }
+
         else if ( opt.setParam("MASK,...")
                || opt.isOption("exclude-files") || opt.isOption('X')
                || opt.setDescription("Exclude files from parsing. The 'MASK' parameter is a simple file mask, where '*' "
@@ -388,7 +414,7 @@ int operator()( const std::string                               &a           //!
                 if (pCol && pCol->isNormalPrintHelpStyle() && argsParser.argsNeedHelp.empty())
                 {
                     auto helpText = opt.getHelpOptionsString();
-                    std::cout << "Usage: " << programLocationInfo.exeName
+                    std::cout << "Usage: " << argsParser.programLocationInfo.exeName
                               //<< " [OPTIONS] input_file [output_file]\n\nOptions:\n\n"<<helpText;
                               << " [OPTIONS] output_file\n\nOptions:\n\n"<<helpText;
                 }

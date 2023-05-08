@@ -50,7 +50,7 @@ bool umbaLogSourceInfo = false;
 
 //#include "scan_sources.h"
 
-umba::program_location::ProgramLocation<std::string>   programLocationInfo;
+//umba::program_location::ProgramLocation<std::string>   programLocationInfo;
 
 
 #include "umba/cmd_line.h"
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
         // argsParser.args.push_back(umba::string_plus::make_string(""));
     }
 
-    programLocationInfo = argsParser.programLocationInfo;
+    // programLocationInfo = argsParser.programLocationInfo;
 
     // Job completed - may be, --where option found
     if (argsParser.mustExit)
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
         return 0;
 
 
-    appConfig = appConfig.getAdjustedConfig(programLocationInfo);
+    appConfig = appConfig.getAdjustedConfig(argsParser.programLocationInfo);
     //pAppConfig = &appConfig;
 
     if (appConfig.getOptShowConfig())
