@@ -111,6 +111,8 @@ int main(int argc, char* argv[])
     {
         argsParser.args.clear();
         argsParser.args.push_back("@..\\umba-brief-scanner.rsp");
+        argsParser.args.push_back("--scan=../src");
+        argsParser.args.push_back("../doc/_sources_brief.txt");
         // argsParser.args.clear();
         // argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
         //argsParser.args.push_back("@..\\make_sources_brief.rsp");
@@ -157,8 +159,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-
-    std::map<std::string, std::string>  originalFileInfo;
+    std::unordered_map<std::string, std::string>  prevBriefFileInfo; // Прочитанное из файла c brief'ами
     if (appConfig.updateMode)
     {
         if (appConfig.updateFromFile.empty())
@@ -186,9 +187,9 @@ int main(int argc, char* argv[])
 
             auto addFileInfo = [&]()
             {
-                if (!curName.empty() && !curText.empty())
+                if (!curName.empty()  /* && !curText.empty() */ )
                 {
-                    originalFileInfo[curName] = curText;
+                    prevBriefFileInfo[curName] = curText;
                 }
 
                 curName.clear();
@@ -356,6 +357,11 @@ int main(int argc, char* argv[])
     }
 
 
+    /* Нужно прочитанное при чтении старых описаний проверять, есть ли такой файл в новом скане. 
+       Если в скане его нет, то файл пропал - изменилась стуктура каталогов
+     */
+    std::unordered_set<std::string> relNames; // Имена, такие же как и прежнем brief'е
+
     auto printInfo = [&]( bool bMain )
     {
         umba::StdStreamCharWriter infoWriter(infoStream);
@@ -386,10 +392,12 @@ int main(int argc, char* argv[])
             if (appConfig.getOptRemovePath())
                 relName = umba::filename::getFileName( relName );
 
+            relNames.insert(relName);
+
             std::string infoText = info.infoText;
 
-            std::map<std::string, std::string>::const_iterator uit = originalFileInfo.find(relName);
-            if (uit!=originalFileInfo.end())
+            std::unordered_map<std::string, std::string>::const_iterator uit = prevBriefFileInfo.find(relName);
+            if (uit!=prevBriefFileInfo.end())
             {
                 if (/* !info.briefFound || */ infoText.empty())
                 {
@@ -477,6 +485,20 @@ int main(int argc, char* argv[])
         infoStream << "</html>\n";
     }
 
+
+    if (appConfig.testVerbosity(VerbosityLevel::normal))
+    {
+        std::unordered_map<std::string, std::string>::const_iterator uit = prevBriefFileInfo.begin();
+        for(; uit!=prevBriefFileInfo.end(); ++uit)
+        {
+            if (relNames.find(uit->first)==relNames.end())
+            {
+                // В новом наборе старого файла нет
+                LOG_WARN_OPT("update-missing") << "previously scanned file not found in current source tree, file: '" << uit->first << "'\n";
+                LOG_WARN_OPT("file-description") << uit->second << "\n";
+            }
+        }
+    }
 
     if (appConfig.testVerbosity(VerbosityLevel::normal))
         logMsg << "Done";

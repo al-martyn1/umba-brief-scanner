@@ -1,10 +1,10 @@
 --entry-name=main,int,void
 --entry-name=wmain,int,void
---entry-name=tmain,int,void
---entry-name=_tmain,int,void
+--entry-name=tmain,int,INT,void
+--entry-name=_tmain,int,INT,void
 --entry-name=INVEST_OPENAPI_MAIN
---entry-name=DllMain,BOOL WINAPI,BOOL
---entry-name=DLLEntryPoint,BOOL WINAPI,BOOL
+--entry-name=DllMain,BOOL WINAPI,BOOL APIENTRY,BOOL
+--entry-name=DLLEntryPoint,BOOL WINAPI,BOOL APIENTRY,BOOL
 
 #https://rtfm.co.ua/c-sozdanie-i-primenenie-shared-library-v-linux/
 
