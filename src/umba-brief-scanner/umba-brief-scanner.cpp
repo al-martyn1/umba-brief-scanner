@@ -216,6 +216,13 @@ int main(int argc, char* argv[])
                     continue;
                 }
 
+                if (line[0]=='#' || line[0]==';')
+                {
+                    // Это коммент или группа
+                    addFileInfo(); // если было что-то
+                    continue;
+                }
+
                 // строка не пустая
 
                 if (line[0]==' ' || line[0]=='\t')
@@ -362,6 +369,8 @@ int main(int argc, char* argv[])
      */
     std::unordered_set<std::string> relNames; // Имена, такие же как и прежнем brief'е
 
+    std::string prevFilePath;
+
     auto printInfo = [&]( bool bMain )
     {
         umba::StdStreamCharWriter infoWriter(infoStream);
@@ -388,6 +397,25 @@ int main(int argc, char* argv[])
             // umba::SimpleFormatter uinfoStream(&infoWriter);
 
             auto relName = appConfig.getScanRelativeName(name);
+
+            auto relPath = umba::filename::getPath(relName);
+
+            if (appConfig.getOptSplitGroups())
+            {
+                if ((!prevFilePath.empty() && prevFilePath!=relPath) || prevFilePath.empty())
+                {
+                    if (!appConfig.getOptHtml())
+                    {
+                        uinfoStream << "\n# " << relPath << "\n";
+                    }
+                    else
+                    {
+                        uinfoStream << "<tr><td><br>" << htmlEscape(relPath) << "<br></td><td>" << "</td></tr>\n";
+                    }
+                }
+            }
+
+            prevFilePath = relPath;
 
             if (appConfig.getOptRemovePath())
                 relName = umba::filename::getFileName( relName );

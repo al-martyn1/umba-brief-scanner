@@ -6,4 +6,5 @@
 --filename-width=24
 --text-width=128
 --update
+--split-group
 # doc/_sources_brief.txt

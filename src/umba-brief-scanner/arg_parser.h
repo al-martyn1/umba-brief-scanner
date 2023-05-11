@@ -294,6 +294,14 @@ int operator()( const std::string                               &a           //!
                 appConfig.setOptHtml(true);
                 return 0;
             }
+
+        else if (opt.isOption("split-group") || opt.isOption("group") || opt.isOption("split") || opt.setDescription("Split files to separate groups (by single empty line) by its path."))
+            {
+                if (argsParser.hasHelpOption) return 0;
+                appConfig.setOptSplitGroups(true);
+                return 0;
+            }
+
         else if (opt.isOption("skip-undocumented") || opt.isOption('U') || opt.setDescription("Skip undocumented files. By default, all files will be added to report, also with empty description."))
             {
                 if (argsParser.hasHelpOption) return 0;

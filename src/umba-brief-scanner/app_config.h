@@ -53,6 +53,8 @@ struct AppConfig
     static const unsigned                    ofSkipUndocumented      = 0x0080; // Skip undocumented files
     static const unsigned                    ofRemovePath            = 0x0100; // Remove path from output names
 
+    static const unsigned                    ofSplitGroups           = 0x0200; // Remove path from output names
+
     //------------------------------
     // !!! Не забывать копировать и/или подготавливать поля класса в функции getAdjustedConfig
     //------------------------------
@@ -73,6 +75,8 @@ struct AppConfig
     bool                                     updateMode;
     std::string                              updateFromFile;
 
+    //std::size_t                              splitGroups      = 0;
+    //bool                                     splitGroups      = false;
 
     unsigned                                 filenameWidth    = 0;
     unsigned                                 descriptionWidth = 0;
@@ -134,6 +138,7 @@ struct AppConfig
             case ofHtml                  : return "Print output in html format";
             case ofSkipUndocumented      : return "Skip undocumented";
             case ofRemovePath            : return "Remove path from file names in output";
+            case ofSplitGroups           : return "Split to groups";
 
             default                      : return "Multiple flags taken!!!";
         }
@@ -148,6 +153,7 @@ struct AppConfig
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Html)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SkipUndocumented)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(RemovePath)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SplitGroups)
     
 
     void setOptQuet( bool q ) { setVerbosityLevel(VerbosityLevel::quet);  }
@@ -233,6 +239,8 @@ struct AppConfig
         s << "    " << getOptNameString(ofHtml)                << ": " << getOptValAsString(optionFlags&ofHtml) << "\n";
         s << "    " << getOptNameString(ofSkipUndocumented)    << ": " << getOptValAsString(optionFlags&ofSkipUndocumented) << "\n";
         s << "    " << getOptNameString(ofRemovePath)          << ": " << getOptValAsString(optionFlags&ofRemovePath) << "\n";
+        s << "    " << getOptNameString(ofSplitGroups)         << ": " << getOptValAsString(optionFlags&ofSplitGroups) << "\n";
+        
 
         s << "\n";
 

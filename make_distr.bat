@@ -1,5 +1,7 @@
 @SETLOCAL ENABLEDELAYEDEXPANSION
 
+@rem «вгрузка на яƒ - https://yandex.ru/dev/disk/api/reference/upload.html
+
 @rem VS150COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\
 @rem VS160COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\
 
