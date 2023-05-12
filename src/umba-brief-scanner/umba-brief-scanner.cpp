@@ -25,6 +25,9 @@
 
 #include "umba/time_service.h"
 #include "umba/text_utils.h"
+#include "marty_cpp/marty_cpp.h"
+#include "marty_cpp/marty_enum.h"
+#include "marty_cpp/marty_flags.h"
 #include "marty_cpp/src_normalization.h"
 
 
