@@ -58,7 +58,7 @@ struct AppConfig
     //------------------------------
     // !!! Не забывать копировать и/или подготавливать поля класса в функции getAdjustedConfig
     //------------------------------
-    std::map<std::string, std::string>       macros; // не используем
+    umba::macros::StringStringMap<std::string>  macros; // не используем
 
     std::map< std::string,std::set<std::string> >  entryNames; // не используем
 
