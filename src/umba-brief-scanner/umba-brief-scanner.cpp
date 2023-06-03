@@ -267,8 +267,8 @@ int main(int argc, char* argv[])
 
     std::vector<std::string> foundFiles, excludedFiles;
     std::set<std::string>    foundExtentions;
-    umba::scanners::scanFolders(appConfig, logMsg, foundFiles, excludedFiles, foundExtentions);
-
+    //umba::scanners::scanFolders(appConfig, logMsg, foundFiles, excludedFiles, foundExtentions);
+    umba::scanners::scanFolders(appConfig, argsParser.quet ? umbaLogStreamNul : umbaLogStreamMsg, foundFiles, excludedFiles, foundExtentions);
 
     if (appConfig.testVerbosity(VerbosityLevel::detailed))
     {
@@ -426,7 +426,10 @@ int main(int argc, char* argv[])
                 {
                     if (!appConfig.getOptHtml())
                     {
-                        uinfoStream << "\n# " << relPath << "\n";
+                        if (bFirstItem || relPath.empty())
+                            uinfoStream << "\n";
+                        else
+                            uinfoStream << "\n# " << relPath << "\n";
                     }
                     else
                     {
