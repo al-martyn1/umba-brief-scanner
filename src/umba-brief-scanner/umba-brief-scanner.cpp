@@ -384,6 +384,8 @@ int main(int argc, char* argv[])
             uinfoStream << "<table><tbody>\n";
         }
 
+        bool bFirstItem = true;
+
         //std::map<std::string, BriefInfo>
         for( const auto& [name,info] : briefInfo)
         {
@@ -405,7 +407,22 @@ int main(int argc, char* argv[])
 
             if (appConfig.getOptSplitGroups())
             {
-                if ((!prevFilePath.empty() && prevFilePath!=relPath) || prevFilePath.empty())
+                // bFirstItem
+                bool prevFilePathEmpty    =  prevFilePath.empty();
+                bool prevFilePathNotEmpty = !prevFilePathEmpty;
+                bool prevPathNotSame      = prevFilePath!=relPath;
+                bool prevPathEmpty        = prevFilePath.empty();
+
+                bool partBreak = false;
+
+                if (bFirstItem)
+                    partBreak = true;
+
+                if (prevPathNotSame)
+                    partBreak = true;
+
+                //if (!bFirstItem && ((!prevFilePath.empty() && prevFilePath!=relPath) || prevFilePath.empty()))
+                if (partBreak)
                 {
                     if (!appConfig.getOptHtml())
                     {
@@ -417,6 +434,8 @@ int main(int argc, char* argv[])
                     }
                 }
             }
+
+            bFirstItem = false;
 
             prevFilePath = relPath;
 
