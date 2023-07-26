@@ -43,7 +43,7 @@ umba-brief-scanner - одна из утилит пакета umba-tools. Ска�
 Пример работы утилиты umba-brief-scanner можно найти [тут](/doc/_sources_brief.txt).
 
 
-### Сборка
+## Сборка утилиты umba-brief-scanner
 
 Делаем `git clone https://github.com/al-martyn1/umba-brief-scanner`.
 
