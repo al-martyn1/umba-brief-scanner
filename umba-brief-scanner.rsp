@@ -4,7 +4,7 @@
 --main
 --remove-path
 --filename-width=24
---text-width=128
+--text-width=80
 --update
 --split-group
 # doc/_sources_brief.txt

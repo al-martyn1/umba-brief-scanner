@@ -30,6 +30,9 @@
 #include "marty_cpp/marty_flags.h"
 #include "marty_cpp/src_normalization.h"
 
+#include "encoding/encoding.h"
+
+#include "marty_utf/utf.h"
 
 #include "brief_info.h"
 
@@ -308,6 +311,7 @@ int main(int argc, char* argv[])
 
     std::map<std::string, BriefInfo>  briefInfo;
 
+    encoding::EncodingsApi* pEncApi = encoding::getEncodingsApi();
 
     for(const auto & filename : foundFiles)
     {
@@ -318,6 +322,21 @@ int main(int argc, char* argv[])
             LOG_WARN_OPT("open-file-failed") << "failed to open file '" << filename << "'\n";
             continue;
         }
+
+        auto filedataStr = std::string(filedata.begin(), filedata.end());
+
+        size_t bomSize = 0;
+        std::string detectRes = pEncApi->detect( filedataStr, bomSize );
+
+        if (bomSize)
+        {
+            filedataStr.erase(0,bomSize);
+        }
+
+        auto cpId = pEncApi->getCodePageByName(detectRes);
+
+        std::string filedataStrUtf8 = pEncApi->convert( filedataStr, cpId, encoding::EncodingsApi::cpid_UTF8 );
+        filedata = std::vector<char>(filedataStrUtf8.begin(), filedataStrUtf8.end());
 
         BriefInfo  info;
         bool bFound = findBriefInfo( filedata, appConfig.entryNames, info );
@@ -468,7 +487,11 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    auto formattedParas = umba::text_utils::formatTextParas( infoText, appConfig.descriptionWidth, umba::text_utils::TextAlignment::left );
+                    // SymbolLenCalculatorEncodingUtf8
+                    auto formattedParas = umba::text_utils::formatTextParas<marty_utf::SymbolLenCalculatorEncodingUtf8>( infoText, appConfig.descriptionWidth
+                                                                                                                       , umba::text_utils::TextAlignment::left
+                                                                                                                       , marty_utf::SymbolLenCalculatorEncodingUtf8()
+                                                                                                                       );
 
                     // Не будем париться - первая строка может свисать справа, ну и фик с ним
 
@@ -554,7 +577,7 @@ int main(int argc, char* argv[])
     }
 
     if (appConfig.testVerbosity(VerbosityLevel::normal))
-        logMsg << "Done";
+        logMsg << "Done\n\n\n";
 
 
     return 0;

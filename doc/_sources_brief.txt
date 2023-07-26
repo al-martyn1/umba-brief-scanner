@@ -2,10 +2,6 @@ Brief Description for Project Sources
 -------------------------------------
 
 
-# _libs/marty_cpp/_generators
-enums.cpp                - Генерация enum и сериализации для различных перечислений.
-
-# _libs/marty_cpp/examples
 01_normalization_and_tabs.cpp - Тестируем cEscapeString, нормализацию CR LF, нормализацию trailing spaces,
                            condenseSpacesToTabs, normalizeIndents.
 02_enum_generator.cpp    - Тестирование генератора enum'ов marty_cpp::enum_generate_*.

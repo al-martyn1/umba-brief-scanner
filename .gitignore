@@ -41,3 +41,5 @@
 /_libs/_pretty_headers
 /_prj_msvc2019/*.user
 /*.log
+/_libs/encoding
+/_libs/marty_utf

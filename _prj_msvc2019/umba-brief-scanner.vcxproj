@@ -28,6 +28,11 @@
   <Import Project="$(ProjectDir)\umba_boost.props" />
   <!--Import Project="$(ProjectDir)\umba_qt.props" /-->
   <Import Project="$(ProjectDir)\umba_llvm.props" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+    <AdditionalIncludeDirectories>$(ProjectDir)\..\_libs\encoding;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
@@ -179,6 +184,11 @@
     <ClCompile Include="..\_libs\umba\critical_section.cpp" />
     <ClCompile Include="..\_libs\umba\time_service.cpp" />
     <ClCompile Include="..\src\umba-brief-scanner\umba-brief-scanner.cpp" />
+    <ClCompile Include="..\_libs\encoding\encoding.cpp" />
+    <ClCompile Include="..\_libs\encoding\compact_enc_det\compact_enc_det.cc" />
+    <ClCompile Include="..\_libs\encoding\compact_enc_det\compact_enc_det_hint_code.cc" />
+    <ClCompile Include="..\_libs\encoding\util\encodings\encodings.cc" />
+    <ClCompile Include="..\_libs\encoding\util\languages\languages.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
