@@ -452,7 +452,7 @@ int main(int argc, char* argv[])
                     }
                     else
                     {
-                        uinfoStream << "<tr><td><br>" << htmlEscape(relPath) << "<br></td><td>" << "</td></tr>\n";
+                        uinfoStream << "<tr><td><br><b>" << htmlEscape(relPath) << "</b><br></td><td>" << "</td></tr>\n";
                     }
                 }
             }

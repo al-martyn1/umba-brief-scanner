@@ -26,10 +26,22 @@
 -X=*.cfg^
 -X=*.ini^
 -X=*.txt^
+-X=*.log^
+-X=*.tlog^
+-X=*.recipe^
+-X=*.lastbuildstate^
 -X=*.md^
 -X=*.*xml^
 -X=*.yml^
 -X=*.sln^
+
+-X=*.exe^
+-X=*.obj^
+-X=*.res^
+-X=*.ilk^
+-X=*.map^
+-X=*.pdb^
+-X=*.pch^
 
 -X=*.bazel^
 -X=*.clang-format^
