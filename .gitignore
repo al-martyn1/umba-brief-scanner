@@ -43,3 +43,4 @@
 /*.log
 /_libs/encoding
 /_libs/marty_utf
+/.build
