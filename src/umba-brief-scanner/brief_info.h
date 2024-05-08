@@ -33,6 +33,17 @@ bool findEntryPoint( std::vector<char> fileText, const std::map< std::string,std
 {
     makeSingleLineText(fileText.begin(), fileText.end());
 
+    #if defined(__GNUC__)
+
+        //TODO: !!! Если не обрезать, то регулярки в GCC 7.3 падают
+        // Переехало в umba. Или нет?
+        if (fileText.size()>7000u)
+        {
+            fileText.erase(fileText.begin()+7000u, fileText.end());
+        }
+
+    #endif
+
 #else
 
 inline 
@@ -40,6 +51,7 @@ bool findEntryPoint( const std::vector<char> &fileText, const std::map< std::str
 {
 
 #endif
+
 
     for(const auto& [name, args] : entryNames)
     {
@@ -109,6 +121,18 @@ inline
 bool findBriefInfo( std::vector<char> fileText, const std::map< std::string,std::set<std::string> > &entryNames, BriefInfo &info)
 {
     makeSingleLineText(fileText.begin(), fileText.end());
+
+    #if defined(__GNUC__)
+
+        // Переехало в umba. Или нет?
+        if (fileText.size()>7000u)
+        {
+            fileText.erase(fileText.begin()+7000u, fileText.end());
+        }
+
+    #endif
+
+
     info.entryPoint = findEntryPoint(fileText, entryNames);
     info.briefFound = false;
 

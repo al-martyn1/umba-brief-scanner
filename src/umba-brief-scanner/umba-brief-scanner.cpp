@@ -12,7 +12,7 @@
 #include <iomanip>
 #include <string>
 // #include <cstdio>
-#include <filesystem>
+// #include <filesystem>
 
 #include "umba/debug_helpers.h"
 #include "umba/string_plus.h"
@@ -97,6 +97,7 @@ int main(int argc, char* argv[])
     umba::time_service::start();
 
     umba::time_service::TimeTick startTick = umba::time_service::getCurTimeMs();
+    UMBA_USED(startTick);
 
 
     using namespace umba::omanip;
@@ -115,10 +116,26 @@ int main(int argc, char* argv[])
     // Force set CLI arguments while running under debugger
     if (umba::isDebuggerPresent())
     {
+        #if (defined(WIN32) || defined(_WIN32))
+
+            #if defined(__GNUC__)
+
+                std::string rootPath = "..\\..\\..\\..\\..\\";
+
+            #else // if
+
+                std::string rootPath = "..\\";
+
+            #endif
+
+        #endif
+
+
         argsParser.args.clear();
-        argsParser.args.push_back("@..\\umba-brief-scanner.rsp");
-        argsParser.args.push_back("--scan=../src");
-        argsParser.args.push_back("../doc/_sources_brief.txt");
+        argsParser.args.push_back("@" + rootPath + "\\umba-brief-scanner.rsp");
+        argsParser.args.push_back("--scan=" + rootPath + "/src");
+        argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
+
         // argsParser.args.clear();
         // argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
         //argsParser.args.push_back("@..\\make_sources_brief.rsp");
@@ -126,6 +143,7 @@ int main(int argc, char* argv[])
         // argsParser.args.push_back(umba::string_plus::make_string(""));
         // argsParser.args.push_back(umba::string_plus::make_string(""));
     }
+
 
     // programLocationInfo = argsParser.programLocationInfo;
 
@@ -185,7 +203,7 @@ int main(int argc, char* argv[])
         std::vector<char> fileData;
         if (umba::filesys::readFile(appConfig.updateFromFile,fileData))
         {
-            std::string updateFromText = marty_cpp::normalizeCrLfToLf(std::string(fileData.begin(), fileData.end()), false);
+            std::string updateFromText = marty_cpp::normalizeCrLfToLf(std::string(fileData.begin(), fileData.end()), 0);
             std::vector<std::string> updateFromLines = marty_cpp::splitToLinesSimple(updateFromText, false);
 
             std::string curName;
@@ -340,6 +358,7 @@ int main(int argc, char* argv[])
 
         BriefInfo  info;
         bool bFound = findBriefInfo( filedata, appConfig.entryNames, info );
+        UMBA_USED(bFound);
         briefInfo[filename] = info;
 
         if (appConfig.testVerbosity(VerbosityLevel::detailed))
@@ -428,9 +447,9 @@ int main(int argc, char* argv[])
             {
                 // bFirstItem
                 bool prevFilePathEmpty    =  prevFilePath.empty();
-                bool prevFilePathNotEmpty = !prevFilePathEmpty;
+                bool prevFilePathNotEmpty = !prevFilePathEmpty;     UMBA_USED(prevFilePathNotEmpty);
                 bool prevPathNotSame      = prevFilePath!=relPath;
-                bool prevPathEmpty        = prevFilePath.empty();
+                bool prevPathEmpty        = prevFilePath.empty();   UMBA_USED(prevPathEmpty);
 
                 bool partBreak = false;
 

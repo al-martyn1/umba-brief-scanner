@@ -84,6 +84,7 @@ set (UMBA_BRIEF_SCANNER_COMMON_SOURCES
 
 add_compile_definitions("USE_UMBA_LOUT_COUT" "CONSOLE" "_CONSOLE")
 
+# add_compile_options(-fsplit-stack)
 
 
 add_executable(umba-brief-scanner  ${UMBA_BRIEF_SCANNER_COMMON_SOURCES} "${UBS_SRC_ROOT}/umba-brief-scanner.cpp" )

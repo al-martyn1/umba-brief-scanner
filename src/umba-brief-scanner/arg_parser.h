@@ -387,6 +387,40 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
+        else if (opt.setParam("MODE", 0, "0/no/none|1/doxify||2/always")
+              || opt.setInitial(-1) || opt.isOption("doxyfication") 
+              || opt.setDescription("Generate .dox files for existing C/C++ sources")
+              /* ", can be:\nno, none, file - disable coloring\nansi, term - set ansi terminal coloring\nwin32, win, windows, cmd, console - windows console specific coloring method" */
+              )
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            DoxificationMode res;
+            auto mapper = [](int i) -> DoxificationMode
+                          {
+                              switch(i)
+                              {
+                                  case 0 : return DoxificationMode::noDoxyfication;
+                                  case 1 : return DoxificationMode::doxyfy;
+                                  case 2 : return DoxificationMode::doxyfyAlways;
+                                  default: return DoxificationMode::invalid;
+                              };
+                          };
+            if (!opt.getParamValue( res, errMsg, mapper ) )
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+
+            if (res==DoxificationMode::invalid)
+            {
+                LOG_ERR_OPT<<"Invalid value (--doxyfication)\n";
+            }
+
+            //coutWriter.forceSetConsoleType(res);
+            //cerrWriter.forceSetConsoleType(res);
+        }
+
         //------------
 
         else if ( opt.isOption("autocomplete-install") 
