@@ -417,8 +417,9 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<"Invalid value (--doxyfication)\n";
             }
 
-            //coutWriter.forceSetConsoleType(res);
-            //cerrWriter.forceSetConsoleType(res);
+            appConfig.doxificationMode = res;
+
+            return 0;
         }
 
         //------------

@@ -1,0 +1,1 @@
+@call test_doxyfication.bat >test_doxyfication.log 2>&1

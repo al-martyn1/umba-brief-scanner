@@ -87,6 +87,9 @@ struct AppConfig
 
     VerbosityLevel                           verbosityLevel = VerbosityLevel::normal;
 
+    DoxificationMode                         doxificationMode = DoxificationMode::noDoxyfication;
+
+
     //------------------------------
 
     typedef std::string StdString;
@@ -345,6 +348,7 @@ struct AppConfig
         appConfig.updateFromFile     = updateFromFile;
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
+        appConfig.doxificationMode   = doxificationMode;
 
         appConfig.filenameWidth      = filenameWidth   ;
         appConfig.descriptionWidth   = descriptionWidth;
