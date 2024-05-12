@@ -65,6 +65,13 @@ struct AppConfig
     std::map< std::string,std::set<std::string> >  entryNames; // не используем
 
 
+    #if defined(WIN32) || defined(_WIN32)
+        marty_cpp::ELinefeedType outputLinefeed = marty_cpp::ELinefeedType::crlf;
+    #else
+        marty_cpp::ELinefeedType outputLinefeed = marty_cpp::ELinefeedType::lf;
+    #endif
+
+    bool                                     bOverwrite = false;
 
     //------------------------------
     std::vector<std::string>                 includeFilesMaskList;
@@ -349,6 +356,8 @@ struct AppConfig
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
         appConfig.doxificationMode   = doxificationMode;
+        appConfig.outputLinefeed     = outputLinefeed;
+        appConfig.bOverwrite         = bOverwrite;
 
         appConfig.filenameWidth      = filenameWidth   ;
         appConfig.descriptionWidth   = descriptionWidth;

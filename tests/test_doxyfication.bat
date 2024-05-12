@@ -2,4 +2,5 @@
 
 @set SCANNER=%UBS%
 %SCANNER% --where
-%SCANNER% @../umba-brief-scanner.rsp --quet --doxyfication=always --scan=../src --scan=../_libs doxy
+@rem --quet
+%SCANNER% @../umba-brief-scanner.rsp --overwrite --doxyfication=always --scan=../src --scan=../_libs doxy

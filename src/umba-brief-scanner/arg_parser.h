@@ -53,6 +53,8 @@ int operator()( const std::string                               &a           //!
     {
         std::string errMsg;
         int intVal;
+        bool boolVal;
+        std::string strVal;
 
         if (opt.name.empty())
         {
@@ -136,6 +138,8 @@ int operator()( const std::string                               &a           //!
                 umba::cli_tool_helpers::printOnlyVersion(umbaLogStreamMsg);
                 return 1;
             }
+
+            return 0;
         }
 
         else if (opt.isOption("where") || opt.setDescription("Show where the executable file is"))
@@ -178,6 +182,57 @@ int operator()( const std::string                               &a           //!
 
             coutWriter.forceSetConsoleType(res);
             cerrWriter.forceSetConsoleType(res);
+
+            return 0;
+        }
+
+        else if ( opt.setParam("?MODE",true)
+               || opt.isOption("overwrite") || opt.isOption('Y') 
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Allow overwrite existing file."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+         
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            appConfig.bOverwrite = boolVal;
+            return 0;
+        }
+
+        else if ( opt.setParam("LINEFEED",umba::command_line::OptionType::optString)
+               || opt.isOption("linefeed") || opt.isOption("LF") || opt.isOption('L')
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Output linefeed. LINEFEED is one of: CR/LF/CRLF/LFCR/DETECT. "
+                                     #if defined(WIN32) || defined(_WIN32)
+                                     "Default is CRLF."
+                                     #else
+                                     "Default is LF."
+                                     #endif
+                                    )
+                )
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(strVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            marty_cpp::ELinefeedType tmp = marty_cpp::enum_deserialize( strVal, marty_cpp::ELinefeedType::invalid );
+            if (tmp== marty_cpp::ELinefeedType::invalid)
+            {
+                LOG_ERR_OPT<<"Invalid linefeed option value: "<<strVal<<"\n";
+                return -1;
+            }
+
+            appConfig.outputLinefeed = tmp;
+
+            return 0;
         }
 
         //------------

@@ -46,3 +46,4 @@
 /.build
 /umba-brief-scanner-help.txt
 /windeployqt.txt
+/tests/doxy

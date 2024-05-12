@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
 
             #else // if
 
-                std::string rootPath = "..\\";
+                std::string rootPath = ".\\";
 
             #endif
 
@@ -132,12 +132,17 @@ int main(int argc, char* argv[])
 
 
         argsParser.args.clear();
+
+        argsParser.args.push_back("--verbose=detailed");
+
         argsParser.args.push_back("@" + rootPath + "\\umba-brief-scanner.rsp");
+        argsParser.args.push_back("--overwrite");
         argsParser.args.push_back("--doxyfication=always");
         argsParser.args.push_back("--scan=" + rootPath + "/src");
         argsParser.args.push_back("--scan=" + rootPath + "/_libs");
         //argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
-        argsParser.args.push_back("doxy");
+        argsParser.args.push_back("tests/doxy");
+
 
         // argsParser.args.clear();
         // argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
@@ -294,12 +299,14 @@ int main(int argc, char* argv[])
     } // if (appConfig.updateMode && !doxyficationMode)
 
 
+    auto &infoLog = argsParser.quet ? umbaLogStreamNul : umbaLogStreamMsg;
+
 
     std::vector<std::string> foundFiles, foundFilesFolders, excludedFiles;
     std::set<std::string>    foundExtentions;
     //umba::scanners::scanFolders(appConfig, logMsg, foundFiles, excludedFiles, foundExtentions);
     umba::filesys::scanners::scanFolders( appConfig
-                                        , argsParser.quet ? umbaLogStreamNul : umbaLogStreamMsg
+                                        , infoLog // argsParser.quet ? umbaLogStreamNul : umbaLogStreamMsg
                                         , foundFiles
                                         , excludedFiles
                                         , foundExtentions
@@ -308,6 +315,14 @@ int main(int argc, char* argv[])
 
     if (appConfig.testVerbosity(VerbosityLevel::detailed))
     {
+        umba::info_log::printSectionHeader(logMsg, "Paths for scan:");
+
+        for(const auto &p : appConfig.scanPaths)
+        {
+            logMsg << "    " << umba::filename::makeCanonical(p) << " (" << p << ")" << endl;
+        }
+
+
         if (!foundFiles.empty())
             umba::info_log::printSectionHeader(logMsg, "Files for Processing");
 
@@ -343,55 +358,59 @@ int main(int argc, char* argv[])
         umba::info_log::printSectionHeader(logMsg, "Processing");
 
 
+    // Читаем брифы
+
+    std::map<std::string, BriefInfo>  briefInfo;
+
+    encoding::EncodingsApi* pEncApi = encoding::getEncodingsApi();
+
+    for(const auto & filename : foundFiles)
+    {
+        // logMsg << name << endl;
+        std::vector<char> filedata;
+        if (!umba::filesys::readFile( filename, filedata ))
+        {
+            LOG_WARN_OPT("open-file-failed") << "failed to open file '" << filename << "'\n";
+            continue;
+        }
+
+        auto filedataStr = std::string(filedata.begin(), filedata.end());
+
+        size_t bomSize = 0;
+        std::string detectRes = pEncApi->detect( filedataStr, bomSize );
+
+        if (bomSize)
+        {
+            filedataStr.erase(0,bomSize);
+        }
+
+        auto cpId = pEncApi->getCodePageByName(detectRes);
+
+        std::string filedataStrUtf8 = pEncApi->convert( filedataStr, cpId, encoding::EncodingsApi::cpid_UTF8 );
+        filedata = std::vector<char>(filedataStrUtf8.begin(), filedataStrUtf8.end());
+
+        BriefInfo  info;
+        bool bFound = findBriefInfo( filedata, appConfig.entryNames, info );
+        UMBA_USED(bFound);
+
+        auto canonicalName = umba::filename::makeCanonical(filename);
+        briefInfo[canonicalName] = info;
+
+        if (appConfig.testVerbosity(VerbosityLevel::detailed))
+        {
+            logMsg << (info.briefFound ? '+' : '-')
+                   << (info.entryPoint ? 'E' : ' ')
+                   << "    " << filename
+                   << "\n";
+        }
+
+    }
+
+
     // Нет доксификации или режим доксификации инвалидный
     if (!doxyficationMode)
     {
 
-	    //!!! - начало обработки брифов
-	
-	    std::map<std::string, BriefInfo>  briefInfo;
-	
-	    encoding::EncodingsApi* pEncApi = encoding::getEncodingsApi();
-	
-	    for(const auto & filename : foundFiles)
-	    {
-	        // logMsg << name << endl;
-	        std::vector<char> filedata;
-	        if (!umba::filesys::readFile( filename, filedata ))
-	        {
-	            LOG_WARN_OPT("open-file-failed") << "failed to open file '" << filename << "'\n";
-	            continue;
-	        }
-	
-	        auto filedataStr = std::string(filedata.begin(), filedata.end());
-	
-	        size_t bomSize = 0;
-	        std::string detectRes = pEncApi->detect( filedataStr, bomSize );
-	
-	        if (bomSize)
-	        {
-	            filedataStr.erase(0,bomSize);
-	        }
-	
-	        auto cpId = pEncApi->getCodePageByName(detectRes);
-	
-	        std::string filedataStrUtf8 = pEncApi->convert( filedataStr, cpId, encoding::EncodingsApi::cpid_UTF8 );
-	        filedata = std::vector<char>(filedataStrUtf8.begin(), filedataStrUtf8.end());
-	
-	        BriefInfo  info;
-	        bool bFound = findBriefInfo( filedata, appConfig.entryNames, info );
-	        UMBA_USED(bFound);
-	        briefInfo[filename] = info;
-	
-	        if (appConfig.testVerbosity(VerbosityLevel::detailed))
-	        {
-	            logMsg << (info.briefFound ? '+' : '-')
-	                   << (info.entryPoint ? 'E' : ' ')
-	                   << "    " << filename
-	                   << "\n";
-	        }
-	
-	    }
 	
 	    std::ofstream infoStream;
 	    if (!appConfig.getOptNoOutput())
@@ -402,6 +421,14 @@ int main(int argc, char* argv[])
 	        //     LOG_WARN_OPT("create-dir-failed") << "failed to create directory: " << path << endl;
 	        //     continue;
 	        // }
+
+            if (umba::filesys::isPathExist(appConfig.outputName) && !appConfig.bOverwrite)
+            {
+                LOG_WARN_OPT("create-file-failed") << "failed to create output file: " << appConfig.outputName << " - file allready exist" << endl;
+             return 1;
+                //bool isPathFile(const StringType &path)
+            }
+
 	
 	        infoStream.open( appConfig.outputName, std::ios_base::out | std::ios_base::trunc );
 	        if (!infoStream)
@@ -625,9 +652,35 @@ int main(int argc, char* argv[])
 
         if (foundFiles.size()!=foundFilesFolders.size())
         {
-            LOG_ERR_OPT << "something gots wrong: number of found files is not the same as number of it's folders" << endl;
+            LOG_ERR_OPT << "something goes wrong: number of found files is not the same as number of it's folders" << endl;
             return 1;
         }
+
+        auto checkCreatePath = [&](const std::string &p)
+        {
+            auto canonP = umba::filename::makeCanonical(p);
+
+            if (umba::filesys::isPathExist(canonP))
+            {
+                if (!umba::filesys::isPathDirectory(canonP))
+                {
+    	            LOG_WARN_OPT("create-dir-failed") << "path exist, but not a directory: " << p << endl;
+                    LOG_ERR_OPT << "fatal error" << endl;
+                    return false;
+                }
+            }
+            else
+            {
+	            if (!umba::filesys::createDirectoryEx(canonP, true /* forceCreatePath */ ))
+	            {
+	                LOG_WARN_OPT("create-dir-failed") << "failed to create directory: " << p << endl;
+                    LOG_ERR_OPT << "fatal error" << endl;
+	                return false;
+	            }
+            }
+
+            return true;
+        };
 
         //std::vector<std::string> foundFiles, foundFilesFolders
 
@@ -636,31 +689,94 @@ int main(int argc, char* argv[])
             std::vector<std::string>::const_iterator fNameIt = foundFiles.begin();
             std::vector<std::string>::const_iterator fldrIt  = foundFilesFolders.begin();
 
+            if (!checkCreatePath(appConfig.outputName))
+                return 1;
+
+
             // Вектора одного размера, мы ранее проверили, поэтому не паримся, и проверяем на окончание только один итератор
             for(; fNameIt!=foundFiles.end(); ++fNameIt, ++fldrIt)
             {
-                const auto &fileName   = *fNameIt;
-                const auto &fileFolder = *fldrIt;
+                auto fileName          = *fNameIt; // Полное имя найденного файла
+                auto fileNameCanonical = umba::filename::makeCanonical(fileName);
 
-                // // Я чет не понял, lineNo и curFile вроде нигде в проекте не определяются, но как-то работало, а тут - перестало работать
-                // int lineNo             = 0;
-                // const auto &curFile    = fileName;
+                auto fileFolderOrg = *fldrIt ; // Корень, в котором нашли файл, исходный
+                auto fileFolder    = umba::filename::makeCanonical(fileFolderOrg); // сделали канонично
+                //auto relFileName   = fileName; // имя относительно корня, пока полное - просто чтобы с типами не возиться
+                using FilenameStringType     = decltype(fileName);
+                using FilenameStringCharType = typename FilenameStringType::value_type;
+                FilenameStringType relFileName; // имя относительно корня, пока пустое - повозился с типом 
 
-                logMsg << "Found " << fileName << " in " << fileFolder << "\n";
+                if (briefInfo.find(fileNameCanonical)!=briefInfo.end())
+                {
+                    if (appConfig.doxificationMode!=DoxificationMode::doxyfyAlways)
+                    {
+                        if (appConfig.testVerbosity(VerbosityLevel::detailed))
+                        {
+                            logMsg << "File " << fileName << " skiped due it iss documented" << endl << normal;
+                        }
+
+                        continue;
+                    }
+                }
+
+                //briefInfo[canonicalName] = info;
+
+                bool isSubPath = umba::filename::isSubPathName(fileFolder, fileName, &relFileName); //
+                if (!isSubPath)
+                {
+                    LOG_WARN_OPT("no-sub-path") << "file path is not a sub-path of it's root: " << fileFolder << " / " << fileName << endl;
+                    LOG_ERR_OPT << "fatal error" << endl;
+                    return 1;
+                }
+
+                //logMsg << "Found " << relFileName << " in " << fileFolder << "\n";
+                //logMsg << "Found " << fileName << " in " << fileFolder << "\n";
+
+                FilenameStringType targetSubPath  = umba::filename::getPath(relFileName);
+                FilenameStringType targetFilename = umba::filename::getFileName(relFileName);
+                FilenameStringType sourceFilename = targetFilename;
+
+                // logMsg << "Found " << targetFilename << " in " << targetSubPath << "\n";
+
+                // Все исходные расширения становятся частью имени файла
+                for(auto &ch : targetFilename)
+                {
+                    if (ch==(FilenameStringCharType)'.')
+                        ch = (FilenameStringCharType)'_';
+                }
+
+                targetFilename = umba::filename::appendExtention(targetFilename, umba::string_plus::make_string<FilenameStringType>("dox"));
+
+                FilenameStringType targetPath = umba::filename::makeCanonical(umba::filename::appendPath(appConfig.outputName, targetSubPath));
+
+	            if (!checkCreatePath(targetPath))
+	                return 1;
+
+                std::string text = "/*! \\file " + sourceFilename + "\n    \\brief \n */\n\n";
+
+                text = marty_cpp::converLfToOutputFormat(text, appConfig.outputLinefeed);
+
+                FilenameStringType targetPathFilename = umba::filename::appendPath(targetPath, targetFilename);
+
+                //appCfg.outputLinefeed
+                try
+                {
+                    umba::cli_tool_helpers::writeOutput( targetPathFilename, umba::cli_tool_helpers::IoFileType::regularFile
+                                                       , encoding::ToUtf8(), encoding::FromUtf8()
+                                                       , text, std::string() // bomData
+                                                       , true /* fromFile */, true /* utfSource */ , appConfig.bOverwrite
+                                                       );
+                
+                }
+                catch(const std::exception &e)
+                {
+                    LOG_WARN_OPT("create-file-failed") << e.what() /* "failed to write file: " << targetPathFilename */  << endl;
+                    LOG_ERR_OPT << "fatal error" << endl;
+	                return false;
+                }
+             
             }
-	
-	        // if (!createDirectory(path))
-	        // {
-	        //     LOG_WARN_OPT("create-dir-failed") << "failed to create directory: " << path << endl;
-	        //     continue;
-	        // }
-	
-	        // infoStream.open( appConfig.outputName, std::ios_base::out | std::ios_base::trunc );
-	        // if (!infoStream)
-	        // {
-	        //     LOG_WARN_OPT("create-file-failed") << "failed to create output file: " << appConfig.outputName << endl;
-	        //     return 1;
-	        // }
+
 	    }
 
     }

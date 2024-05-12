@@ -20,6 +20,7 @@
 -X=*/doc/*
 #-X=*/tests/*
 
+-X=*.git/*^
 -X=*.gitignore^
 -X=*.bat^
 -X=*.sh^
