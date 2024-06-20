@@ -19,14 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0681199F-D7BD-47E5-AE43-CE856D22E49E}</ProjectGuid>
+    <ProjectGuid>{713FF2D2-8367-4D28-B064-C27B383F34B5}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(ProjectDir)\umba_msvcver.props" />
   <Import Project="$(ProjectDir)\umba_prjdirs.props" />
   <Import Project="$(ProjectDir)\umba_boost.props" />
-  <Import Project="$(ProjectDir)\umba_qt.props" />
+  <!--Import Project="$(ProjectDir)\umba_qt.props" /-->
   <Import Project="$(ProjectDir)\umba_llvm.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -176,10 +176,11 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\_libs\umba\critical_section.cpp" />
-    <ClCompile Include="..\_libs\umba\time_service.cpp" />
-    <ClCompile Include="..\src\umba-brief-scanner\test01.cpp" />
+    <ClCompile Include="..\src\umba-brief-scanner\umba-brief-scanner.cpp" />
   </ItemGroup>
+  <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\umba\.msvc\sources.props" />
+  <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\sfmt\.msvc\sources.props" />
+  <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\encoding\.msvc\sources.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

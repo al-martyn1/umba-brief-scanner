@@ -19,20 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{713FF2D2-8367-4D28-B064-C27B383F34B5}</ProjectGuid>
+    <ProjectGuid>{2F3FE53D-00A5-4568-946D-A674878C3BC5}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(ProjectDir)\umba_msvcver.props" />
   <Import Project="$(ProjectDir)\umba_prjdirs.props" />
   <Import Project="$(ProjectDir)\umba_boost.props" />
-  <!--Import Project="$(ProjectDir)\umba_qt.props" /-->
+  <Import Project="$(ProjectDir)\umba_qt.props" />
   <Import Project="$(ProjectDir)\umba_llvm.props" />
-  <ItemDefinitionGroup>
-    <ClCompile>
-    <AdditionalIncludeDirectories>$(ProjectDir)\..\_libs\encoding;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
@@ -181,15 +176,11 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\_libs\umba\critical_section.cpp" />
-    <ClCompile Include="..\_libs\umba\time_service.cpp" />
-    <ClCompile Include="..\src\umba-brief-scanner\umba-brief-scanner.cpp" />
-    <ClCompile Include="..\_libs\encoding\encoding.cpp" />
-    <ClCompile Include="..\_libs\encoding\compact_enc_det\compact_enc_det.cc" />
-    <ClCompile Include="..\_libs\encoding\compact_enc_det\compact_enc_det_hint_code.cc" />
-    <ClCompile Include="..\_libs\encoding\util\encodings\encodings.cc" />
-    <ClCompile Include="..\_libs\encoding\util\languages\languages.cc" />
+    <ClCompile Include="..\src\umba-brief-scanner\test02.cpp" />
   </ItemGroup>
+  <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\umba\.msvc\sources.props" />
+  <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\sfmt\.msvc\sources.props" />
+  <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\encoding\.msvc\sources.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
