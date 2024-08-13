@@ -58,11 +58,11 @@ struct AppConfig
     static const unsigned                    ofSplitGroups           = 0x0200; // Remove path from output names
 
     //------------------------------
-    // !!! Не забывать копировать и/или подготавливать поля класса в функции getAdjustedConfig
+    // !!! РќРµ Р·Р°Р±С‹РІР°С‚СЊ РєРѕРїРёСЂРѕРІР°С‚СЊ Рё/РёР»Рё РїРѕРґРіРѕС‚Р°РІР»РёРІР°С‚СЊ РїРѕР»СЏ РєР»Р°СЃСЃР° РІ С„СѓРЅРєС†РёРё getAdjustedConfig
     //------------------------------
-    umba::macros::StringStringMap<std::string>  macros; // не используем
+    umba::macros::StringStringMap<std::string>  macros; // РЅРµ РёСЃРїРѕР»СЊР·СѓРµРј
 
-    std::map< std::string,std::set<std::string> >  entryNames; // не используем
+    std::map< std::string,std::set<std::string> >  entryNames; // РЅРµ РёСЃРїРѕР»СЊР·СѓРµРј
 
 
     #if defined(WIN32) || defined(_WIN32)
@@ -109,8 +109,8 @@ struct AppConfig
     //------------------------------
     void setVerbosityLevel(VerbosityLevel lvl) { verbosityLevel = lvl; }
 
-    //! Проверяет уровень lvl на предмет допустимости детализации выхлопа в лог для данного уровня.
-    /*! Уровень детализации lvl должен быть меньше или равен заданному в конфиге.
+    //! РџСЂРѕРІРµСЂСЏРµС‚ СѓСЂРѕРІРµРЅСЊ lvl РЅР° РїСЂРµРґРјРµС‚ РґРѕРїСѓСЃС‚РёРјРѕСЃС‚Рё РґРµС‚Р°Р»РёР·Р°С†РёРё РІС‹С…Р»РѕРїР° РІ Р»РѕРі РґР»СЏ РґР°РЅРЅРѕРіРѕ СѓСЂРѕРІРЅСЏ.
+    /*! РЈСЂРѕРІРµРЅСЊ РґРµС‚Р°Р»РёР·Р°С†РёРё lvl РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РјРµРЅСЊС€Рµ РёР»Рё СЂР°РІРµРЅ Р·Р°РґР°РЅРЅРѕРјСѓ РІ РєРѕРЅС„РёРіРµ.
      */
     bool testVerbosity(VerbosityLevel lvl) const
     {

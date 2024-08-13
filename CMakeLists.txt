@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21.0)
-project(umba-fsm VERSION 0.1.0 LANGUAGES C CXX)
+project(umba-brief-scanner VERSION 0.1.0 LANGUAGES C CXX)
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
@@ -29,7 +29,7 @@ include_directories(${LIB_ROOT})
 add_subdirectory(${LIB_ROOT}/encoding)
 add_subdirectory(${LIB_ROOT}/marty_cpp)
 # add_subdirectory(${LIB_ROOT}/marty_pugixml)
-add_subdirectory(${LIB_ROOT}/marty_tr)
+# add_subdirectory(${LIB_ROOT}/marty_tr)
 # add_subdirectory(${LIB_ROOT}/marty_yaml_toml_json)
 # add_subdirectory(${LIB_ROOT}/nlohmann)    # https://json.nlohmann.me/integration/cmake/#external
 # add_subdirectory(${LIB_ROOT}/pugixml)
@@ -99,32 +99,32 @@ set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
 # set(COMMON_UMBA_OPTIONS "BIGOBJ" "UTF8" "WALL" "WERR")
 
 
-add_executable(umba-brief-scanner "${SRC_ROOT}/umba-fsm/umba-brief-scanner.cpp" "${headers}")
+add_executable(umba-brief-scanner "${SRC_ROOT}/umba-brief-scanner/umba-brief-scanner.cpp" "${headers}")
 umba_add_target_options(umba-brief-scanner "BIGOBJ" "CONSOLE" "UTF8")
 target_link_libraries(umba-brief-scanner PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
-add_executable(qt_stub "${SRC_ROOT}/umba-fsm/qt_stub.cpp" "${headers}")
-umba_add_target_options(qt_stub "BIGOBJ" "CONSOLE" "UTF8")
-target_link_libraries(qt_stub PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+# add_executable(qt_stub "${SRC_ROOT}/umba-brief-scanner/qt_stub.cpp" "${headers}")
+# umba_add_target_options(qt_stub "BIGOBJ" "CONSOLE" "UTF8")
+# target_link_libraries(qt_stub PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
-add_executable(test00 "${SRC_ROOT}/umba-fsm/test00.cpp" "${headers}")
+add_executable(test00 "${SRC_ROOT}/umba-brief-scanner/test00.cpp" "${headers}")
 umba_add_target_options(test00 "BIGOBJ" "CONSOLE" "UTF8")
 target_link_libraries(test00 PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
-add_executable(test01 "${SRC_ROOT}/umba-fsm/test01.cpp" "${headers}")
-umba_add_target_options(test01 "BIGOBJ" "CONSOLE" "UTF8")
-target_link_libraries(test01 PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+# add_executable(test01 "${SRC_ROOT}/umba-brief-scanner/test01.cpp" "${headers}")
+# umba_add_target_options(test01 "BIGOBJ" "CONSOLE" "UTF8")
+# target_link_libraries(test01 PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
-add_executable(test02 "${SRC_ROOT}/umba-fsm/test02.cpp" "${headers}")
-umba_add_target_options(test02 "BIGOBJ" "CONSOLE" "UTF8")
-target_link_libraries(test02 PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+# add_executable(test02 "${SRC_ROOT}/umba-brief-scanner/test02.cpp" "${headers}")
+# umba_add_target_options(test02 "BIGOBJ" "CONSOLE" "UTF8")
+# target_link_libraries(test02 PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
-add_executable(test03 "${SRC_ROOT}/umba-fsm/test03.cpp" "${headers}")
+add_executable(test03 "${SRC_ROOT}/umba-brief-scanner/test03.cpp" "${headers}")
 umba_add_target_options(test03 "BIGOBJ" "CONSOLE" "UTF8")
 target_link_libraries(test03 PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 

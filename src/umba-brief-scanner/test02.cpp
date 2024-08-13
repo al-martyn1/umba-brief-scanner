@@ -27,7 +27,7 @@
 
 #include "umba/time_service.h"
 
-#include "utils.h"
+// #include "utils.h"
 
 #define LOG_REGEX_MATCH
 
@@ -48,8 +48,8 @@ bool logSourceInfo = false;
 
 
 #include "log.h"
-#include "utils.h"
-#include "scan_folders.h"
+// #include "utils.h"
+#include "umba/scan_folders.h"
 
 //#include "scan_sources.h"
 
