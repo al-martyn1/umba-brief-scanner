@@ -35,6 +35,7 @@
 /.distr
 /.out
 /.vs
+/setup_msvc.bat
 /tests/*.txt
 /tests/test.bat
 /_libs/pretty_headers
