@@ -410,7 +410,6 @@ int main(int argc, char* argv[])
     // Нет доксификации или режим доксификации инвалидный
     if (!doxyficationMode)
     {
-
 	
 	    std::ofstream infoStream;
 	    if (!appConfig.getOptNoOutput())
@@ -425,7 +424,7 @@ int main(int argc, char* argv[])
             if (umba::filesys::isPathExist(appConfig.outputName) && !appConfig.bOverwrite)
             {
                 LOG_WARN_OPT("create-file-failed") << "failed to create output file: " << appConfig.outputName << " - file allready exist" << endl;
-             return 1;
+                 return 1;
                 //bool isPathFile(const StringType &path)
             }
 
@@ -441,16 +440,20 @@ int main(int argc, char* argv[])
 	
 	    std::string titleStr = "Brief Description for Project Sources";
 	    std::string sepLine  = "-------------------------------------";
-	
-	    if (!appConfig.getOptHtml())
+
+        if (appConfig.getOptMd())
 	    {
-	        infoStream << titleStr << "\n" << sepLine << "\n\n";
+	        infoStream << "# " << titleStr << "\n\n";
+	    }
+        else if (appConfig.getOptHtml())
+	    {
+            infoStream << "<!DOCTYPE html>\n<html>\n";
+	        infoStream << "<head>\n<title>" << titleStr << "</title>\n</head>\n";
+	        infoStream << "<body>\n";
 	    }
 	    else
 	    {
-	        infoStream << "<!DOCTYPE html>\n<html>\n";
-	        infoStream << "<head>\n<title>" << titleStr << "</title>\n</head>\n";
-	        infoStream << "<body>\n";
+            infoStream << titleStr << "\n" << sepLine << "\n\n";
 	    }
 	
 	
@@ -466,10 +469,17 @@ int main(int argc, char* argv[])
 	        umba::StdStreamCharWriter infoWriter(infoStream);
 	        umba::SimpleFormatter uinfoStream(&infoWriter);
 	
-	        if (appConfig.getOptHtml())
+
+	        if (appConfig.getOptMd())
+            {
+            }
+            else if (appConfig.getOptHtml())
 	        {
 	            uinfoStream << "<table><tbody>\n";
 	        }
+            else
+            {
+            }
 	
 	        bool bFirstItem = true;
 	
@@ -511,16 +521,31 @@ int main(int argc, char* argv[])
 	                //if (!bFirstItem && ((!prevFilePath.empty() && prevFilePath!=relPath) || prevFilePath.empty()))
 	                if (partBreak)
 	                {
-	                    if (!appConfig.getOptHtml())
+	                    if (appConfig.getOptMd())
 	                    {
-	                        if (bFirstItem || relPath.empty())
-	                            uinfoStream << "\n";
-	                        else
-	                            uinfoStream << "\n# " << relPath << "\n";
+                            if (relPath.empty())
+                            {
+                                if (bMain)
+                                    uinfoStream << "\n## " << "Entry points" << "\n\n";
+                                else
+                                    uinfoStream << "\n\n";
+                            }
+                            else
+                            {
+                                uinfoStream << "\n## " << relPath << (bMain?" (Entry points)":"") << "\n\n";
+                            }
+                        }
+                        else if (appConfig.getOptHtml())
+                        {
+                            // if (bFirstItem || relPath.empty())
+	                        uinfoStream << "<tr><td><br><b>" << htmlEscape(relPath) << (bMain?" (Entry points)":"") << "</b><br></td><td>" << "</td></tr>\n";
 	                    }
 	                    else
-	                    {
-	                        uinfoStream << "<tr><td><br><b>" << htmlEscape(relPath) << "</b><br></td><td>" << "</td></tr>\n";
+                        {
+	                        if ( /* bFirstItem ||  */ relPath.empty())
+	                            uinfoStream << (bMain?"Entry points":"") << "\n";
+	                        else
+	                            uinfoStream << "\n# " << relPath << (bMain?" (Entry points)":"") << "\n";
 	                    }
 	                }
 	            }
@@ -545,7 +570,17 @@ int main(int argc, char* argv[])
 	                }
 	            }
 	
-	            if (!appConfig.getOptHtml())
+
+                if (appConfig.getOptMd())
+                {
+                    uinfoStream << " - **" << relName << "** - " << info.infoText << "\n";
+                }
+	            else if (appConfig.getOptHtml())
+	            {
+	                //TODO: !!! Add HTML output here
+	                uinfoStream << "<tr><td>" << htmlEscape(relName) << "</td><td>" << htmlEscape(info.infoText) << "</td></tr>\n";
+	            }
+                else // txt
 	            {
 	                int fnw = (int)appConfig.filenameWidth;
 	
@@ -585,45 +620,53 @@ int main(int argc, char* argv[])
 	                // std::string textAddIndent(const std::string &text, const std::string &indent, const std::string &firstIndent)
 	                //infoStream << relName << " - " << info.infoText << "\n";
 	            }
-	            else // Html
-	            {
-	                //TODO: !!! Add HTML output here
-	                uinfoStream << "<tr><td>" << htmlEscape(relName) << "</td><td>" << htmlEscape(info.infoText) << "</td></tr>\n";
-	            }
 	        
 	        } // for
 	
 	
-	        if (appConfig.getOptHtml())
+	        if (appConfig.getOptMd())
+            {
+            }
+            else if (appConfig.getOptHtml())
 	        {
 	            uinfoStream << "</tbody></table>\n";
 	        }
 	
 	
 	    };
-	
-	
+
+    	
+	    //infoStream << "##### 1\n";
+
 	    printInfo(true);
 	        
 	    if (!appConfig.getOptMain())
 	    {
 	        // print all
 	
-	        if (!appConfig.getOptHtml())
+	        if (appConfig.getOptMd())
 	        {
 	            infoStream << "\n";
 	        }
-	        else
-	        {
+            else if (appConfig.getOptHtml())
+            {
 	            //TODO: !!! Add HTML line break here
 	        }
+            else
+	        {
+	            infoStream << "\n";
+	        }
 	
+            //infoStream << "##### 2\n";
 	        printInfo(false);
 	
 	    }
 	
 	
-	    if (appConfig.getOptHtml())
+        if (appConfig.getOptMd())
+        {
+        }
+	    else if (appConfig.getOptHtml())
 	    {
 	        infoStream << "</body>\n";
 	        infoStream << "</html>\n";
@@ -772,14 +815,14 @@ int main(int argc, char* argv[])
                 {
                     LOG_WARN_OPT("create-file-failed") << e.what() /* "failed to write file: " << targetPathFilename */  << endl;
                     LOG_ERR_OPT << "fatal error" << endl;
-	                return false;
+	                return 1;
                 }
              
-            }
+            } // for(; fNameIt!=foundFiles.end(); ++fNameIt, ++fldrIt)
 
-	    }
+	    } // if (!appConfig.getOptNoOutput())
 
-    }
+    } // else // А вот тут делаем доксификацию
 
 
     if (appConfig.testVerbosity(VerbosityLevel::normal))

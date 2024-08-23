@@ -51,11 +51,14 @@ struct AppConfig
     static const unsigned                    ofEmptyOptionFlags      = 0x0000;
     static const unsigned                    ofNoOutput              = 0x0010; // Do not actually write output files
     static const unsigned                    ofMain                  = 0x0020; // Print only main files (whish contains main or other entry point)
-    static const unsigned                    ofHtml                  = 0x0040; // Print output in html format
-    static const unsigned                    ofSkipUndocumented      = 0x0080; // Skip undocumented files
-    static const unsigned                    ofRemovePath            = 0x0100; // Remove path from output names
+    static const unsigned                    ofSkipUndocumented      = 0x0040; // Skip undocumented files
+    static const unsigned                    ofRemovePath            = 0x0080; // Remove path from output names
 
     static const unsigned                    ofSplitGroups           = 0x0200; // Remove path from output names
+
+    static const unsigned                    ofHtml                  = 0x1000; // Print output in html format
+    static const unsigned                    ofMd                    = 0x2000; // Print output in md format, overrides html option
+
 
     //------------------------------
     // !!! Не забывать копировать и/или подготавливать поля класса в функции getAdjustedConfig
@@ -146,8 +149,9 @@ struct AppConfig
         switch(ofFlag)
         {
             case ofNoOutput              : return "Disable writting outputs";
-            case ofMain                  : return "Print only main filess";
+            case ofMain                  : return "Print only main files";
             case ofHtml                  : return "Print output in html format";
+            case ofMd                    : return "Print output in md format (overrides html option)";
             case ofSkipUndocumented      : return "Skip undocumented";
             case ofRemovePath            : return "Remove path from file names in output";
             case ofSplitGroups           : return "Split to groups";
@@ -163,6 +167,7 @@ struct AppConfig
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(NoOutput)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Main)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Html)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Md)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SkipUndocumented)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(RemovePath)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SplitGroups)
@@ -211,7 +216,7 @@ struct AppConfig
     template<typename StreamType>
     StreamType& printVerbosity( StreamType &s ) const
     {
-        s << "Verbosity      : " << VerbosityLevel_toStdString(verbosityLevel) << "\n";
+        s << "Verbosity         : " << VerbosityLevel_toStdString(verbosityLevel) << "\n";
         return s;
     }
 
@@ -249,6 +254,7 @@ struct AppConfig
         s << "    " << getOptNameString(ofNoOutput)            << ": " << getOptValAsString(optionFlags&ofNoOutput) << "\n";
         s << "    " << getOptNameString(ofMain)                << ": " << getOptValAsString(optionFlags&ofMain) << "\n";
         s << "    " << getOptNameString(ofHtml)                << ": " << getOptValAsString(optionFlags&ofHtml) << "\n";
+        s << "    " << getOptNameString(ofMd)                  << ": " << getOptValAsString(optionFlags&ofMd) << "\n";
         s << "    " << getOptNameString(ofSkipUndocumented)    << ": " << getOptValAsString(optionFlags&ofSkipUndocumented) << "\n";
         s << "    " << getOptNameString(ofRemovePath)          << ": " << getOptValAsString(optionFlags&ofRemovePath) << "\n";
         s << "    " << getOptNameString(ofSplitGroups)         << ": " << getOptValAsString(optionFlags&ofSplitGroups) << "\n";

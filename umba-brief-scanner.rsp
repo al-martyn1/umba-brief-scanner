@@ -1,7 +1,8 @@
+--overwrite
 --verbose=detailed
 #--verbose=normal
 #--verbose=config
---main
+# --main
 --remove-path
 --filename-width=24
 --text-width=80

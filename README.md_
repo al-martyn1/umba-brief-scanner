@@ -1,9 +1,3 @@
-  - [umba-brief-scanner](#user-content-umba-brief-scanner)
-    - [Все umba-утилиты](#user-content-все-umba-утилиты)
-    - [umba-brief-scanner](#user-content-umba-brief-scanner-1)
-      - [Пример работы утилиты umba-brief-scanner](#user-content-пример-работы-утилиты-umba-brief-scanner)
-    - [Сборка утилиты umba-brief-scanner](#user-content-сборка-утилиты-umba-brief-scanner)
-
 # umba-brief-scanner
 
 umba-brief-scanner - одна из утилит пакета umba-tools. Сканирует каталоги проекта и извлекает описания из
@@ -67,5 +61,4 @@ clone_libs_ssh.bat
 
 Открываем solution - `umba-brief-scanner.sln` и собираем нужную конфигурацию.
 Можно из командной строки MSVC собрать проект при помощи MSBUILD.
-
 

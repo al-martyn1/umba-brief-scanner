@@ -350,6 +350,13 @@ int operator()( const std::string                               &a           //!
                 return 0;
             }
 
+        else if (opt.isOption("md") || opt.setDescription("Print output in md format."))
+            {
+                if (argsParser.hasHelpOption) return 0;
+                appConfig.setOptMd(true);
+                return 0;
+            }
+
         else if (opt.isOption("split-group") || opt.isOption("group") || opt.isOption("split") || opt.setDescription("Split files to separate groups (by single empty line) by its path."))
             {
                 if (argsParser.hasHelpOption) return 0;

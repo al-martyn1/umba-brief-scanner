@@ -1,3 +1,5 @@
+@if exist "%~dp0\set_sln.bat"    @call "%~dp0\set_sln.bat"
+
 @rem %UMBA_TOOLS% - eg F:\umba-tools
 
 @if "%UMBA_TOOLS%"=="" goto UMBA_TOOLS_VAR_NOT_SET
@@ -9,13 +11,19 @@
 
 :UMBA_TOOLS_VAR_IS_SET
 
+@call %~dp0\.bat\setup_out_pp_root_paths.bat
+@rem call %~dp0\update_md-pp-view-conf-options.bat
 
 @if not exist %UMBA_TOOLS%\bin    mkdir %UMBA_TOOLS%\bin
 @if not exist %UMBA_TOOLS%\conf   mkdir %UMBA_TOOLS%\conf
 
-@copy /Y .out\msvc2019\x64\Release\umba-brief-scanner.exe    %UMBA_TOOLS%\bin\
+@IF "%PPROOTPATH%"=="" @(
+    @echo PPROOTPATH not found
+    exit /B 1
+)
 
-@xcopy /Y /S /E /I /F /R _distr_conf\conf\*                  %UMBA_TOOLS%\conf
+copy /Y "%PPROOTPATH%\Release\%SLN%.exe"         %UMBA_TOOLS%\bin\
 
+@if exist _distr_conf @xcopy /Y /S /E /I /F /R %~dp0\_distr_conf\conf\*               %UMBA_TOOLS%\conf
 
 umba-brief-scanner --help > help.txt
