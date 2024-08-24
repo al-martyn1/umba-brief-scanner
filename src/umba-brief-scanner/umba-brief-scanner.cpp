@@ -113,43 +113,59 @@ int main(int argc, char* argv[])
                                                             )
                                                         );
 
-    // Force set CLI arguments while running under debugger
     if (umba::isDebuggerPresent())
     {
+        std::string cwd = umba::filesys::getCurrentDirectory<std::string>();
+        std::cout << "Working Dir: " << cwd << "\n";
+        std::string rootPath;
+    
         #if (defined(WIN32) || defined(_WIN32))
-
-            #if defined(__GNUC__)
-
-                std::string rootPath = "..\\..\\..\\..\\..\\";
-
-            #else // if
-
-                std::string rootPath = ".\\";
-
-            #endif
-
+    
+    
+            if (winhelpers::isProcessHasParentOneOf({"devenv"}))
+            {
+                // По умолчанию студия задаёт текущим каталогом На  уровень выше от того, где лежит бинарник
+                rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\"));
+                //argsParser.args.push_back("--batch-output-root=D:/temp/mdpp-test");
+            }
+            else if (winhelpers::isProcessHasParentOneOf({"code"}))
+            {
+                // По умолчанию VSCode задаёт текущим каталогом тот, где лежит бинарник
+                rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\..\\"));
+                //argsParser.args.push_back("--batch-output-root=C:/work/temp/mdpp-test");
+    
+            }
+            else
+            {
+                //rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\"));
+            }
+    
+            //#endif
+    
+            if (!rootPath.empty())
+                rootPath = umba::filename::appendPathSepCopy(rootPath);
+    
+            argsParser.args.clear();
+    
+            argsParser.args.push_back("--verbose=detailed");
+    
+            argsParser.args.push_back("@" + rootPath + "\\umba-brief-scanner.rsp");
+            argsParser.args.push_back("--overwrite");
+            argsParser.args.push_back("--doxyfication=always");
+            argsParser.args.push_back("--scan=" + rootPath + "/src");
+            argsParser.args.push_back("--scan=" + rootPath + "/_libs");
+            argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
+            //argsParser.args.push_back("tests/doxy");
+    
+    
+            // argsParser.args.clear();
+            // argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
+            //argsParser.args.push_back("@..\\make_sources_brief.rsp");
+            // argsParser.args.push_back(umba::string_plus::make_string(""));
+            // argsParser.args.push_back(umba::string_plus::make_string(""));
+            // argsParser.args.push_back(umba::string_plus::make_string(""));
+    
         #endif
-
-
-        argsParser.args.clear();
-
-        argsParser.args.push_back("--verbose=detailed");
-
-        argsParser.args.push_back("@" + rootPath + "\\umba-brief-scanner.rsp");
-        argsParser.args.push_back("--overwrite");
-        argsParser.args.push_back("--doxyfication=always");
-        argsParser.args.push_back("--scan=" + rootPath + "/src");
-        argsParser.args.push_back("--scan=" + rootPath + "/_libs");
-        //argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
-        argsParser.args.push_back("tests/doxy");
-
-
-        // argsParser.args.clear();
-        // argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
-        //argsParser.args.push_back("@..\\make_sources_brief.rsp");
-        // argsParser.args.push_back(umba::string_plus::make_string(""));
-        // argsParser.args.push_back(umba::string_plus::make_string(""));
-        // argsParser.args.push_back(umba::string_plus::make_string(""));
     }
 
 
@@ -528,7 +544,7 @@ int main(int argc, char* argv[])
                                 if (bMain)
                                     uinfoStream << "\n## " << "Entry points" << "\n\n";
                                 else
-                                    uinfoStream << "\n\n";
+                                    uinfoStream << "\n";
                             }
                             else
                             {
@@ -540,10 +556,10 @@ int main(int argc, char* argv[])
                             // if (bFirstItem || relPath.empty())
 	                        uinfoStream << "<tr><td><br><b>" << htmlEscape(relPath) << (bMain?" (Entry points)":"") << "</b><br></td><td>" << "</td></tr>\n";
 	                    }
-	                    else
+	                    else // Text
                         {
 	                        if ( /* bFirstItem ||  */ relPath.empty())
-	                            uinfoStream << (bMain?"Entry points":"") << "\n";
+	                            uinfoStream << (bMain?"# Entry points":"") << "\n";
 	                        else
 	                            uinfoStream << "\n# " << relPath << (bMain?" (Entry points)":"") << "\n";
 	                    }

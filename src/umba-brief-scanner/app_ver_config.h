@@ -1,3 +1,7 @@
+/*! \file
+    \brief Информация о приложении umba-brief-scanner и его версии
+ */
+
 std::string appFullName   = "Umba Brief Scanner";
 std::string appVersion    = "1.0";
 std::string appCommitHash;  //UNDONE

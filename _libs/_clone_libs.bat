@@ -24,8 +24,9 @@ goto DO_CLONE
 set PREFIX=git@%BASE%:%ACC%
 
 :DO_CLONE
-git clone %PREFIX%/umba_mm_mod_encodings.git   %~dp0\encoding
-git clone %PREFIX%/marty_cpp.git               %~dp0\marty_cpp
-git clone %PREFIX%/marty_utf.git               %~dp0\marty_utf
-git clone %PREFIX%/umba_mm_mod_sfmt.git        %~dp0\sfmt
-git clone %PREFIX%/umba_mm_mod_umba.git        %~dp0\umba
+@git clone --recurse-submodules %PREFIX%/umba_mm_mod_encodings.git   %~dp0\encoding
+@git clone --recurse-submodules %PREFIX%/marty_cpp.git               %~dp0\marty_cpp
+@git clone --recurse-submodules %PREFIX%/marty_decimal.git           %~dp0\marty_decimal
+@git clone --recurse-submodules %PREFIX%/marty_utf.git               %~dp0\marty_utf
+@git clone --recurse-submodules %PREFIX%/umba_mm_mod_sfmt.git        %~dp0\sfmt
+@git clone --recurse-submodules %PREFIX%/umba_mm_mod_umba.git        %~dp0\umba

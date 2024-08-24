@@ -1,3 +1,7 @@
+/*! \file
+    \brief Класс конфигурации
+ */
+
 #pragma once
 
 #include <string>

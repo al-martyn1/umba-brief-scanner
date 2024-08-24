@@ -1,3 +1,7 @@
+/*! \file
+    \brief Макросы для лога
+ */
+
 #pragma once
 
 #include "umba/log.h"
