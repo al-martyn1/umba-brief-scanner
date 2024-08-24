@@ -62,3 +62,5 @@ clone_libs_ssh.bat
 Открываем solution - `umba-brief-scanner.sln` и собираем нужную конфигурацию.
 Можно из командной строки MSVC собрать проект при помощи MSBUILD.
 
+
+#!insert{doc} .bat/md_/building.md_
