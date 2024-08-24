@@ -118,10 +118,10 @@ int main(int argc, char* argv[])
         std::string cwd = umba::filesys::getCurrentDirectory<std::string>();
         std::cout << "Working Dir: " << cwd << "\n";
         std::string rootPath;
-    
+
         #if (defined(WIN32) || defined(_WIN32))
-    
-    
+
+
             if (winhelpers::isProcessHasParentOneOf({"devenv"}))
             {
                 // По умолчанию студия задаёт текущим каталогом На  уровень выше от того, где лежит бинарник
@@ -133,22 +133,22 @@ int main(int argc, char* argv[])
                 // По умолчанию VSCode задаёт текущим каталогом тот, где лежит бинарник
                 rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\..\\"));
                 //argsParser.args.push_back("--batch-output-root=C:/work/temp/mdpp-test");
-    
+
             }
             else
             {
                 //rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\"));
             }
-    
+
             //#endif
-    
+
             if (!rootPath.empty())
                 rootPath = umba::filename::appendPathSepCopy(rootPath);
-    
+
             argsParser.args.clear();
-    
+
             argsParser.args.push_back("--verbose=detailed");
-    
+
             argsParser.args.push_back("@" + rootPath + "\\umba-brief-scanner.rsp");
             argsParser.args.push_back("--overwrite");
             argsParser.args.push_back("--doxyfication=always");
@@ -156,15 +156,15 @@ int main(int argc, char* argv[])
             argsParser.args.push_back("--scan=" + rootPath + "/_libs");
             argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
             //argsParser.args.push_back("tests/doxy");
-    
-    
+
+
             // argsParser.args.clear();
             // argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
             //argsParser.args.push_back("@..\\make_sources_brief.rsp");
             // argsParser.args.push_back(umba::string_plus::make_string(""));
             // argsParser.args.push_back(umba::string_plus::make_string(""));
             // argsParser.args.push_back(umba::string_plus::make_string(""));
-    
+
         #endif
     }
 
@@ -426,16 +426,16 @@ int main(int argc, char* argv[])
     // Нет доксификации или режим доксификации инвалидный
     if (!doxyficationMode)
     {
-	
-	    std::ofstream infoStream;
-	    if (!appConfig.getOptNoOutput())
-	    {
-	
-	        // if (!createDirectory(path))
-	        // {
-	        //     LOG_WARN_OPT("create-dir-failed") << "failed to create directory: " << path << endl;
-	        //     continue;
-	        // }
+
+        std::ofstream infoStream;
+        if (!appConfig.getOptNoOutput())
+        {
+
+            // if (!createDirectory(path))
+            // {
+            //     LOG_WARN_OPT("create-dir-failed") << "failed to create directory: " << path << endl;
+            //     continue;
+            // }
 
             if (umba::filesys::isPathExist(appConfig.outputName) && !appConfig.bOverwrite)
             {
@@ -444,101 +444,101 @@ int main(int argc, char* argv[])
                 //bool isPathFile(const StringType &path)
             }
 
-	
-	        infoStream.open( appConfig.outputName, std::ios_base::out | std::ios_base::trunc );
-	        if (!infoStream)
-	        {
-	            LOG_WARN_OPT("create-file-failed") << "failed to create output file: " << appConfig.outputName << endl;
-	            return 1;
-	        }
-	    }
-	
-	
-	    std::string titleStr = "Brief Description for Project Sources";
-	    std::string sepLine  = "-------------------------------------";
+
+            infoStream.open( appConfig.outputName, std::ios_base::out | std::ios_base::trunc );
+            if (!infoStream)
+            {
+                LOG_WARN_OPT("create-file-failed") << "failed to create output file: " << appConfig.outputName << endl;
+                return 1;
+            }
+        }
+
+
+        std::string titleStr = "Brief Description for Project Sources";
+        std::string sepLine  = "-------------------------------------";
 
         if (appConfig.getOptMd())
-	    {
-	        infoStream << "# " << titleStr << "\n\n";
-	    }
+        {
+            infoStream << "# " << titleStr << "\n\n";
+        }
         else if (appConfig.getOptHtml())
-	    {
+        {
             infoStream << "<!DOCTYPE html>\n<html>\n";
-	        infoStream << "<head>\n<title>" << titleStr << "</title>\n</head>\n";
-	        infoStream << "<body>\n";
-	    }
-	    else
-	    {
+            infoStream << "<head>\n<title>" << titleStr << "</title>\n</head>\n";
+            infoStream << "<body>\n";
+        }
+        else
+        {
             infoStream << titleStr << "\n" << sepLine << "\n\n";
-	    }
-	
-	
-	    /* Нужно прочитанное при чтении старых описаний проверять, есть ли такой файл в новом скане. 
-	       Если в скане его нет, то файл пропал - изменилась стуктура каталогов
-	     */
-	    std::unordered_set<std::string> relNames; // Имена, такие же как и прежнем brief'е
-	
-	    std::string prevFilePath;
-	
-	    auto printInfo = [&]( bool bMain )
-	    {
-	        umba::StdStreamCharWriter infoWriter(infoStream);
-	        umba::SimpleFormatter uinfoStream(&infoWriter);
-	
+        }
 
-	        if (appConfig.getOptMd())
+
+        /* Нужно прочитанное при чтении старых описаний проверять, есть ли такой файл в новом скане.
+           Если в скане его нет, то файл пропал - изменилась стуктура каталогов
+         */
+        std::unordered_set<std::string> relNames; // Имена, такие же как и прежнем brief'е
+
+        std::string prevFilePath;
+
+        auto printInfo = [&]( bool bMain )
+        {
+            umba::StdStreamCharWriter infoWriter(infoStream);
+            umba::SimpleFormatter uinfoStream(&infoWriter);
+
+
+            if (appConfig.getOptMd())
             {
             }
             else if (appConfig.getOptHtml())
-	        {
-	            uinfoStream << "<table><tbody>\n";
-	        }
+            {
+                uinfoStream << "<table><tbody>\n";
+            }
             else
             {
             }
-	
-	        bool bFirstItem = true;
-	
-	        //std::map<std::string, BriefInfo>
-	        for( const auto& [name,info] : briefInfo)
-	        {
-	            if (info.entryPoint!=bMain)
-	                continue;
-	
-	            if (appConfig.getOptSkipUndocumented())
-	            {
-	                if (!info.briefFound)
-	                    continue;
-	            }
-	
-	            // umba::StdStreamCharWriter infoWriter(infoStream);
-	            // umba::SimpleFormatter uinfoStream(&infoWriter);
-	
-	            auto relName = appConfig.getScanRelativeName(name);
-	
-	            auto relPath = umba::filename::getPath(relName);
-	
-	            if (appConfig.getOptSplitGroups())
-	            {
-	                // bFirstItem
-	                bool prevFilePathEmpty    =  prevFilePath.empty();
-	                bool prevFilePathNotEmpty = !prevFilePathEmpty;     UMBA_USED(prevFilePathNotEmpty);
-	                bool prevPathNotSame      = prevFilePath!=relPath;
-	                bool prevPathEmpty        = prevFilePath.empty();   UMBA_USED(prevPathEmpty);
-	
-	                bool partBreak = false;
-	
-	                if (bFirstItem)
-	                    partBreak = true;
-	
-	                if (prevPathNotSame)
-	                    partBreak = true;
-	
-	                //if (!bFirstItem && ((!prevFilePath.empty() && prevFilePath!=relPath) || prevFilePath.empty()))
-	                if (partBreak)
-	                {
-	                    if (appConfig.getOptMd())
-	                    {
+
+            bool bFirstItem = true;
+
+            //std::map<std::string, BriefInfo>
+            for( const auto& [name,info] : briefInfo)
+            {
+                if (info.entryPoint!=bMain)
+                    continue;
+
+                if (appConfig.getOptSkipUndocumented())
+                {
+                    if (!info.briefFound)
+                        continue;
+                }
+
+                // umba::StdStreamCharWriter infoWriter(infoStream);
+                // umba::SimpleFormatter uinfoStream(&infoWriter);
+
+                auto relName = appConfig.getScanRelativeName(name);
+
+                auto relPath = umba::filename::getPath(relName);
+
+                if (appConfig.getOptSplitGroups())
+                {
+                    // bFirstItem
+                    bool prevFilePathEmpty    =  prevFilePath.empty();
+                    bool prevFilePathNotEmpty = !prevFilePathEmpty;     UMBA_USED(prevFilePathNotEmpty);
+                    bool prevPathNotSame      = prevFilePath!=relPath;
+                    bool prevPathEmpty        = prevFilePath.empty();   UMBA_USED(prevPathEmpty);
+
+                    bool partBreak = false;
+
+                    if (bFirstItem)
+                        partBreak = true;
+
+                    if (prevPathNotSame)
+                        partBreak = true;
+
+                    //if (!bFirstItem && ((!prevFilePath.empty() && prevFilePath!=relPath) || prevFilePath.empty()))
+                    if (partBreak)
+                    {
+                        if (appConfig.getOptMd())
+                        {
                             if (relPath.empty())
                             {
                                 if (bMain)
@@ -554,156 +554,156 @@ int main(int argc, char* argv[])
                         else if (appConfig.getOptHtml())
                         {
                             // if (bFirstItem || relPath.empty())
-	                        uinfoStream << "<tr><td><br><b>" << htmlEscape(relPath) << (bMain?" (Entry points)":"") << "</b><br></td><td>" << "</td></tr>\n";
-	                    }
-	                    else // Text
+                            uinfoStream << "<tr><td><br><b>" << htmlEscape(relPath) << (bMain?" (Entry points)":"") << "</b><br></td><td>" << "</td></tr>\n";
+                        }
+                        else // Text
                         {
-	                        if ( /* bFirstItem ||  */ relPath.empty())
-	                            uinfoStream << (bMain?"# Entry points":"") << "\n";
-	                        else
-	                            uinfoStream << "\n# " << relPath << (bMain?" (Entry points)":"") << "\n";
-	                    }
-	                }
-	            }
-	
-	            bFirstItem = false;
-	
-	            prevFilePath = relPath;
-	
-	            if (appConfig.getOptRemovePath())
-	                relName = umba::filename::getFileName( relName );
-	
-	            relNames.insert(relName);
-	
-	            std::string infoText = info.infoText;
-	
-	            std::unordered_map<std::string, std::string>::const_iterator uit = prevBriefFileInfo.find(relName);
-	            if (uit!=prevBriefFileInfo.end())
-	            {
-	                if (/* !info.briefFound || */ infoText.empty())
-	                {
-	                    infoText = uit->second;
-	                }
-	            }
-	
+                            if ( /* bFirstItem ||  */ relPath.empty())
+                                uinfoStream << (bMain?"# Entry points":"") << "\n";
+                            else
+                                uinfoStream << "\n# " << relPath << (bMain?" (Entry points)":"") << "\n";
+                        }
+                    }
+                }
+
+                bFirstItem = false;
+
+                prevFilePath = relPath;
+
+                if (appConfig.getOptRemovePath())
+                    relName = umba::filename::getFileName( relName );
+
+                relNames.insert(relName);
+
+                std::string infoText = info.infoText;
+
+                std::unordered_map<std::string, std::string>::const_iterator uit = prevBriefFileInfo.find(relName);
+                if (uit!=prevBriefFileInfo.end())
+                {
+                    if (/* !info.briefFound || */ infoText.empty())
+                    {
+                        infoText = uit->second;
+                    }
+                }
+
 
                 if (appConfig.getOptMd())
                 {
                     uinfoStream << " - **" << relName << "** - " << info.infoText << "\n";
                 }
-	            else if (appConfig.getOptHtml())
-	            {
-	                //TODO: !!! Add HTML output here
-	                uinfoStream << "<tr><td>" << htmlEscape(relName) << "</td><td>" << htmlEscape(info.infoText) << "</td></tr>\n";
-	            }
+                else if (appConfig.getOptHtml())
+                {
+                    //TODO: !!! Add HTML output here
+                    uinfoStream << "<tr><td>" << htmlEscape(relName) << "</td><td>" << htmlEscape(info.infoText) << "</td></tr>\n";
+                }
                 else // txt
-	            {
-	                int fnw = (int)appConfig.filenameWidth;
-	
-	                if (appConfig.descriptionWidth==0)
-	                {
-	                    uinfoStream << width(fnw) << left << relName << " - " << infoText << "\n";
-	                }
-	                else
-	                {
-	                    // SymbolLenCalculatorEncodingUtf8
-	                    auto formattedParas = umba::text_utils::formatTextParas<marty_utf::SymbolLenCalculatorEncodingUtf8>( infoText, appConfig.descriptionWidth
-	                                                                                                                       , umba::text_utils::TextAlignment::left
-	                                                                                                                       , marty_utf::SymbolLenCalculatorEncodingUtf8()
-	                                                                                                                       );
-	
-	                    // Не будем париться - первая строка может свисать справа, ну и фик с ним
-	
-	                    //TODO: !!! Не корректно определяется длина строк в многобайтной кодировке
-	                    //          Мой поток вывода (umba::SimpleFormatter) - также некорректно работает с многобайтной кодировкой,
-	                    //          но это обычно не проблема, если имена файлов  исходников используют только английский алфавит.
-	                    //          При форматировании же текста кодировка зависит от кодировки исходника - может быть как однобайтной,
-	                    //          так и многобайтной (UTF-8, например, и в линуксе это обычно уже стандарт)
-	                    //          Поэтому, если где-то используются русскоязычные описания и используется форматирование, то лучше
-	                    //          сделать его побольше - не 80, а 120 символов шириной, например.
-	
-	                    auto textWithIndent = umba::text_utils::textAddIndent( formattedParas, std::string(fnw+3, ' '), std::string() );
-	
-	                    uinfoStream << width(fnw) << left << relName << " - " 
-	                                << textWithIndent
-	                                << "\n";
-	                }
-	
-	                // descriptionWidth
-	                // umba::text_utils::  
-	                // std::string textAddIndent(const std::string &text, const std::string &indent)
-	                // std::string formatTextParas( std::string text, std::string::size_type paraWidth )
-	                // std::string textAddIndent(const std::string &text, const std::string &indent, const std::string &firstIndent)
-	                //infoStream << relName << " - " << info.infoText << "\n";
-	            }
-	        
-	        } // for
-	
-	
-	        if (appConfig.getOptMd())
+                {
+                    int fnw = (int)appConfig.filenameWidth;
+
+                    if (appConfig.descriptionWidth==0)
+                    {
+                        uinfoStream << width(fnw) << left << relName << " - " << infoText << "\n";
+                    }
+                    else
+                    {
+                        // SymbolLenCalculatorEncodingUtf8
+                        auto formattedParas = umba::text_utils::formatTextParas<marty_utf::SymbolLenCalculatorEncodingUtf8>( infoText, appConfig.descriptionWidth
+                                                                                                                           , umba::text_utils::TextAlignment::left
+                                                                                                                           , marty_utf::SymbolLenCalculatorEncodingUtf8()
+                                                                                                                           );
+
+                        // Не будем париться - первая строка может свисать справа, ну и фик с ним
+
+                        //TODO: !!! Не корректно определяется длина строк в многобайтной кодировке
+                        //          Мой поток вывода (umba::SimpleFormatter) - также некорректно работает с многобайтной кодировкой,
+                        //          но это обычно не проблема, если имена файлов  исходников используют только английский алфавит.
+                        //          При форматировании же текста кодировка зависит от кодировки исходника - может быть как однобайтной,
+                        //          так и многобайтной (UTF-8, например, и в линуксе это обычно уже стандарт)
+                        //          Поэтому, если где-то используются русскоязычные описания и используется форматирование, то лучше
+                        //          сделать его побольше - не 80, а 120 символов шириной, например.
+
+                        auto textWithIndent = umba::text_utils::textAddIndent( formattedParas, std::string(fnw+3, ' '), std::string() );
+
+                        uinfoStream << width(fnw) << left << relName << " - "
+                                    << textWithIndent
+                                    << "\n";
+                    }
+
+                    // descriptionWidth
+                    // umba::text_utils::
+                    // std::string textAddIndent(const std::string &text, const std::string &indent)
+                    // std::string formatTextParas( std::string text, std::string::size_type paraWidth )
+                    // std::string textAddIndent(const std::string &text, const std::string &indent, const std::string &firstIndent)
+                    //infoStream << relName << " - " << info.infoText << "\n";
+                }
+
+            } // for
+
+
+            if (appConfig.getOptMd())
             {
             }
             else if (appConfig.getOptHtml())
-	        {
-	            uinfoStream << "</tbody></table>\n";
-	        }
-	
-	
-	    };
+            {
+                uinfoStream << "</tbody></table>\n";
+            }
 
-    	
-	    //infoStream << "##### 1\n";
 
-	    printInfo(true);
-	        
-	    if (!appConfig.getOptMain())
-	    {
-	        // print all
-	
-	        if (appConfig.getOptMd())
-	        {
-	            infoStream << "\n";
-	        }
+        };
+
+
+        //infoStream << "##### 1\n";
+
+        printInfo(true);
+
+        if (!appConfig.getOptMain())
+        {
+            // print all
+
+            if (appConfig.getOptMd())
+            {
+                infoStream << "\n";
+            }
             else if (appConfig.getOptHtml())
             {
-	            //TODO: !!! Add HTML line break here
-	        }
+                //TODO: !!! Add HTML line break here
+            }
             else
-	        {
-	            infoStream << "\n";
-	        }
-	
+            {
+                infoStream << "\n";
+            }
+
             //infoStream << "##### 2\n";
-	        printInfo(false);
-	
-	    }
-	
-	
+            printInfo(false);
+
+        }
+
+
         if (appConfig.getOptMd())
         {
         }
-	    else if (appConfig.getOptHtml())
-	    {
-	        infoStream << "</body>\n";
-	        infoStream << "</html>\n";
-	    }
-	
-	
-	    if (appConfig.testVerbosity(VerbosityLevel::normal))
-	    {
-	        std::unordered_map<std::string, std::string>::const_iterator uit = prevBriefFileInfo.begin();
-	        for(; uit!=prevBriefFileInfo.end(); ++uit)
-	        {
-	            if (relNames.find(uit->first)==relNames.end())
-	            {
-	                // В новом наборе старого файла нет
-	                LOG_WARN_OPT("update-missing") << "previously scanned file not found in current source tree, file: '" << uit->first << "'\n";
-	                LOG_WARN_OPT("file-description") << uit->second << "\n";
-	            }
-	        }
-	    }
-	
-	    //!!! конец обработки брифов
+        else if (appConfig.getOptHtml())
+        {
+            infoStream << "</body>\n";
+            infoStream << "</html>\n";
+        }
+
+
+        if (appConfig.testVerbosity(VerbosityLevel::normal))
+        {
+            std::unordered_map<std::string, std::string>::const_iterator uit = prevBriefFileInfo.begin();
+            for(; uit!=prevBriefFileInfo.end(); ++uit)
+            {
+                if (relNames.find(uit->first)==relNames.end())
+                {
+                    // В новом наборе старого файла нет
+                    LOG_WARN_OPT("update-missing") << "previously scanned file not found in current source tree, file: '" << uit->first << "'\n";
+                    LOG_WARN_OPT("file-description") << uit->second << "\n";
+                }
+            }
+        }
+
+        //!!! конец обработки брифов
     }
     else // А вот тут делаем доксификацию
     {
@@ -723,19 +723,19 @@ int main(int argc, char* argv[])
             {
                 if (!umba::filesys::isPathDirectory(canonP))
                 {
-    	            LOG_WARN_OPT("create-dir-failed") << "path exist, but not a directory: " << p << endl;
+                    LOG_WARN_OPT("create-dir-failed") << "path exist, but not a directory: " << p << endl;
                     LOG_ERR_OPT << "fatal error" << endl;
                     return false;
                 }
             }
             else
             {
-	            if (!umba::filesys::createDirectoryEx(canonP, true /* forceCreatePath */ ))
-	            {
-	                LOG_WARN_OPT("create-dir-failed") << "failed to create directory: " << p << endl;
+                if (!umba::filesys::createDirectoryEx(canonP, true /* forceCreatePath */ ))
+                {
+                    LOG_WARN_OPT("create-dir-failed") << "failed to create directory: " << p << endl;
                     LOG_ERR_OPT << "fatal error" << endl;
-	                return false;
-	            }
+                    return false;
+                }
             }
 
             return true;
@@ -744,7 +744,7 @@ int main(int argc, char* argv[])
         //std::vector<std::string> foundFiles, foundFilesFolders
 
         if (!appConfig.getOptNoOutput())
-	    {
+        {
             std::vector<std::string>::const_iterator fNameIt = foundFiles.begin();
             std::vector<std::string>::const_iterator fldrIt  = foundFilesFolders.begin();
 
@@ -763,7 +763,7 @@ int main(int argc, char* argv[])
                 //auto relFileName   = fileName; // имя относительно корня, пока полное - просто чтобы с типами не возиться
                 using FilenameStringType     = decltype(fileName);
                 using FilenameStringCharType = typename FilenameStringType::value_type;
-                FilenameStringType relFileName; // имя относительно корня, пока пустое - повозился с типом 
+                FilenameStringType relFileName; // имя относительно корня, пока пустое - повозился с типом
 
                 if (briefInfo.find(fileNameCanonical)!=briefInfo.end())
                 {
@@ -808,8 +808,8 @@ int main(int argc, char* argv[])
 
                 FilenameStringType targetPath = umba::filename::makeCanonical(umba::filename::appendPath(appConfig.outputName, targetSubPath));
 
-	            if (!checkCreatePath(targetPath))
-	                return 1;
+                if (!checkCreatePath(targetPath))
+                    return 1;
 
                 std::string text = "/*! \\file " + sourceFilename + "\n    \\brief \n */\n\n";
 
@@ -825,18 +825,18 @@ int main(int argc, char* argv[])
                                                        , text, std::string() // bomData
                                                        , true /* fromFile */, true /* utfSource */ , appConfig.bOverwrite
                                                        );
-                
+
                 }
                 catch(const std::exception &e)
                 {
                     LOG_WARN_OPT("create-file-failed") << e.what() /* "failed to write file: " << targetPathFilename */  << endl;
                     LOG_ERR_OPT << "fatal error" << endl;
-	                return 1;
+                    return 1;
                 }
-             
+
             } // for(; fNameIt!=foundFiles.end(); ++fNameIt, ++fldrIt)
 
-	    } // if (!appConfig.getOptNoOutput())
+        } // if (!appConfig.getOptNoOutput())
 
     } // else // А вот тут делаем доксификацию
 

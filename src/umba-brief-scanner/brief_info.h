@@ -6,7 +6,7 @@
 
 #include "commentUtils.h"
 
-#include "umba/regex_helpers.h"                                                                                                                                       
+#include "umba/regex_helpers.h"
 
 #include "umba/string_plus.h"
 
@@ -41,7 +41,7 @@ void makeSingleLineText( IterType b, IterType e )
 
 #ifdef LOG_REGEX_MATCH
 
-inline 
+inline
 bool findEntryPoint( std::vector<char> fileText, const std::map< std::string,std::set<std::string> > &entryNames )
 {
     makeSingleLineText(fileText.begin(), fileText.end());
@@ -59,7 +59,7 @@ bool findEntryPoint( std::vector<char> fileText, const std::map< std::string,std
 
 #else
 
-inline 
+inline
 bool findEntryPoint( const std::vector<char> &fileText, const std::map< std::string,std::set<std::string> > &entryNames )
 {
 
@@ -76,7 +76,7 @@ bool findEntryPoint( const std::vector<char> &fileText, const std::map< std::str
         if (!argsAlters.empty())
             argsAlters = std::string("(") + argsAlters + std::string(")") + std::string("[\\s]+?");
 
-        std::string regexStr = std::string(".*") 
+        std::string regexStr = std::string(".*")
                              + argsAlters
                              + name
                              + std::string("\\s*\\(.*")
@@ -119,10 +119,10 @@ bool findEntryPoint( const std::vector<char> &fileText, const std::map< std::str
 
     //   std::string regexStrMain = "(void|int) \\s*(main|wmain|tmain__tmain)\\s*\\(";
     // //std::string regexStrMain = ".*(void|int) \\s*(main|wmain|tmain__tmain)\\s*\\(.*";
-    //  
+    //
     // // https://en.cppreference.com/w/cpp/regex/syntax_option_type
     // std::regex re(regexStrMain, std::regex::ECMAScript  /* | std::regex::multiline */ ); // multiline not supported in MSVC2019
-    //  
+    //
     // return umba::regex_helpers::regexMatch(fileText, re);
 
     // std::string testText = "int";
@@ -154,7 +154,7 @@ auto makeTokenText(umba::tokenizer::payload_type tokenType, umba::iterator::Text
     // {
     //     return marty_cpp::normalizeCrLfToLf(umba::iterator::makeString(b, e));
     // }
-    //  
+    //
     return umba::iterator::makeString(b, e);
 }
 
@@ -349,9 +349,9 @@ bool findBriefInfo( std::vector<char> fileText, const std::map< std::string,std:
                          "prefix=[" << m.prefix() << "]\nsmatch:\n";
             for(std::size_t n = 0; n < m.size(); ++n)
                 std::cout << "\nm[" << n << "]=[" << m[n] << "] ";
-       
+
             std::cout << "\n\nsuffix=[" << m.suffix() << "]\n";
-       
+
         }
         else
         {

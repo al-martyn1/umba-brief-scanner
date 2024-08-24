@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 
     using std::cout;
     using std::endl;
-    
+
     auto speed = Speed(0);
 
     cout << "Speed: " << speed << endl;

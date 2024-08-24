@@ -29,7 +29,7 @@ enum class VerbosityLevel
      invalid      = -1,
      begin        = 0,
 
-     quet         = 0,   // quet 
+     quet         = 0,   // quet
      normal       = 1,   // normal - print common details
      config       = 2,   // print common details and app config
      detailed     = 3,   // print common details, app config and all declarations, found in user files
@@ -134,8 +134,8 @@ struct AppConfig
 
     //------------------------------
 
-    
-    
+
+
     //------------------------------
     void ofSet  ( unsigned ofFlags )       { optionFlags |=  ofFlags; }
     void ofReset( unsigned ofFlags )       { optionFlags &= ~ofFlags; }
@@ -175,7 +175,7 @@ struct AppConfig
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SkipUndocumented)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(RemovePath)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SplitGroups)
-    
+
 
     void setOptQuet( bool q ) { setVerbosityLevel(VerbosityLevel::quet);  }
     //bool getOptQuet( )  const { return testVerbosity(VerbosityLevel::quet); }
@@ -262,7 +262,7 @@ struct AppConfig
         s << "    " << getOptNameString(ofSkipUndocumented)    << ": " << getOptValAsString(optionFlags&ofSkipUndocumented) << "\n";
         s << "    " << getOptNameString(ofRemovePath)          << ": " << getOptValAsString(optionFlags&ofRemovePath) << "\n";
         s << "    " << getOptNameString(ofSplitGroups)         << ": " << getOptValAsString(optionFlags&ofSplitGroups) << "\n";
-        
+
 
         s << "\n";
 
@@ -298,7 +298,7 @@ struct AppConfig
 
         s << "Include File Masks:\n";
         for(auto includeFileMask : includeFilesMaskList)
-	    {
+        {
             //auto regexStr = expandSimpleMaskToEcmaRegex(includeFileMask);
             auto regexStr = umba::regex_helpers::expandSimpleMaskToEcmaRegex(includeFileMask, true /* useAnchoring */, true /* allowRawRegexes */);
             s << "    '" << includeFileMask;
@@ -318,12 +318,12 @@ struct AppConfig
         }
 
         s << "\n";
-        
+
         //------------------------------
 
         s << "Exclude File Masks:\n";
         for(auto excludeFileMask : excludeFilesMaskList)
-	    {
+        {
             // auto regexStr = expandSimpleMaskToEcmaRegex(excludeFileMask);
             auto regexStr = umba::regex_helpers::expandSimpleMaskToEcmaRegex( excludeFileMask, true /* useAnchoring */, true /* allowRawRegexes */ );
 
@@ -344,10 +344,10 @@ struct AppConfig
         }
 
         s << "\n";
-        
+
         //------------------------------
 
-        
+
 
         return s;
     }

@@ -259,14 +259,14 @@ int main(int argc, char* argv[])
             {
                 //TODO: !!! Add HTML output here
             }
-        
+
         }
 
     };
 
 
     printInfo(true);
-        
+
     if (!appConfig.getOptMain())
     {
         // print all
