@@ -19,10 +19,11 @@
 
 ## umba-brief-scanner
 
- - **app_config.h** - 
- - **app_ver_config.h** - 
- - **arg_parser.h** - 
- - **brief_info.h** - 
- - **enums_manual.h** - 
- - **log.h** - 
+ - **app_config.h** - Класс конфигурации
+ - **app_ver_config.h** - Информация о приложении umba-brief-scanner и его версии
+ - **arg_parser.h** - Разбор аргументов командной строки
+ - **brief_info.h** - Извлечение brief info
+ - **commentutils.h** - Утилитки для разбора коментариев
+ - **enums_manual.h** - "Ручные" перечисления
+ - **log.h** - Макросы для лога
 

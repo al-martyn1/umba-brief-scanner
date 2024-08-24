@@ -1,3 +1,6 @@
+@call "%~dp0\.bat\gen-doc.bat"
+exit /B 0
+
 @rem set BATCH_ROOT=--batch-output-path=C:\work\temp\mdpp-test
 @set EXCLUDE_DIRS=--batch-exclude-dir=_libs,libs,_lib,lib,tests,test,rc,_generators,_distr_conf,src,.msvc2019,boost,icons
 @set COMMON=--overwrite --copy-images

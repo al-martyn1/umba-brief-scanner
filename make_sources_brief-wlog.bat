@@ -1,1 +1,0 @@
-@call make_sources_brief.bat >make_sources_brief.log 2>&1
