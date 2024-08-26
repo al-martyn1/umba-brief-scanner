@@ -10,6 +10,20 @@
 #include <utility>
 
 
+
+inline
+const std::string& getBannerChars()
+{
+    static std::string bch = "!#$%*-=|";
+    return bch;
+}
+
+inline
+bool isBannerChar(char ch)
+{
+    return getBannerChars().find(ch)!=std::string::npos;
+}
+
 inline
 std::string makeBriefSingleString(const std::string &str)
 {
@@ -32,15 +46,21 @@ std::string makeBriefSingleString(const std::string &str)
 }
 
 inline
-bool isSingleCharLine(const std::string &line, std::size_t minChars = 3)
+bool isBannerSingleCharLine(const std::string &line, std::size_t minChars = 3)
 {
+    if (line.empty())
+        return false;
+
+    if (!isBannerChar(line[0]))
+        return false;
+
     for(auto ch : line)
     {
         if (ch!=line[0])
             return false;
     }
 
-    return line.size()>= minChars;
+    return line.size()>=minChars;
 }
 
 /**
@@ -70,7 +90,7 @@ std::string prepareMultilineCommentBannerText(std::string commentText)
             if (tmp.empty() && lineTrimmed.empty())
                 continue; // Пропускаем пустые строки в начале
 
-            if (isSingleCharLine(lineTrimmed))
+            if (isBannerSingleCharLine(lineTrimmed))
                 continue;
             tmp.emplace_back(line);
         }
@@ -93,7 +113,28 @@ std::string prepareMultilineCommentBannerText(std::string commentText)
             sameLastCh  = false;
             //return marty_cpp::mergeLines(commentLines, marty_cpp::ELinefeedType::lf);
         }
-        else if (firstCh==0)
+
+        if (!isBannerChar(line.front())) // Не обрезаем всё, что является небаннерными символами
+        {
+            sameFirstCh = false;
+        }
+
+        if (line.size()<2)
+        {
+            sameLastCh = false;
+        }
+
+        if (!isBannerChar(line.back())) // Не обрезаем всё, что является небаннерными символами
+        {
+            sameLastCh = false;
+        }
+
+        if (!sameFirstCh && !sameLastCh) // и первые символы строк, и последние - различаются, это не баннер
+        {
+            break;
+        }
+
+        if (firstCh==0)
         {
             firstCh = line.front();
             lastCh  = line.back();

@@ -161,7 +161,7 @@ auto makeTokenText(umba::tokenizer::payload_type tokenType, umba::iterator::Text
 
 
 inline
-bool findBriefInfo( std::vector<char> fileText, const std::map< std::string,std::set<std::string> > &entryNames, BriefInfo &info)
+bool findBriefInfo( std::string fileText, const std::map< std::string,std::set<std::string> > &entryNames, BriefInfo &info)
 {
     auto tokenizerBuilder = getTokenizerBuilder();
 

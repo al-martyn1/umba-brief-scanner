@@ -149,11 +149,12 @@ int main(int argc, char* argv[])
 
             argsParser.args.push_back("--verbose=detailed");
 
+            // argsParser.args.push_back("--batch-exclude-dir=_libs,libs,_lib,lib,tests,test,rc,_generators,_distr_conf,src,.msvc2019,boost,icons");
             argsParser.args.push_back("@" + rootPath + "\\umba-brief-scanner.rsp");
             argsParser.args.push_back("--overwrite");
-            argsParser.args.push_back("--doxyfication=always");
+            //argsParser.args.push_back("--doxyfication=always");
             argsParser.args.push_back("--scan=" + rootPath + "/src");
-            argsParser.args.push_back("--scan=" + rootPath + "/_libs");
+            //argsParser.args.push_back("--scan=" + rootPath + "/_libs");
             argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
             //argsParser.args.push_back("tests/doxy");
 
@@ -383,14 +384,15 @@ int main(int argc, char* argv[])
     for(const auto & filename : foundFiles)
     {
         // logMsg << name << endl;
-        std::vector<char> filedata;
-        if (!umba::filesys::readFile( filename, filedata ))
+        //std::vector<char> filedata;
+        std::string filedataStr;
+        if (!umba::filesys::readFile( filename, filedataStr ))
         {
             LOG_WARN_OPT("open-file-failed") << "failed to open file '" << filename << "'\n";
             continue;
         }
 
-        auto filedataStr = std::string(filedata.begin(), filedata.end());
+        //auto filedataStr = std::string(filedata.begin(), filedata.end());
 
         size_t bomSize = 0;
         std::string detectRes = pEncApi->detect( filedataStr, bomSize );
@@ -403,10 +405,12 @@ int main(int argc, char* argv[])
         auto cpId = pEncApi->getCodePageByName(detectRes);
 
         std::string filedataStrUtf8 = pEncApi->convert( filedataStr, cpId, encoding::EncodingsApi::cpid_UTF8 );
-        filedata = std::vector<char>(filedataStrUtf8.begin(), filedataStrUtf8.end());
+        //filedata = std::vector<char>(filedataStrUtf8.begin(), filedataStrUtf8.end());
+
+        filedataStr = marty_cpp::normalizeCrLfToLf(filedataStr);
 
         BriefInfo  info;
-        bool bFound = findBriefInfo( filedata, appConfig.entryNames, info );
+        bool bFound = findBriefInfo( filedataStr, appConfig.entryNames, info );
         UMBA_USED(bFound);
 
         auto canonicalName = umba::filename::makeCanonical(filename);
