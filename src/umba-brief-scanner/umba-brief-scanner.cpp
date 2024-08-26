@@ -459,7 +459,7 @@ int main(int argc, char* argv[])
 
         if (appConfig.getOptMd())
         {
-            infoStream << "# " << titleStr << "\n\n";
+            infoStream << "---\nTitle: " << titleStr << "\n---\n";
         }
         else if (appConfig.getOptHtml())
         {
@@ -542,13 +542,13 @@ int main(int argc, char* argv[])
                             if (relPath.empty())
                             {
                                 if (bMain)
-                                    uinfoStream << "\n## " << "Entry points" << "\n\n";
+                                    uinfoStream << "\n# " << "Entry points" << "\n\n";
                                 else
                                     uinfoStream << "\n";
                             }
                             else
                             {
-                                uinfoStream << "\n## " << relPath << (bMain?" (Entry points)":"") << "\n\n";
+                                uinfoStream << "\n# " << relPath << (bMain?" (Entry points)":"") << "\n\n";
                             }
                         }
                         else if (appConfig.getOptHtml())
