@@ -12,7 +12,8 @@
 UMBA_INTEGRAL_ARITHMETIC_STRONG_TYPEDEF( Speed, int )
 
 
-int main(int argc, char* argv[])
+int
+main (int argc, char* argv[])
 {
 
     using std::cout;
