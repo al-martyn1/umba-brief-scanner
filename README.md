@@ -1,6 +1,7 @@
-  - [umba-brief-scanner](#user-content-umba-brief-scanner)
+# Утилита Umba Brief Scanner
+
     - [Все umba-утилиты](#user-content-все-umba-утилиты)
-    - [umba-brief-scanner](#user-content-umba-brief-scanner-1)
+    - [umba-brief-scanner](#user-content-umba-brief-scanner)
       - [Пример работы утилиты umba-brief-scanner](#user-content-пример-работы-утилиты-umba-brief-scanner)
     - [Сборка утилиты umba-brief-scanner](#user-content-сборка-утилиты-umba-brief-scanner)
   - [Сборка и отладка проекта](#user-content-сборка-и-отладка-проекта)
@@ -10,7 +11,7 @@
       - [Запуск VSCode](#user-content-запуск-vscode)
       - [Запуск MSVC](#user-content-запуск-msvc)
 
-# umba-brief-scanner
+ 
 
 umba-brief-scanner - одна из утилит пакета umba-tools. Сканирует каталоги проекта и извлекает описания из
 файлов с исходными кодами.

@@ -1,4 +1,7 @@
-# umba-brief-scanner
+---
+Title: Утилита Umba Brief Scanner
+---
+ 
 
 umba-brief-scanner - одна из утилит пакета umba-tools. Сканирует каталоги проекта и извлекает описания из
 файлов с исходными кодами.
