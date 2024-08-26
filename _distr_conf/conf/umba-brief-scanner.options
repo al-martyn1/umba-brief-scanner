@@ -1,13 +1,25 @@
---entry-name=main,int,void
---entry-name=wmain,int,void
---entry-name=tmain,int,INT,void
---entry-name=_tmain,int,INT,void
---entry-name=INVEST_OPENAPI_MAIN
---entry-name=DllMain,BOOL WINAPI,BOOL APIENTRY,BOOL
---entry-name=DLLEntryPoint,BOOL WINAPI,BOOL APIENTRY,BOOL
+--entry-point=void main(
+--entry-point=int main(
+
+--entry-point=void wmain(
+--entry-point=int wmain(
+--entry-point=void _wmain(
+--entry-point=int _wmain(
+
+--entry-point=void tmain(
+--entry-point=int tmain(
+--entry-point=void _tmain(
+--entry-point=int _tmain(
+
+--entry-point=BOOL WINAPI DllMain(
+--entry-point=BOOL APIENTRY DllMain(
+--entry-point=BOOL DllMain(
+
+--entry-point=BOOL WINAPI DLLEntryPoint(
+--entry-point=BOOL APIENTRY DLLEntryPoint(
+--entry-point=BOOL DLLEntryPoint(
 
 #https://rtfm.co.ua/c-sozdanie-i-primenenie-shared-library-v-linux/
-
 
 
 -X=^.?*/*

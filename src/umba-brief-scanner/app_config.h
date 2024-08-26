@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 
+//
 #include "umba/program_location.h"
 #include "umba/enum_helpers.h"
 #include "umba/flag_helpers.h"
@@ -15,6 +16,8 @@
 #include "umba/regex_helpers.h"
 
 #include "enums_manual.h"
+
+#include "signature.h"
 
 
 //----------------------------------------------------------------------------
@@ -69,7 +72,8 @@ struct AppConfig
     //------------------------------
     umba::macros::StringStringMap<std::string>  macros; // не используем
 
-    std::map< std::string,std::set<std::string> >  entryNames; // не используем
+    // std::map< std::string,std::set<std::string> >  entryNames; // не используем
+    std::vector<TextSignature>                  entrySignatures;
 
 
     #if defined(WIN32) || defined(_WIN32)
@@ -390,11 +394,13 @@ struct AppConfig
             appConfig.descriptionWidth = 64;
 
 
-        appConfig.entryNames         = entryNames;
-        if (appConfig.entryNames.empty())
+        appConfig.entrySignatures = entrySignatures;
+        if (appConfig.entrySignatures.empty())
         {
-            appConfig.entryNames["main"].insert("int");
-            appConfig.entryNames["main"].insert("void");
+            appConfig.entrySignatures.emplace_back(TextSignature("void main("));
+            appConfig.entrySignatures.emplace_back(TextSignature("int main("));
+            // appConfig.entryNames["main"].insert("int");
+            // appConfig.entryNames["main"].insert("void");
         }
 
 

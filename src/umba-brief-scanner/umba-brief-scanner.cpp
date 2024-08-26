@@ -410,7 +410,7 @@ int main(int argc, char* argv[])
         filedataStr = marty_cpp::normalizeCrLfToLf(filedataStr);
 
         BriefInfo  info;
-        bool bFound = findBriefInfo( filedataStr, appConfig.entryNames, info );
+        bool bFound = findBriefInfo( filedataStr, appConfig.entrySignatures, info );
         UMBA_USED(bFound);
 
         auto canonicalName = umba::filename::makeCanonical(filename);

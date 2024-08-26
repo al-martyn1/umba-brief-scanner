@@ -393,28 +393,45 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
+        // else if ( opt.setParam("NAME")
+        //        || opt.isOption("entry-name") || opt.isOption('E')
+        //        || opt.setDescription("Add name to lookup as entry point"))
+        // {
+        //     if (argsParser.hasHelpOption) return 0;
+        //
+        //     if (!opt.hasArg())
+        //     {
+        //         LOG_ERR_OPT<<"Adding entry name requres argument (--entry-name)\n";
+        //         return -1;
+        //     }
+        //
+        //     std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
+        //     // if (lst.size()<2)
+        //     //     lst.push_back("int"); // default return type of entry point is int
+        //
+        //     std::vector< std::string >::const_iterator lit = lst.begin();
+        //     std::string entryName = *lit; ++lit;
+        //
+        //     // appConfig.entryNames[entryName].insert(lit, lst.end()); // лень разбираться
+        //     auto &retTypes = appConfig.entryNames[entryName];
+        //     for(; lit!=lst.end(); ++lit) retTypes.insert(*lit);
+        //
+        //     return 0;
+        // }
+
         else if ( opt.setParam("NAME")
-               || opt.isOption("entry-name") || opt.isOption('E')
-               || opt.setDescription("Add name to lookup as entry point"))
+               || opt.isOption("entry-point") || opt.isOption('E')
+               || opt.setDescription("Add signature to lookup as entry point"))
         {
             if (argsParser.hasHelpOption) return 0;
 
             if (!opt.hasArg())
             {
-                LOG_ERR_OPT<<"Adding entry name requres argument (--entry-name)\n";
+                LOG_ERR_OPT<<"Adding entry point signature requres argument (--entry-point)\n";
                 return -1;
             }
 
-            std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
-            // if (lst.size()<2)
-            //     lst.push_back("int"); // default return type of entry point is int
-
-            std::vector< std::string >::const_iterator lit = lst.begin();
-            std::string entryName = *lit; ++lit;
-
-            // appConfig.entryNames[entryName].insert(lit, lst.end()); // лень разбираться
-            auto &retTypes = appConfig.entryNames[entryName];
-            for(; lit!=lst.end(); ++lit) retTypes.insert(*lit);
+            appConfig.entrySignatures.emplace_back(TextSignature(opt.optArg));
 
             return 0;
         }

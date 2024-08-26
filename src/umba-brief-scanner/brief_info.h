@@ -4,17 +4,15 @@
 
 #pragma once
 
+#include "signature.h"
 #include "commentUtils.h"
-
-#include "umba/regex_helpers.h"
-
+//
+// #include "umba/regex_helpers.h"
 #include "umba/string_plus.h"
-
 //
 #include "umba/tokenizer.h"
 //
 #include "umba/tokenizer/lang/cpp.h"
-
 
 
 
@@ -38,7 +36,7 @@ void makeSingleLineText( IterType b, IterType e )
     }
 }
 
-
+#if 0
 #ifdef LOG_REGEX_MATCH
 
 inline
@@ -129,6 +127,8 @@ bool findEntryPoint( const std::vector<char> &fileText, const std::map< std::str
     // return umba::regex_helpers::regexMatch(testText, re);
 
 }
+#endif
+
 
 inline
 const auto& getTokenizerBuilder()
@@ -161,7 +161,7 @@ auto makeTokenText(umba::tokenizer::payload_type tokenType, umba::iterator::Text
 
 
 inline
-bool findBriefInfo( std::string fileText, const std::map< std::string,std::set<std::string> > &entryNames, BriefInfo &info)
+bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entrySignatures, BriefInfo &info)
 {
     auto tokenizerBuilder = getTokenizerBuilder();
 
@@ -286,6 +286,16 @@ bool findBriefInfo( std::string fileText, const std::map< std::string,std::set<s
     {
         bOk = tokenizer.tokenizeFinalize(itEnd);
     }
+
+    //std::string
+    fileTextNoComments = marty_cpp::normalizeCrLfToLf(fileTextNoComments, 0);
+    std::vector<std::string> fileTextLines = marty_cpp::splitToLinesSimple(fileTextNoComments, false);
+
+    info.entryPoint = findTextSignatureInLines(fileTextLines, entrySignatures);
+
+    // fileTextNoComments
+
+    //info.entryPoint = findEntryPoint(fileText, entryNames);
 
     return info.briefFound;
 
