@@ -1,5 +1,5 @@
 /*! \file
-    \brief Информация о приложении umba-brief-scanner и его версии
+    \brief Информация о приложении umba-brief-scanner и его версии - название, описание, версия, время/дата, домашняя страница
  */
 
 std::string appFullName   = "Umba Brief Scanner";

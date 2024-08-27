@@ -1,5 +1,5 @@
 /*! \file
-    \brief Извлечение brief info
+    \brief Реализация извлечения brief info из файлов сорцов
  */
 
 #pragma once
