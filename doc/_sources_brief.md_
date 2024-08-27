@@ -16,7 +16,7 @@ Title: Brief Description for Project Sources
 
 # umba-brief-scanner
 
- - **app_config.h** - Класс, задающий конфигурацию приложения umba-brief-scanner. Настраивается опциями командной строки.
+ - **app_config.h** - Класс, задающий параметры работы приложения umba-brief-scanner. Настраивается опциями командной строки.
  - **app_ver_config.h** - Информация о приложении umba-brief-scanner и его версии - название, описание, версия, время/дата, домашняя страница
  - **arg_parser.h** - Разбор аргументов командной строки
  - **brief_info.h** - Реализация извлечения brief info из файлов сорцов
