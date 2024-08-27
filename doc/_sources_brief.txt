@@ -11,8 +11,8 @@ test00.cpp               -
 test01.cpp               - Перетащил всю требуху из другого проекта, лишнее отрежу потом.
 test02.cpp               - Простой тест регулярок по поиску точки входа и brief'а.
 test03.cpp               - Тест arithmetic_strong_typedef - просто присунул тут по случаю.
-umba-brief-scanner.cpp   - Утилита umba-brief-scanner - сканирование исходных текстов на C++ и получение
-                           списка описаний.
+umba-brief-scanner.cpp   - Утилита umba-brief-scanner - сканирование исходных текстов на C/C++ и получение
+                           списка кратких описаний файлов исходных текстов.
 
 
 # umba-brief-scanner
