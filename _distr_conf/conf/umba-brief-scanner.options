@@ -47,6 +47,11 @@
 -X=*.*xml^
 -X=*.yml^
 -X=*.sln^
+-X=*.pro^
+-X=*.am^
+-X=*.svd^
+-X=*.lds^
+-X=*/dummy.cpp^
 
 -X=*.exe^
 -X=*.obj^
