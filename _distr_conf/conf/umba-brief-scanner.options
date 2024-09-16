@@ -30,6 +30,15 @@
 -X=*/.?*/*
 -X=*/_prj_msvc2019/*
 -X=*/doc/*
+-X=*/doc.dox/*
+-X=*/doc.doxy/*
+-X=*/doc.doxygen/*
+-X=*/.dox/*
+-X=*/.doxy/*
+-X=*/.doxygen/*
+-X=*/dox/*
+-X=*/doxy/*
+-X=*/doxygen/*
 #-X=*/tests/*
 
 -X=*.git/*^
