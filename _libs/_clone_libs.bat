@@ -30,3 +30,4 @@ set PREFIX=git@%BASE%:%ACC%
 @git clone --recurse-submodules %PREFIX%/marty_utf.git               %~dp0\marty_utf
 @git clone --recurse-submodules %PREFIX%/umba_mm_mod_sfmt.git        %~dp0\sfmt
 @git clone --recurse-submodules %PREFIX%/umba_mm_mod_umba.git        %~dp0\umba
+@git clone --recurse-submodules %PREFIX%/umba_tokenizer.git          %~dp0\umba_tokenizer
