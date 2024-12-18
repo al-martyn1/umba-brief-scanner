@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
 
     if (umba::isDebuggerPresent())
     {
-        std::string cwd = umba::filesys::getCurrentDirectory<std::string>();
+        std::string cwd = umba::filesys::getCurrentDirectory();
         std::cout << "Working Dir: " << cwd << "\n";
         std::string rootPath;
 

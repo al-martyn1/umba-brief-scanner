@@ -35,6 +35,7 @@ add_subdirectory(${LIB_ROOT}/marty_cpp)
 # add_subdirectory(${LIB_ROOT}/pugixml)
 add_subdirectory(${LIB_ROOT}/sfmt)
 add_subdirectory(${LIB_ROOT}/umba)
+add_subdirectory(${LIB_ROOT}/umba_tokenizer)
 # add_subdirectory(${LIB_ROOT}/yaml-cpp)
 
 
@@ -91,7 +92,7 @@ if(WIN32) # Всё нормально, это про таргет
     list(APPEND PLATFORM_LIBS ws2_32 iphlpapi shell32)
 endif()
 
-set(COMMON_LIBS encoding::encoding marty_cpp::marty_cpp sfmt::sfmt umba::umba)
+set(COMMON_LIBS encoding::encoding marty_cpp::marty_cpp sfmt::sfmt umba::umba umba_tokenizer::umba_tokenizer)
 #set(PUGIXML_LIB pugixml::pugixml marty_pugixml::marty_pugixml)
 set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
 

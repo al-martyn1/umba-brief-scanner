@@ -405,7 +405,7 @@ struct AppConfig
 
 
         if (appConfig.scanPaths.empty())
-            appConfig.scanPaths.push_back(umba::filesys::getCurrentDirectory<std::string>());
+            appConfig.scanPaths.push_back(umba::filesys::getCurrentDirectory());
 
         for(auto includeFileMask: includeFilesMaskList)
         {

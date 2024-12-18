@@ -28,7 +28,7 @@ std::string makeAbsPath( std::string p )
     std::string basePath;
 
     if (optFiles.empty())
-        basePath = umba::filesys::getCurrentDirectory<std::string>();
+        basePath = umba::filesys::getCurrentDirectory();
     else
         basePath = umba::filename::getPath(optFiles.top());
 

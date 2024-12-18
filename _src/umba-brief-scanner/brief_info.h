@@ -73,7 +73,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
     using InputIteratorType    = typename tokenizer_type::iterator_type;
     using tokenizer_char_type  = typename tokenizer_type::value_type;
     using messages_string_type = typename tokenizer_type::messages_string_type;
-    using token_parsed_data    = typename tokenizer_type::token_parsed_data;
+    using token_parsed_data    = typename tokenizer_type::token_parsed_data_type;
     using payload_type         = umba::tokenizer::payload_type;
 
     std::string fileTextNoComments; // Потом будет использоваться для поиска Entry Point
