@@ -23,6 +23,6 @@
 
 copy /Y "%OUTROOTPATH%\Release\%SLN%.exe"         "%UMBA_TOOLS%\bin\"
 
-@if exist _distr_conf @xcopy /Y /S /E /I /F /R "%~dp0\_distr_conf\conf\*"               "%UMBA_TOOLS%\conf"
+@if exist conf @xcopy /Y /S /E /I /F /R "%~dp0\conf\*"  "%UMBA_TOOLS%\conf"
 
 umba-brief-scanner --help > help.txt
