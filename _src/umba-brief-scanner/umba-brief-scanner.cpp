@@ -3,10 +3,12 @@
  */
 
 #include "umba/umba.h"
+//
 #include "umba/simple_formatter.h"
 #include "umba/char_writers.h"
 
 #include "umba/debug_helpers.h"
+#include "umba/shellapi.h"
 
 #include <iostream>
 #include <iomanip>
@@ -115,48 +117,50 @@ int main(int argc, char* argv[])
 
     if (umba::isDebuggerPresent())
     {
-        std::string cwd = umba::filesys::getCurrentDirectory();
-        std::cout << "Working Dir: " << cwd << "\n";
-        std::string rootPath;
+        std::string cwd;
+        std::string rootPath = umba::shellapi::getDebugAppRootFolder(&cwd);
+        std::cout << "App Root Path: " << rootPath << "\n";
+        std::cout << "Working Dir  : " << cwd << "\n";
 
+        #if 1
         #if (defined(WIN32) || defined(_WIN32))
 
 
-            if (winhelpers::isProcessHasParentOneOf({"devenv"}))
-            {
-                // По умолчанию студия задаёт текущим каталогом На  уровень выше от того, где лежит бинарник
-                rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\"));
-                //argsParser.args.push_back("--batch-output-root=D:/temp/mdpp-test");
-            }
-            else if (winhelpers::isProcessHasParentOneOf({"code"}))
-            {
-                // По умолчанию VSCode задаёт текущим каталогом тот, где лежит бинарник
-                rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\..\\"));
-                //argsParser.args.push_back("--batch-output-root=C:/work/temp/mdpp-test");
-
-            }
-            else
-            {
-                //rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\"));
-            }
-
-            //#endif
-
-            if (!rootPath.empty())
-                rootPath = umba::filename::appendPathSepCopy(rootPath);
-
-            argsParser.args.clear();
-
-            argsParser.args.push_back("--verbose=detailed");
-
-            // argsParser.args.push_back("--batch-exclude-dir=_libs,libs,_lib,lib,tests,test,rc,_generators,_distr_conf,src,.msvc2019,boost,icons");
-            argsParser.args.push_back("@" + rootPath + "\\umba-brief-scanner.rsp");
-            argsParser.args.push_back("--overwrite");
-            //argsParser.args.push_back("--doxyfication=always");
-            argsParser.args.push_back("--scan=" + rootPath + "/src");
-            //argsParser.args.push_back("--scan=" + rootPath + "/_libs");
-            argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
-            //argsParser.args.push_back("tests/doxy");
+            // if (winhelpers::isProcessHasParentOneOf({"devenv"}))
+            // {
+            //     // По умолчанию студия задаёт текущим каталогом На  уровень выше от того, где лежит бинарник
+            //     rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\"));
+            //     //argsParser.args.push_back("--batch-output-root=D:/temp/mdpp-test");
+            // }
+            // else if (winhelpers::isProcessHasParentOneOf({"code"}))
+            // {
+            //     // По умолчанию VSCode задаёт текущим каталогом тот, где лежит бинарник
+            //     rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\..\\"));
+            //     //argsParser.args.push_back("--batch-output-root=C:/work/temp/mdpp-test");
+            //  
+            // }
+            // else
+            // {
+            //     //rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\"));
+            // }
+            //  
+            // //#endif
+            //  
+            // if (!rootPath.empty())
+            //     rootPath = umba::filename::appendPathSepCopy(rootPath);
+            //  
+            // argsParser.args.clear();
+            //  
+            // argsParser.args.push_back("--verbose=detailed");
+            //  
+            // // argsParser.args.push_back("--batch-exclude-dir=_libs,libs,_lib,lib,tests,test,rc,_generators,_distr_conf,src,.msvc2019,boost,icons");
+            // argsParser.args.push_back("@" + rootPath + "\\umba-brief-scanner.rsp");
+            // argsParser.args.push_back("--overwrite");
+            // //argsParser.args.push_back("--doxyfication=always");
+            // argsParser.args.push_back("--scan=" + rootPath + "/src");
+            // //argsParser.args.push_back("--scan=" + rootPath + "/_libs");
+            // argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
+            // //argsParser.args.push_back("tests/doxy");
 
 
             // argsParser.args.clear();
@@ -166,7 +170,29 @@ int main(int argc, char* argv[])
             // argsParser.args.push_back(umba::string_plus::make_string(""));
             // argsParser.args.push_back(umba::string_plus::make_string(""));
 
+
+
+            argsParser.args.clear();
+
+            argsParser.args.push_back("--overwrite");
+            argsParser.args.push_back("@" + rootPath + "umba-brief-scanner.rsp");
+            argsParser.args.push_back("--scan=" + rootPath + "/src");
+            argsParser.args.push_back("--scan=" + rootPath + "/_src");
+            argsParser.args.push_back("--scan=" + rootPath + "/examples");
+            argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
+
+
+// @if exist "%~dp0..\umba-brief-scanner.rsp" @set RSP="@%~dp0..\umba-brief-scanner.rsp"
+// @rem echo RSP="@%RSP%"
+// umba-brief-scanner --where
+// umba-brief-scanner --overwrite "%RSP%"        "--scan=%~dp0\../src" "--scan=%~dp0\../_src" "--scan=%~dp0\../examples" "%~dp0\../doc/_sources_brief.txt"
+// umba-brief-scanner --overwrite "%RSP%" --html "--scan=%~dp0\../src" "--scan=%~dp0\../_src" "--scan=%~dp0\../examples" "%~dp0\../doc/_sources_brief.html"
+// umba-brief-scanner --overwrite "%RSP%" --md   "--scan=%~dp0\../src" "--scan=%~dp0\../_src" "--scan=%~dp0\../examples" "%~dp0\../doc/_sources_brief.md_"
+
+
         #endif
+        #endif
+
     }
 
 
