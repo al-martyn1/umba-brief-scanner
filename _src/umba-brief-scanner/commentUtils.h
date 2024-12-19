@@ -81,6 +81,17 @@ std::string prepareMultilineCommentBannerText(std::string commentText)
 
     std::vector<std::string> commentLines = marty_cpp::splitToLinesSimple(commentText, false /* addEmptyLineAfterLastLf */);
 
+    auto simpleTrim = [](const std::string &str)
+    {
+        return marty_cpp::simple_trim(str, [&](char ch) { return ch==' '; } );
+    };
+
+    // if (!commentLines.empty() && simpleTrim(commentLines.back()).empty())
+    //     commentLines.pop_back(); // удаляем последнюю пустую строку
+    //  
+    // if (!commentLines.empty() && simpleTrim(commentLines.front()).empty())
+    //     commentLines.erase(commentLines.begin()); // удаляем первую пустую строку
+
     {
         std::vector<std::string> tmp; tmp.reserve(commentLines.size());
         for(const auto &line: commentLines)
@@ -103,14 +114,31 @@ std::string prepareMultilineCommentBannerText(std::string commentText)
     char lastCh  = 0;
     bool sameFirstCh = true;
     bool sameLastCh  = true;
+    std::size_t lineNo = 0; // (std::size_t)-1;
 
     for(auto line : commentLines)
     {
-        line = marty_cpp::simple_trim(line, [&](char ch) { return ch==' '; } );
+        // Первую строку игнорируем - там может быть начало многострочного коментария, 
+        // и когда символы коментария обрезаются, там может не остаться символа '*', 
+        // который в остальных строках - баннерный
+        if (!lineNo++) 
+        {
+            continue;
+        }
+
+        if (lineNo>=commentLines.size()) // Последнюю строку игнорируем аналогично
+        {
+            continue;
+        }
+
+        //line = marty_cpp::simple_trim(line, [&](char ch) { return ch==' '; } );
+        line = simpleTrim(line);
+
         if (line.empty())
         {
             sameFirstCh = false;
             sameLastCh  = false;
+            continue;
             //return marty_cpp::mergeLines(commentLines, marty_cpp::ELinefeedType::lf);
         }
 
@@ -128,6 +156,7 @@ std::string prepareMultilineCommentBannerText(std::string commentText)
         {
             sameLastCh = false;
         }
+
 
         if (!sameFirstCh && !sameLastCh) // и первые символы строк, и последние - различаются, это не баннер
         {
@@ -167,7 +196,7 @@ std::string prepareMultilineCommentBannerText(std::string commentText)
         if (sameFirstCh)
         {
             line = marty_cpp::simple_ltrim(line, [&](char ch) { return ch==' '; } );
-            if (!line.empty())
+            if (!line.empty() && isBannerChar(line.front()))
             {
                 line.erase(0, 1);
             }
@@ -176,7 +205,7 @@ std::string prepareMultilineCommentBannerText(std::string commentText)
         if (sameLastCh)
         {
             line = marty_cpp::simple_rtrim(line, [&](char ch) { return ch==' '; } );
-            if (!line.empty())
+            if (!line.empty() && isBannerChar(line.back()))
             {
                 line.erase(line.size()-1, 1);
             }
