@@ -51,6 +51,8 @@ int operator()( const std::string                               &a           //!
 {
     //using namespace marty::clang::helpers;
 
+    UMBA_USED(fBuiltin);
+
     std::string dppof = "Don't parse predefined options from ";
 
     if (opt.isOption())
@@ -547,8 +549,8 @@ int operator()( const std::string                               &a           //!
                 //printNameVersion();
                 if (!argsParser.quet)
                 {
-                    umba::cli_tool_helpers::printBuildDateTime(umbaLogStreamMsg);
-                    umba::cli_tool_helpers::printCommitHash(umbaLogStreamMsg);
+                    // umba::cli_tool_helpers::printBuildDateTime(umbaLogStreamMsg);
+                    // umba::cli_tool_helpers::printCommitHash(umbaLogStreamMsg);
                     std::cout<<"\n";
                 //printHelp();
                 }

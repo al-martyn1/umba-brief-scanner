@@ -18,6 +18,8 @@
 struct BriefInfo
 {
     std::string    infoText;
+    std::string    fileName;
+    std::string    encodingName;
     bool           entryPoint   = false;
 
     bool           briefFound   = false;

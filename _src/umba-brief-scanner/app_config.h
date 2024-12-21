@@ -181,7 +181,7 @@ struct AppConfig
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SplitGroups)
 
 
-    void setOptQuet( bool q ) { setVerbosityLevel(VerbosityLevel::quet);  }
+    void setOptQuet(bool q) { UMBA_USED(q); setVerbosityLevel(VerbosityLevel::quet); }
     //bool getOptQuet( )  const { return testVerbosity(VerbosityLevel::quet); }
 
     bool getOptShowConfig( )  const { return testVerbosity(VerbosityLevel::config); }
@@ -359,6 +359,8 @@ struct AppConfig
 
     AppConfig getAdjustedConfig( const umba::program_location::ProgramLocation<std::string> &programLocation ) const
     {
+        UMBA_USED(programLocation);
+
         AppConfig appConfig;
 
         //appConfig.macros             = macros;

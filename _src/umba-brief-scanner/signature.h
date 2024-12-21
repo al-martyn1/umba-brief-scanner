@@ -10,6 +10,7 @@
 
 
 //----------------------------------------------------------------------------
+#include "umba/warnings/push_disable_spectre_mitigation.h"
 inline
 std::string normalizeSignatureLine(const std::string &str)
 {
@@ -24,6 +25,7 @@ std::string normalizeSignatureLine(const std::string &str)
 
     return res;
 }
+#include "umba/warnings/pop.h"
 
 //----------------------------------------------------------------------------
 
@@ -93,6 +95,7 @@ struct TextSignature
 
 
 //----------------------------------------------------------------------------
+#include "umba/warnings/push_disable_spectre_mitigation.h"
 inline
 bool findTextSignatureInLines(const std::vector<std::string> &lines, const TextSignature &ts )
                                     // , std::size_t &foundSignatureNumLines, std::size_t startLine /* =(std::size_t)-1 */ )
@@ -155,6 +158,7 @@ bool findTextSignatureInLines(const std::vector<std::string> &lines, const TextS
 
     return false; // (std::size_t)-1;
 }
+#include "umba/warnings/pop.h"
 
 //----------------------------------------------------------------------------
 inline

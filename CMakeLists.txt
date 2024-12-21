@@ -101,7 +101,7 @@ set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
 
 
 add_executable(umba-brief-scanner "${SRC_ROOT}/umba-brief-scanner/umba-brief-scanner.cpp" "${headers}")
-umba_add_target_options(umba-brief-scanner "BIGOBJ" "CONSOLE" "UTF8")
+umba_add_target_options(umba-brief-scanner "BIGOBJ" "CONSOLE" "UTF8" "PEDANTIC" "WERROR") # "PEDANTIC" "WERROR"
 target_link_libraries(umba-brief-scanner PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 

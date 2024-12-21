@@ -9,6 +9,7 @@
 
 #include "umba/debug_helpers.h"
 #include "umba/shellapi.h"
+#include "umba/app_main.h"
 
 #include <iostream>
 #include <iomanip>
@@ -93,7 +94,29 @@ std::string htmlEscape(const std::string &s)
 }
 
 
-int main(int argc, char* argv[])
+// int main(int argc, char* argv[])
+int unsafeMain(int argc, char* argv[]);
+
+UMBA_APP_MAIN()
+{
+    try
+    {
+        auto res = unsafeMain(argc, argv);
+        return res;
+    }
+    catch(const std::exception &e)
+    {
+        LOG_ERR_OPT << "Exception: " << e.what() << "\n";
+    }
+    catch(...)
+    {
+        LOG_ERR_OPT << "Exception: " << "unknown exception" << "\n";
+    }
+
+    return 66;
+}
+
+int unsafeMain(int argc, char* argv[])
 {
     umba::time_service::init();
     umba::time_service::start();
@@ -173,12 +196,23 @@ int main(int argc, char* argv[])
 
 
             argsParser.args.clear();
+            // argsParser.args.push_back("--help");
 
             argsParser.args.push_back("--overwrite");
+
+            #if 0
             argsParser.args.push_back("@" + rootPath + "umba-brief-scanner.rsp");
             argsParser.args.push_back("--scan=" + rootPath + "/src");
             argsParser.args.push_back("--scan=" + rootPath + "/_src");
             argsParser.args.push_back("--scan=" + rootPath + "/examples");
+            argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
+            #endif
+
+            // F:\_github\mca\roboware
+            // F:\_github\umba-tools\umba-brief-scanner
+            rootPath += "/../../mca/roboware";
+            rootPath = umba::filename::makeCanonical(rootPath);
+            argsParser.args.push_back("@" + rootPath + "/umba-brief-scanner.rsp");
             argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
 
 
@@ -433,14 +467,43 @@ int main(int argc, char* argv[])
         std::string filedataStrUtf8 = pEncApi->convert( filedataStr, cpId, encoding::EncodingsApi::cpid_UTF8 );
         //filedata = std::vector<char>(filedataStrUtf8.begin(), filedataStrUtf8.end());
 
-        filedataStr = marty_cpp::normalizeCrLfToLf(filedataStr);
+        //filedataStr = marty_cpp::normalizeCrLfToLf(filedataStr);
+        filedataStr = marty_cpp::normalizeCrLfToLf(filedataStrUtf8);
 
-        BriefInfo  info;
-        bool bFound = findBriefInfo( filedataStr, appConfig.entrySignatures, info );
+        bool bFound = false;
         UMBA_USED(bFound);
+        BriefInfo  info;
+        info.fileName       = umba::filename::makeCanonical(filename);
+        info.encodingName   = detectRes;
+        // std::string curFile = info.fileName;
+        // int lineNo = 1;
 
-        auto canonicalName = umba::filename::makeCanonical(filename);
-        briefInfo[canonicalName] = info;
+#define UMBA_BRIEF_SCANNER_LOG_EXCEPTION(where, what, ma_briefInfo) \
+        do{                                                         \
+            std::string curFile = ma_briefInfo.fileName;            \
+            std::size_t lineNo = 1u;                                \
+            LOG_ERR << where << ": " << what << "\n";               \
+            LOG_ERR << "File encoding: " << ma_briefInfo.encodingName << "\n"; \
+        }                                                           \
+        while(0)
+
+        try
+        {
+            bFound = findBriefInfo( filedataStr, appConfig.entrySignatures, info );
+        }
+        catch(const std::exception &e)
+        {
+            // UMBA_DEBUGBREAK();
+            UMBA_BRIEF_SCANNER_LOG_EXCEPTION("Exception in findBriefInfo", e.what(), info );
+            continue;
+        }
+        catch(...)
+        {
+            UMBA_BRIEF_SCANNER_LOG_EXCEPTION("Exception in findBriefInfo", "unknown error", info );
+            continue;
+        }
+
+        briefInfo[info.fileName] = info;
 
         if (appConfig.testVerbosity(VerbosityLevel::detailed))
         {
@@ -636,27 +699,72 @@ int main(int argc, char* argv[])
                     }
                     else
                     {
-                        // SymbolLenCalculatorEncodingUtf8
-                        auto formattedParas = umba::text_utils::formatTextParas<marty_utf::SymbolLenCalculatorEncodingUtf8>( infoText, appConfig.descriptionWidth
-                                                                                                                           , umba::text_utils::TextAlignment::left
-                                                                                                                           , marty_utf::SymbolLenCalculatorEncodingUtf8()
-                                                                                                                           );
+                        std::string formattedParas;
+                        std::string textWithIndent;
 
-                        // Не будем париться - первая строка может свисать справа, ну и фик с ним
+                        try
+                        {
+                            formattedParas = umba::text_utils::formatTextParas<marty_utf::SymbolLenCalculatorEncodingUtf8>( infoText, appConfig.descriptionWidth
+                                                                                                                          , umba::text_utils::TextAlignment::left
+                                                                                                                          , marty_utf::SymbolLenCalculatorEncodingUtf8()
+                                                                                                                          );
+                        }
+                        catch(const std::exception &e)
+                        {
+                            UMBA_BRIEF_SCANNER_LOG_EXCEPTION("Exception in formatTextParas", e.what(), info );
+                            continue;
+                        }
+                        catch(...)
+                        {
+                            UMBA_BRIEF_SCANNER_LOG_EXCEPTION("Exception in formatTextParas", "unknown error", info );
+                            continue;
+                        }
 
-                        //TODO: !!! Не корректно определяется длина строк в многобайтной кодировке
-                        //          Мой поток вывода (umba::SimpleFormatter) - также некорректно работает с многобайтной кодировкой,
-                        //          но это обычно не проблема, если имена файлов  исходников используют только английский алфавит.
-                        //          При форматировании же текста кодировка зависит от кодировки исходника - может быть как однобайтной,
-                        //          так и многобайтной (UTF-8, например, и в линуксе это обычно уже стандарт)
-                        //          Поэтому, если где-то используются русскоязычные описания и используется форматирование, то лучше
-                        //          сделать его побольше - не 80, а 120 символов шириной, например.
 
-                        auto textWithIndent = umba::text_utils::textAddIndent( formattedParas, std::string(fnw+3, ' '), std::string() );
+                        try
+                        {
+                            // Не будем париться - первая строка может свисать справа, ну и фик с ним
+    
+                            //TODO: !!! Не корректно определяется длина строк в многобайтной кодировке
+                            //          Мой поток вывода (umba::SimpleFormatter) - также некорректно работает с многобайтной кодировкой,
+                            //          но это обычно не проблема, если имена файлов  исходников используют только английский алфавит.
+                            //          При форматировании же текста кодировка зависит от кодировки исходника - может быть как однобайтной,
+                            //          так и многобайтной (UTF-8, например, и в линуксе это обычно уже стандарт)
+                            //          Поэтому, если где-то используются русскоязычные описания и используется форматирование, то лучше
+                            //          сделать его побольше - не 80, а 120 символов шириной, например.
+    
+                            textWithIndent = umba::text_utils::textAddIndent( formattedParas, std::string(fnw+3u, ' '), std::string() );
+                        }
+                        catch(const std::exception &e)
+                        {
+                            UMBA_BRIEF_SCANNER_LOG_EXCEPTION("Exception in textAddIndent", e.what(), info );
+                            continue;
+                        }
+                        catch(...)
+                        {
+                            UMBA_BRIEF_SCANNER_LOG_EXCEPTION("Exception in textAddIndent", "unknown error", info );
+                            continue;
+                        }
 
-                        uinfoStream << width(fnw) << left << relName << " - "
-                                    << textWithIndent
-                                    << "\n";
+
+                        try
+                        {
+                            uinfoStream << width(fnw) << left << relName << " - "
+                                        << textWithIndent
+                                        << "\n";
+                        }
+                        catch(const std::exception &e)
+                        {
+                            UMBA_BRIEF_SCANNER_LOG_EXCEPTION("Exception in uinfoStream", e.what(), info );
+                            continue;
+                        }
+                        catch(...)
+                        {
+                            UMBA_BRIEF_SCANNER_LOG_EXCEPTION("Exception in uinfoStream", "unknown error", info );
+                            continue;
+                        }
+
+
                     }
 
                     // descriptionWidth
