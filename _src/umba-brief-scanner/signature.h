@@ -119,7 +119,7 @@ bool findTextSignatureInLines(const std::vector<std::string> &lines, const TextS
     auto makeSingleTestLineFromDeque = [&]()
     {
         std::string res;
-        for(const auto l: curTestLinesQue)
+        for(const auto &l: curTestLinesQue)
             res.append(l);
         return res;
     };
