@@ -369,7 +369,7 @@ struct AppConfig
         s << "    " << getOptNameString(ofSkipUndocumented)    << ": " << getOptValAsString(optionFlags&ofSkipUndocumented) << "\n";
         s << "    " << getOptNameString(ofRemovePath)          << ": " << getOptValAsString(optionFlags&ofRemovePath) << "\n";
         s << "    " << getOptNameString(ofSplitGroups)         << ": " << getOptValAsString(optionFlags&ofSplitGroups) << "\n";
-        s << "    " << getOptNameString(oftodo)                << ": " << getOptValAsString(optionFlags&ofTodo) << "\n";
+        s << "    " << getOptNameString(ofTodo)                << ": " << getOptValAsString(optionFlags&ofTodo) << "\n";
 
         s << "\n";
 

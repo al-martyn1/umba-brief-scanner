@@ -395,6 +395,113 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
+        else if ( opt.setParam("PATH", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-output-path") || opt.isOption("todo-output-path")
+               || opt.setDescription("Set output path to write notes/todo-list files."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-output-path)\n";
+                return -1;
+            }
+
+            if (!appConfig.setNotesOutputPath(strVal))
+            {
+                LOG_ERR_OPT<<"Setting output path for writting notes/todo-list files failed (--notes-output-path)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        else if ( opt.setParam("EXT", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-filename-ext") || opt.isOption("todo-filename-ext")
+               || opt.setDescription("Set extention for notes/todo-list output files."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-filename-ext)\n";
+                return -1;
+            }
+
+            if (!appConfig.setNotesFileExt(strVal))
+            {
+                LOG_ERR_OPT<<"Setting extention for notes/todo-list files failed (--notes-output-ext)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        else if ( opt.setParam("TYPE:NAME", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-filename") || opt.isOption("todo-filename")
+               || opt.setDescription("Set file name for notes/todo-list output files for specified note type."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-filename)\n";
+                return -1;
+            }
+
+            if (!appConfig.addNoteFilename(strVal))
+            {
+                LOG_ERR_OPT<<"Setting file name for notes/todo-list output files for specified type failed (--notes-filename)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        else if ( opt.setParam("TYPE:MARKER", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-marker") || opt.isOption("todo-marker")
+               || opt.setDescription("Set note marker for specified note type."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-marker)\n";
+                return -1;
+            }
+
+            if (!appConfig.addNoteMarker(strVal))
+            {
+                LOG_ERR_OPT<<"Setting note marker failed (--notes-marker)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        else if ( opt.setParam("STRIP", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-strip") || opt.isOption("todo-strip")
+               || opt.setDescription("Add note strip prefix (for all note types)."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-strip)\n";
+                return -1;
+            }
+
+            if (!appConfig.addNoteStripPrefix(strVal))
+            {
+                LOG_ERR_OPT<<"Adding note strip prefix failed (--notes-strip)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+
+
         // else if ( opt.setParam("NAME")
         //        || opt.isOption("entry-name") || opt.isOption('E')
         //        || opt.setDescription("Add name to lookup as entry point"))
