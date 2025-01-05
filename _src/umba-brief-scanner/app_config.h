@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
 
 //
 #include "umba/program_location.h"
@@ -19,6 +22,8 @@
 
 #include "signature.h"
 
+//
+#include "notes.h"
 
 //----------------------------------------------------------------------------
 
@@ -50,6 +55,8 @@ UMBA_ENUM_CLASS_IMPLEMENT_RELATION_OPERATORS(VerbosityLevel)
 
 
 
+
+
 //----------------------------------------------------------------------------
 struct AppConfig
 {
@@ -65,6 +72,8 @@ struct AppConfig
 
     static const unsigned                    ofHtml                  = 0x1000; // Print output in html format
     static const unsigned                    ofMd                    = 0x2000; // Print output in md format, overrides html option
+
+    static const unsigned                    ofTodo                  = 0x4000; // Scan for todo
 
 
     //------------------------------
@@ -107,6 +116,98 @@ struct AppConfig
 
     DoxificationMode                         doxificationMode = DoxificationMode::noDoxyfication;
 
+    std::unordered_map<std::string, NoteConfig>  noteConfigs; // --todo-filename, --todo-marker
+    std::unordered_set<std::string>          notesStrip; // --todo-strip
+    std::string                              notesExt; // = "md"; // --todo-ext
+    std::string                              notesOutputPath; // --todo-output-path
+
+    //------------------------------
+
+
+    //------------------------------
+    bool addNoteMarker(std::string noteType, std::string noteMarker)
+    {
+        if (noteType.empty())
+            return false;
+
+        if (noteMarker.empty())
+            return false;
+
+        umba::string::tolower(noteType);
+        umba::string::tolower(noteMarker);
+        noteConfigs[noteType].markers.insert(noteMarker);
+
+        return true;
+    }
+
+    bool addNoteMarker(const std::string &noteTypeMarkerPair)
+    {
+        std::string f;
+        std::string s;
+        if (!umba::string_plus::split_to_pair(noteTypeMarkerPair, f, s, ':'))
+            return false;
+
+        return addNoteMarker(f, s);
+    }
+
+    bool addNoteFilename(std::string noteType, std::string noteFilename)
+    {
+        if (noteType.empty())
+            return false;
+
+        if (noteFilename.empty())
+            return false;
+
+        umba::string::tolower(noteType);
+        noteConfigs[noteType].fileName = noteFilename;
+
+        return true;
+    }
+
+    bool addNoteFilename(const std::string &noteTypeFilenamePair)
+    {
+        std::string f;
+        std::string s;
+        if (!umba::string_plus::split_to_pair(noteTypeFilenamePair, f, s, ':'))
+            return false;
+
+        return addNoteFilename(f, s);
+    }
+
+    bool addNoteStripPrefix(std::string noteStrip)
+    {
+        if (noteStrip.empty())
+            return false;
+
+        umba::string::tolower(noteStrip);
+        notesStrip.insert(noteStrip);
+        return true;
+    }
+
+    bool setNotesOutputPath(const std::string &p)
+    {
+        notesOutputPath = p;
+        return true;
+    }
+
+    bool setNotesFileExt(const std::string &e)
+    {
+        notesExt = e;
+        return true;
+    }
+
+
+// struct NoteConfig
+// {
+//     std::string                        fileName; // --todo-filename
+//     std::unordered_set<std::string>    markers ; // в нижнем регистре  --todo-marker
+//  
+//     // Text must be ltrimmed
+//     std::string::size_type findMarker(std::string text, std::string *pFoundMarker=0)
+
+
+
+    //------------------------------
 
     //------------------------------
 
@@ -163,6 +264,7 @@ struct AppConfig
             case ofSkipUndocumented      : return "Skip undocumented";
             case ofRemovePath            : return "Remove path from file names in output";
             case ofSplitGroups           : return "Split to groups";
+            case ofTodo                  : return "Scan for TODOs";
 
             default                      : return "Multiple flags taken!!!";
         }
@@ -179,6 +281,7 @@ struct AppConfig
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SkipUndocumented)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(RemovePath)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SplitGroups)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Todo)
 
 
     void setOptQuet(bool q) { UMBA_USED(q); setVerbosityLevel(VerbosityLevel::quet); }
@@ -266,7 +369,7 @@ struct AppConfig
         s << "    " << getOptNameString(ofSkipUndocumented)    << ": " << getOptValAsString(optionFlags&ofSkipUndocumented) << "\n";
         s << "    " << getOptNameString(ofRemovePath)          << ": " << getOptValAsString(optionFlags&ofRemovePath) << "\n";
         s << "    " << getOptNameString(ofSplitGroups)         << ": " << getOptValAsString(optionFlags&ofSplitGroups) << "\n";
-
+        s << "    " << getOptNameString(oftodo)                << ": " << getOptValAsString(optionFlags&ofTodo) << "\n";
 
         s << "\n";
 
@@ -377,6 +480,12 @@ struct AppConfig
 
         appConfig.filenameWidth      = filenameWidth   ;
         appConfig.descriptionWidth   = descriptionWidth;
+
+        appConfig.noteConfigs        = noteConfigs    ;
+        appConfig.notesStrip         = notesStrip     ;
+        appConfig.notesExt           = notesExt       ;
+        appConfig.notesOutputPath    = notesOutputPath;
+
 
         if (appConfig.filenameWidth==0)
         {
