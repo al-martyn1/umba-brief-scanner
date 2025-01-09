@@ -500,6 +500,136 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
+        else if ( opt.setParam("TYPE1[,TYPE2...]", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-add-check") || opt.isOption("todo-add-check")
+               || opt.setDescription("Force set check marks in output for notes of TYPE1, TYPE2 etc. "
+                                     "`reset`, `clr`, `clear` - set option OFF for all types. "
+                                     "`all`, `set` - set option ON for all types."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-add-check)\n";
+                return -1;
+            }
+
+            if (!appConfig.setNotesAddCheck(strVal))
+            {
+                LOG_ERR_OPT<<"Setting notes add-check option failed (--notes-add-check)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        else if ( opt.setParam("TYPE1[,TYPE2...]", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-keep-check") || opt.isOption("todo-keep-check")
+               || opt.setDescription("Keep extracted check marks in output for notes of TYPE1, TYPE2 etc. "
+                                     "`reset`, `clr`, `clear` - set option OFF for all types. "
+                                     "`all`, `set` - set option ON for all types."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-keep-check)\n";
+                return -1;
+            }
+
+            if (!appConfig.setNotesKeepCheck(strVal))
+            {
+                LOG_ERR_OPT<<"Setting notes keep-check option failed (--notes-keep-check)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        else if ( opt.setParam("TYPE:TITLE", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-single-output-title") || opt.isOption("todo-single-output-title")
+               || opt.setDescription("Set note title for specified note type when wrutting all notes to single output."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-single-output-title)\n";
+                return -1;
+            }
+
+            if (!appConfig.setNoteTitle(strVal))
+            {
+                LOG_ERR_OPT<<"Setting note title failed (--notes-single-output-title)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        else if ( opt.setParam("FMT", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-single-output-title-format") || opt.isOption("todo-single-output-title-format")
+               || opt.setDescription("Set note title format."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-single-output-title-format)\n";
+                return -1;
+            }
+
+            if (!appConfig.setNotesTitleFormat(strVal))
+            {
+                LOG_ERR_OPT<<"Setting note title format failed (--notes-single-output-title-format)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        else if ( opt.setParam("FMT", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-source-info-format") || opt.isOption("todo-source-info-format")
+               || opt.setDescription("Set note source info format."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-source-info-format)\n";
+                return -1;
+            }
+
+            if (!appConfig.setNotesSrcInfoFormat(strVal))
+            {
+                LOG_ERR_OPT<<"Setting note source info format failed (--notes-source-info-format)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
+        else if ( opt.setParam("TYPE", umba::command_line::OptionType::optString)
+               || opt.isOption("notes-single-output") || opt.isOption("todo-single-output")
+               || opt.setDescription("Set notes single output type."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue( strVal, errMsg ) )
+            {
+                LOG_ERR_OPT<<errMsg<<" (--notes-single-output)\n";
+                return -1;
+            }
+
+            if (!appConfig.setNotesSingleOutputType(strVal))
+            {
+                LOG_ERR_OPT<<"Setting notes single output failed (--notes-single-output)\n";
+                return -1;
+            }
+
+            return 0;
+        }
+
 
 
         // else if ( opt.setParam("NAME")

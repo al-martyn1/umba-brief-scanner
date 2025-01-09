@@ -24,6 +24,7 @@
 
 //
 #include "notes.h"
+#include "utils.h"
 
 //----------------------------------------------------------------------------
 
@@ -116,15 +117,106 @@ struct AppConfig
 
     DoxificationMode                         doxificationMode = DoxificationMode::noDoxyfication;
 
-    std::unordered_map<std::string, NoteConfig>  noteConfigs; // --todo-filename, --todo-marker
-    std::unordered_set<std::string>          notesStrip; // --todo-strip
-    std::string                              notesExt; // = "md"; // --todo-ext
-    std::string                              notesOutputPath; // --todo-output-path
+    NotesConfig                              notesConfig;
 
     //------------------------------
 
 
     //------------------------------
+    bool setNotesAddCheck(std::string opt)
+    {
+        umba::string::tolower(opt);
+        auto typeList = splitAndTrimAndSkipEmpty(opt,',');
+        if (typeList.empty())
+            return false;
+
+        auto setAll = [&](bool bVal)
+        {
+            for(auto &kv : notesConfig.typeConfigs)
+                kv.second.addCheck = bVal;
+        };
+        
+        for(auto &&t : typeList)
+        {
+            if (t=="reset" || t=="clr" || t=="clear")
+                setAll(false);
+            else if (t=="all" || t=="set")
+                setAll(true);
+            else
+                notesConfig.typeConfigs[t].addCheck = true;
+        }
+
+        return true;
+    }
+
+    bool setNotesKeepCheck(std::string opt)
+    {
+        umba::string::tolower(opt);
+        auto typeList = splitAndTrimAndSkipEmpty(opt,',');
+        if (typeList.empty())
+            return false;
+
+        auto setAll = [&](bool bVal)
+        {
+            for(auto &kv : notesConfig.typeConfigs)
+                kv.second.keepCheck = bVal;
+        };
+        
+        for(auto &&t : typeList)
+        {
+            if (t=="reset" || t=="clr" || t=="clear")
+                setAll(false);
+            else if (t=="all" || t=="set")
+                setAll(true);
+            else
+                notesConfig.typeConfigs[t].keepCheck = true;
+        }
+
+        return true;
+    }
+
+    bool setNotesTitleFormat(const std::string &titleFormat)
+    {
+        notesConfig.titleFormat = titleFormat;
+        return true;
+    }
+
+    bool setNotesSrcInfoFormat(const std::string &srcInfoFormat)
+    {
+        notesConfig.srcInfoFormat = srcInfoFormat;
+        return true;
+    }
+
+    bool setNotesSingleOutputType(const std::string &singleOutputType)
+    {
+        notesConfig.singleOutput = singleOutputType;
+        return true;
+    }
+
+    bool setNoteTitle(std::string noteType, const std::string &noteTitle)
+    {
+        if (noteType.empty())
+            return false;
+
+        if (noteTitle.empty())
+            return false;
+
+        umba::string::tolower(noteType);
+        notesConfig.typeConfigs[noteType].title = noteTitle;
+
+        return true;
+    }
+
+    bool setNoteTitle(const std::string &noteTypeTitlePair)
+    {
+        std::string f;
+        std::string s;
+        if (!umba::string_plus::split_to_pair(noteTypeTitlePair, f, s, ':'))
+            return false;
+
+        return setNoteTitle(f, s);
+    }
+
     bool addNoteMarker(std::string noteType, std::string noteMarker)
     {
         if (noteType.empty())
@@ -135,7 +227,7 @@ struct AppConfig
 
         umba::string::tolower(noteType);
         umba::string::tolower(noteMarker);
-        noteConfigs[noteType].markers.insert(noteMarker);
+        notesConfig.typeConfigs[noteType].markers.insert(noteMarker);
 
         return true;
     }
@@ -159,7 +251,7 @@ struct AppConfig
             return false;
 
         umba::string::tolower(noteType);
-        noteConfigs[noteType].fileName = noteFilename;
+        notesConfig.typeConfigs[noteType].fileName = noteFilename;
 
         return true;
     }
@@ -180,19 +272,19 @@ struct AppConfig
             return false;
 
         umba::string::tolower(noteStrip);
-        notesStrip.insert(noteStrip);
+        notesConfig.stripSet.insert(noteStrip);
         return true;
     }
 
     bool setNotesOutputPath(const std::string &p)
     {
-        notesOutputPath = p;
+        notesConfig.outputPath = p;
         return true;
     }
 
     bool setNotesFileExt(const std::string &e)
     {
-        notesExt = e;
+        notesConfig.targetExt = e;
         return true;
     }
 
@@ -481,10 +573,7 @@ struct AppConfig
         appConfig.filenameWidth      = filenameWidth   ;
         appConfig.descriptionWidth   = descriptionWidth;
 
-        appConfig.noteConfigs        = noteConfigs    ;
-        appConfig.notesStrip         = notesStrip     ;
-        appConfig.notesExt           = notesExt       ;
-        appConfig.notesOutputPath    = notesOutputPath;
+        appConfig.notesConfig        = notesConfig    ;
 
 
         if (appConfig.filenameWidth==0)
