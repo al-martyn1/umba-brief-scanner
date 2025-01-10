@@ -210,10 +210,20 @@ int unsafeMain(int argc, char* argv[])
 
             // F:\_github\mca\roboware
             // F:\_github\umba-tools\umba-brief-scanner
-            rootPath += "/../../mca/roboware";
+
+            //rootPath += "/../../mca/roboware";
+
             rootPath = umba::filename::makeCanonical(rootPath);
             argsParser.args.push_back("@" + rootPath + "/umba-brief-scanner.rsp");
             argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
+
+            argsParser.args.push_back("--scan=" + rootPath + "/_src");
+
+// --scan=src
+// --scan=_libs\unicont
+// --scan=_libs\unicont_boost
+// --scan=_libs\unicont_ubus
+
 
 
 // @if exist "%~dp0..\umba-brief-scanner.rsp" @set RSP="@%~dp0..\umba-brief-scanner.rsp"
@@ -387,7 +397,11 @@ int unsafeMain(int argc, char* argv[])
                                         , foundFiles
                                         , excludedFiles
                                         , foundExtentions
-                                        , doxyficationMode ? &foundFilesFolders : 0 // для доксификации нам нужны пути, где файлы были найдены
+                                        , &foundFilesFolders // а пусть всегда, не жалко // doxyficationMode ? &foundFilesFolders : 0 // для доксификации нам нужны пути, где файлы были найдены
+                                        , appConfig.excludeDirs // std::vector<std::string>() //  excludeFoldersExact
+                                        , true // scanRecurse
+                                        , true // logFoundHeader
+                                        , false // addFolders to list of found names
                                         );
 
     if (appConfig.testVerbosity(VerbosityLevel::detailed))

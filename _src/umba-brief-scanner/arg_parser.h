@@ -328,6 +328,36 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
+        else if ( opt.isOption("exclude-dir") || opt.isOption("exclude-dirs") || opt.setParam("DIRNAME,...")
+               || opt.setDescription("Exclude dirs from scaning. The 'DIRNAME' parameter is a simple directory name, not a mask"
+                                    )
+                )
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.hasArg())
+            {
+                LOG_ERR_OPT<<"exclude dirs not taken (--exclude-dir)\n";
+                return -1;
+            }
+
+            // TODO: Хорошо бы переделать, чтобы минус мог быть в списке
+            // заодно надо бы переделать и --exclude-files/--include-files
+            if (opt.optArg=="-")
+            {
+                appConfig.excludeDirs.clear();
+            }
+            else
+            {
+                std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
+                appConfig.excludeDirs.insert(appConfig.excludeDirs.end(), lst.begin(), lst.end());
+            }
+
+            return 0;
+        }
+
+
+
         else if (opt.isOption("no-output") || opt.isOption("dry-run") || opt.setDescription("Do not actually write output files. Simulation mode. Behave normally, but do not copy/creater/update any files."))
             {
                 if (argsParser.hasHelpOption) return 0;

@@ -67,6 +67,19 @@
 
 #https://rtfm.co.ua/c-sozdanie-i-primenenie-shared-library-v-linux/
 
+--exclude-dirs=_md,_md_,md_
+--exclude-dirs=_mkd,_mkd_,mkd_
+--exclude-dirs=_mdwn,_mdwn_,mdwn_
+--exclude-dirs=_mdown,_mdown_,mdown_
+--exclude-dirs=_mdtxt,_mdtxt_,mdtxt_
+--exclude-dirs=_mdtext,_mdtext_,mdtext_
+--exclude-dirs=_markdown,_markdown_,markdown_
+--exclude-dirs=doc.dox,doc.doxy,doc.doxygen,.dox,.doxy,.doxygen,dox,doxy,doxygen
+#--exclude-dirs=_text,_text_,text_
+
+--exclude-dir=.out,.build,.git,.bat,.cmake,.msvc,.vscode,.vs,.config
+
+
 
 -X=^.?*/*
 -X=^_prj_msvc2019/*

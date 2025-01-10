@@ -96,8 +96,8 @@ struct AppConfig
 
     //------------------------------
     std::vector<std::string>                 includeFilesMaskList;
-
     std::vector<std::string>                 excludeFilesMaskList;
+    std::vector<std::string>                 excludeDirs;
 
     std::vector<std::string>                 scanPaths;
     //std::string                              outputPath;
@@ -561,6 +561,7 @@ struct AppConfig
         //appConfig.macros             = macros;
         //appConfig.keepGeneratedFiles = keepGeneratedFiles;
         appConfig.scanPaths          = scanPaths;
+        appConfig.excludeDirs        = excludeDirs;
         appConfig.outputName         = outputName;
         appConfig.updateMode         = updateMode    ;
         appConfig.updateFromFile     = updateFromFile;
