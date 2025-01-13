@@ -135,6 +135,11 @@ umba_add_target_options(test04 "BIGOBJ" "CONSOLE" "UTF8")
 target_link_libraries(test04 PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
+add_executable(test05 "${SRC_ROOT}/umba-brief-scanner/test05.cpp" "${headers}")
+umba_add_target_options(test05 "BIGOBJ" "CONSOLE" "UTF8")
+target_link_libraries(test05 PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
 
 
 #https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#target-usage-requirements

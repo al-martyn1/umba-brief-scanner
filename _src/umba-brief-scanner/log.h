@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "umba/simple_formatter.h"
 #include "umba/log.h"
 
 

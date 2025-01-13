@@ -13,6 +13,7 @@
 //
 #include "umba/tokenizer/lang/cpp.h"
 
+#include "cpp-tokenizer.h"
 
 
 struct BriefInfo
@@ -38,12 +39,6 @@ void makeSingleLineText( IterType b, IterType e )
 }
 
 
-inline
-const auto& getTokenizerBuilder()
-{
-    static auto tokenizerBuilder = umba::tokenizer::makeTokenizerBuilderCpp<char>();
-    return tokenizerBuilder;
-}
 
 inline
 auto makeTokenText(umba::tokenizer::payload_type tokenType, umba::iterator::TextPositionCountingIterator<char> b, umba::iterator::TextPositionCountingIterator<char> e)
