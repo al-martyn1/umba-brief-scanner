@@ -70,6 +70,11 @@ struct NoteInfo
     bool           isChecked = false; // Найденный маркер был checked
 
 
+    bool empty() const
+    {
+        return noteText.empty() && noteType.empty();
+    }
+
     bool needAddCheckToTarget(const NoteConfig &noteCfg, bool *pVal=0) const
     {
         if (noteCfg.keepCheck && hasCheck)
@@ -303,6 +308,7 @@ struct NotesConfig
 
 
 //----------------------------------------------------------------------------
+//! Проверяем текст на предмет обрезаемых префиксов, и обрезаем их все
 inline
 bool noteTextTestForStripsAndStrip( std::string                             &text
                                   , const std::unordered_set<std::string>   &strips
@@ -339,6 +345,7 @@ bool noteTextTestForStripsAndStrip( std::string                             &tex
 }
 
 //----------------------------------------------------------------------------
+//! Проверяем текст на предмет 
 inline
 bool noteTextTestForMarkersAndStrip( std::string &text
                                    , const std::unordered_map<std::string, NoteConfig> &noteConfigs
@@ -390,7 +397,7 @@ const std::unordered_set<std::string>& getNoteChecksSet()
 
 //----------------------------------------------------------------------------
 inline
-bool noteTextHasCheck( std::string &text
+bool noteTextTestForCheckAndStrip( std::string &text
                      , bool *pChecked
                      )
 {
@@ -409,5 +416,48 @@ bool noteTextHasCheck( std::string &text
     return true;
 
 }
+
+//----------------------------------------------------------------------------
+inline
+bool parseTextNote(std::string text, const NotesConfig &cfg, NoteInfo &note)
+{
+    if (!noteTextTestForMarkersAndStrip(text, cfg.typeConfigs, cfg.stripSet, &note.noteType))
+        return false; // marker not found
+
+    umba::string_plus::ltrim(text);
+
+    note.hasCheck = noteTextTestForCheckAndStrip(text, &note.isChecked);
+
+    umba::string_plus::trim(text);
+
+    note.noteText = text;
+
+    return true;
+}
+
+
+// bool noteTextTestForMarkersAndStrip( std::string &text
+//                                    , const std::unordered_map<std::string, NoteConfig> &noteConfigs
+//                                    , const std::unordered_set<std::string>             &notesStrip
+//                                    , std::string *pFoundNoteType=0
+//                                    , std::string *pFoundMarker=0
+//                                    )
+
+// struct NotesConfig
+// {
+//     std::unordered_map<std::string, NoteConfig>  typeConfigs; // --todo-filename, --todo-marker
+//     std::unordered_set<std::string>              stripSet   ; // --todo-strip
+
+
+// struct NoteInfo
+// {
+//     std::string    noteType;
+//     std::string    noteText;
+//  
+//     std::string    file;
+//     std::size_t    line;
+//  
+//     bool           hasCheck  = false; // В исходниках заметки был найден маркер
+//     bool           isChecked = false; // Найденный маркер был checked
 
 

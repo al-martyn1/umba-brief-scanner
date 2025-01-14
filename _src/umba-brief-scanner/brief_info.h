@@ -15,6 +15,10 @@
 
 #include "cpp-tokenizer.h"
 
+#include "utils.h"
+
+#include "notes.h"
+
 
 struct BriefInfo
 {
@@ -41,25 +45,10 @@ void makeSingleLineText( IterType b, IterType e )
 
 
 inline
-auto makeTokenText(umba::tokenizer::payload_type tokenType, umba::iterator::TextPositionCountingIterator<char> b, umba::iterator::TextPositionCountingIterator<char> e)
-{
-    if (tokenType==UMBA_TOKENIZER_TOKEN_LINEFEED)
-    {
-        return std::string("\n");
-    }
-
-    if (tokenType==UMBA_TOKENIZER_TOKEN_LINE_CONTINUATION)
-    {
-        return std::string("\\\n");
-    }
-
-    return umba::iterator::makeString(b, e);
-}
-
-
-
-inline
-bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entrySignatures, BriefInfo &info)
+bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entrySignatures, BriefInfo &info
+                  , const NotesConfig &notesConfig
+                  , std::vector<NoteInfo> &notes
+                  )
 {
     auto tokenizerBuilder = getTokenizerBuilder();
 
@@ -74,6 +63,46 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
     using payload_type         = umba::tokenizer::payload_type;
 
     std::string fileTextNoComments; // Потом будет использоваться для поиска Entry Point
+
+    std::size_t lineFeedAfterSingleLineCommentCount = 0;
+
+    auto isLastNoteEmpty = [&]()
+    {
+        return !notes.empty() && notes.back().empty();
+    };
+
+    auto notePushOrReplaceLastEmpty = [&](const NoteInfo &note)
+    {
+        if (isLastNoteEmpty())
+            notes.back() = note;
+        else
+            notes.emplace_back(note);
+
+        notes.emplace_back(); // Всегда храним в конце вектора заметок одну пустую
+    };
+
+    auto checkPushNoteFromMultilineComment = [&](const std::string &text)
+    {
+        NoteInfo note;
+        if (!parseTextNote(text, notesConfig, note))
+            return;
+
+        notePushOrReplaceLastEmpty(note);
+    };
+
+    // auto noteAppendOr = [&](const NoteInfo &note)
+    // {
+    //     if (isLastNoteEmpty())
+    //         notes.back() = note;
+    //     else
+    //         notes.emplace_back(note);
+    //  
+    //     notes.emplace_back(); // Всегда храним в конце вектора заметок одну пустую
+    // };
+
+
+
+    notes.emplace_back(); // Всегда храним в конце вектора заметок одну пустую
 
 
     auto tokenHandler =     [&]( auto &tokenizer
@@ -94,8 +123,26 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                     return true; // Управляющий токен, не надо выводить, никакой нагрузки при нём нет
                                 }
 
-                                if (tokenType>=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_FIRST && tokenType<=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_LAST)
+                                if (tokenType==UMBA_TOKENIZER_TOKEN_LINEFEED)
                                 {
+                                    ++lineFeedAfterSingleLineCommentCount;
+                                }
+                                else if (tokenType>=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_FIRST && tokenType<=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_LAST)
+                                {
+                                    auto commentData = std::get<typename tokenizer_type::CommentData>(parsedData);
+                                    auto commentStr  = std::string(commentData.data);
+
+                                    NoteInfo note;
+                                    if (parseTextNote(text, notesConfig, note))
+                                    {
+                                        notePushOrReplaceLastEmpty(note);
+                                    }
+                                    else
+                                    {
+                                        // У нас обычный текст
+                                        // !!!
+                                    }
+
                                     // fileTextNoComments.append(1, '\n'); // Вместо коментария выводим окончание строки
                                     // Или однострочный коментарий не включает в себя перевод строки, и его можно просто игнорировать?
                                     return true;
@@ -103,10 +150,10 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                 else if (tokenType==UMBA_TOKENIZER_TOKEN_OPERATOR_MULTI_LINE_COMMENT)
                                 {
                                     auto commentData = std::get<typename tokenizer_type::CommentData>(parsedData);
-                                    auto commentStr = std::string(commentData.data);
+                                    auto commentStr  = std::string(commentData.data);
 
                                     if (commentStr.empty())
-                                        return true; // Просто пропускаем пустые коментарии
+                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем пустые коментарии
 
                                     // https://www.doxygen.nl/manual/docblocks.html#cppblock
 
@@ -114,7 +161,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                       && commentStr[0]!='!' // Qt comment style
                                         )
                                     {
-                                        return true; // Просто пропускаем обычные коментарии
+                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем обычные коментарии
                                     }
 
                                     commentStr.erase(0, 1);
@@ -124,12 +171,12 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                     if (fileDirectivePos==commentStr.npos)
                                         fileDirectivePos = commentStr.find("\\file", 0);
                                     if (fileDirectivePos==commentStr.npos)
-                                        return true; // Просто пропускаем - директива @file не найдена
+                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем - директива @file не найдена
 
                                     fileDirectivePos += 5;
                                     auto fileDirectiveEndPos = commentStr.find("\n", fileDirectivePos);
                                     if (fileDirectiveEndPos==commentStr.npos)
-                                        return true; // Просто пропускаем - директива @file найдена, но конца её нет, и brief'а тут не будет
+                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем - директива @file найдена, но конца её нет, и brief'а тут не будет
 
                                     std::string fileName = marty_cpp::simple_trim(std::string(commentStr, fileDirectivePos, fileDirectiveEndPos-fileDirectivePos), [&](char ch) { return ch==' '; } );
                                     ++fileDirectiveEndPos;
@@ -138,7 +185,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                     if (briefDirectivePos==commentStr.npos)
                                         briefDirectivePos = commentStr.find("\\brief", fileDirectiveEndPos);
                                     if (briefDirectivePos==commentStr.npos)
-                                        return true; // Просто пропускаем - директива @brief не найдена
+                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем - директива @brief не найдена
 
                                     briefDirectivePos += 6;
                                     std::string briefText;

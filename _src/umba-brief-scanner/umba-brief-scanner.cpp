@@ -503,7 +503,8 @@ int unsafeMain(int argc, char* argv[])
 
         try
         {
-            bFound = findBriefInfo( filedataStr, appConfig.entrySignatures, info );
+            std::vector<NoteInfo> notes;
+            bFound = findBriefInfo( filedataStr, appConfig.entrySignatures, info, appConfig.notesConfig, notes );
         }
         catch(const std::exception &e)
         {

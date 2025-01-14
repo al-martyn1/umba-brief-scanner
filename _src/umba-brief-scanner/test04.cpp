@@ -67,7 +67,7 @@ void testParseNote(std::string noteText)
     cout << "Found note, type: " << foundNoteType << ", marker: " << foundNoteMarker << "\n";
 
     bool checked = false;
-    if (noteTextHasCheck(noteText, &checked))
+    if (noteTextTestForCheckAndStrip(noteText, &checked))
     {
         cout << "Note hase chesk, state: " << (checked ? "X" : "_") << "\n";
     }
