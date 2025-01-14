@@ -70,6 +70,31 @@ struct NoteInfo
     bool           isChecked = false; // Найденный маркер был checked
 
 
+    static
+    bool isSpaceChar(char ch)
+    {
+        return ch==' ' || ch=='\t' || ch=='\r' || ch=='\n';
+    }
+
+    static
+    std::string concatTexts(const std::string &s1, const std::string &s2)
+    {
+        if (s1.empty())
+            return s2;
+        if (s2.empty())
+            return s1;
+
+        if (!isSpaceChar(s1.back()) && !isSpaceChar(s2.front()))
+            return s1 + " " + s2;
+
+        return s1 + s2;
+    }
+
+    void append(const std::string &s)
+    {
+        noteText = concatTexts(noteText, s);
+    }
+
     bool empty() const
     {
         return noteText.empty() && noteType.empty();

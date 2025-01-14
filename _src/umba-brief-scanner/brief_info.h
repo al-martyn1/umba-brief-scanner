@@ -66,14 +66,15 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
 
     std::size_t lineFeedAfterSingleLineCommentCount = 0;
 
-    auto isLastNoteEmpty = [&]()
-    {
-        return !notes.empty() && notes.back().empty();
-    };
+    // auto isLastNoteEmpty = [&]()
+    // {
+    //     return !notes.empty() && notes.back().empty();
+    // };
 
     auto notePushOrReplaceLastEmpty = [&](const NoteInfo &note)
     {
-        if (isLastNoteEmpty())
+        // if (isLastNoteEmpty())
+        if (!notes.empty() && notes.back().empty()) // вектор не пуст, но последний элемент - пуст
             notes.back() = note;
         else
             notes.emplace_back(note);
@@ -81,12 +82,13 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
         notes.emplace_back(); // Всегда храним в конце вектора заметок одну пустую
     };
 
-    auto checkPushNoteFromMultilineComment = [&](const std::string &text)
+    auto checkPushNoteFromMultilineComment = [&](const std::string &text, InputIteratorType b)
     {
         NoteInfo note;
         if (!parseTextNote(text, notesConfig, note))
             return;
 
+        note.line = b.getPosition().lineNumber;
         notePushOrReplaceLastEmpty(note);
     };
 
@@ -126,6 +128,14 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                 if (tokenType==UMBA_TOKENIZER_TOKEN_LINEFEED)
                                 {
                                     ++lineFeedAfterSingleLineCommentCount;
+                                    if (lineFeedAfterSingleLineCommentCount>1)
+                                    {
+                                        if (notes.empty() || !notes.back().empty())
+                                        {
+                                            // Если больше одного перевода строки, то если в хвосте что-то лежало, то пропихиваем его, чтобы нельзя было ничего добавить
+                                            notes.emplace_back();
+                                        }
+                                    }
                                 }
                                 else if (tokenType>=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_FIRST && tokenType<=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_LAST)
                                 {
@@ -133,14 +143,23 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                     auto commentStr  = std::string(commentData.data);
 
                                     NoteInfo note;
-                                    if (parseTextNote(text, notesConfig, note))
+                                    if (parseTextNote(commentStr, notesConfig, note))
                                     {
+                                        note.line = b.getPosition().lineNumber;
                                         notePushOrReplaceLastEmpty(note);
                                     }
                                     else
                                     {
                                         // У нас обычный текст
-                                        // !!!
+                                        if (lineFeedAfterSingleLineCommentCount<2)
+                                        {
+                                            // Был только один перевод строки - это продолжение заметки, если она была
+                                            if (!notes.empty() || !notes.back().empty()) // Есть последняя заметка и она не пустая, надо просто добавить текст
+                                            {
+                                                umba::string_plus::trim(commentStr);
+                                                notes.back().append(commentStr);
+                                            }
+                                        }
                                     }
 
                                     // fileTextNoComments.append(1, '\n'); // Вместо коментария выводим окончание строки
@@ -153,7 +172,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                     auto commentStr  = std::string(commentData.data);
 
                                     if (commentStr.empty())
-                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем пустые коментарии
+                                        return checkPushNoteFromMultilineComment(commentStr, b), true; // Просто пропускаем пустые коментарии
 
                                     // https://www.doxygen.nl/manual/docblocks.html#cppblock
 
@@ -161,7 +180,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                       && commentStr[0]!='!' // Qt comment style
                                         )
                                     {
-                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем обычные коментарии
+                                        return checkPushNoteFromMultilineComment(commentStr, b), true; // Просто пропускаем обычные коментарии
                                     }
 
                                     commentStr.erase(0, 1);
@@ -171,12 +190,12 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                     if (fileDirectivePos==commentStr.npos)
                                         fileDirectivePos = commentStr.find("\\file", 0);
                                     if (fileDirectivePos==commentStr.npos)
-                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем - директива @file не найдена
+                                        return checkPushNoteFromMultilineComment(commentStr, b), true; // Просто пропускаем - директива @file не найдена
 
                                     fileDirectivePos += 5;
                                     auto fileDirectiveEndPos = commentStr.find("\n", fileDirectivePos);
                                     if (fileDirectiveEndPos==commentStr.npos)
-                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем - директива @file найдена, но конца её нет, и brief'а тут не будет
+                                        return checkPushNoteFromMultilineComment(commentStr, b), true; // Просто пропускаем - директива @file найдена, но конца её нет, и brief'а тут не будет
 
                                     std::string fileName = marty_cpp::simple_trim(std::string(commentStr, fileDirectivePos, fileDirectiveEndPos-fileDirectivePos), [&](char ch) { return ch==' '; } );
                                     ++fileDirectiveEndPos;
@@ -185,7 +204,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                     if (briefDirectivePos==commentStr.npos)
                                         briefDirectivePos = commentStr.find("\\brief", fileDirectiveEndPos);
                                     if (briefDirectivePos==commentStr.npos)
-                                        return checkPushNoteFromMultilineComment(commentStr), true; // Просто пропускаем - директива @brief не найдена
+                                        return checkPushNoteFromMultilineComment(commentStr, b), true; // Просто пропускаем - директива @brief не найдена
 
                                     briefDirectivePos += 6;
                                     std::string briefText;
@@ -232,6 +251,11 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
     std::vector<std::string> fileTextLines = marty_cpp::splitToLinesSimple(fileTextNoComments, false);
 
     info.entryPoint = findTextSignatureInLines(fileTextLines, entrySignatures);
+
+    if (!notes.empty() && notes.back().empty())
+    {
+        notes.erase(notes.begin()+std::ptrdiff_t(notes.size()-1));
+    }
 
     return info.briefFound;
 
