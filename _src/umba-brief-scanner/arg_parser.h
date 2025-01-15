@@ -578,7 +578,7 @@ int operator()( const std::string                               &a           //!
 
         else if ( opt.setParam("TYPE:TITLE", umba::command_line::OptionType::optString)
                || opt.isOption("notes-single-output-title") || opt.isOption("todo-single-output-title")
-               || opt.setDescription("Set note title for specified note type when wrutting all notes to single output."))
+               || opt.setDescription("Set note title for specified note type when writting all notes to single output."))
         {
             if (argsParser.hasHelpOption) return 0;
 

@@ -403,6 +403,11 @@ int unsafeMain(int argc, char* argv[])
                                         , true // logFoundHeader
                                         , false // addFolders to list of found names
                                         );
+    if (foundFiles.size()!=foundFilesFolders.size())
+    {
+        LOG_ERR_OPT << "Number of found folders mismatch number of found files" << endl;
+        return 1;
+    }
 
     if (appConfig.testVerbosity(VerbosityLevel::detailed))
     {
@@ -452,11 +457,18 @@ int unsafeMain(int argc, char* argv[])
     // Читаем брифы
 
     std::map<std::string, BriefInfo>  briefInfo;
+    NotesCollection                   notesCollection;
 
     encoding::EncodingsApi* pEncApi = encoding::getEncodingsApi();
 
-    for(const auto & filename : foundFiles)
+    // std::vector<std::string> foundFiles, foundFilesFolders
+    std::vector<std::string>::const_iterator ffIt  = foundFiles.begin();
+    std::vector<std::string>::const_iterator fffIt = foundFilesFolders.begin();
+    //for(const auto & filename : foundFiles)
+    for(; ffIt!=foundFiles.end() && fffIt!=foundFilesFolders.end(); ++ffIt, ++fffIt)
     {
+        const std::string & filename   = *ffIt;
+        const std::string & fileFolder = *fffIt;
         // logMsg << name << endl;
         //std::vector<char> filedata;
         std::string filedataStr;
@@ -504,7 +516,8 @@ int unsafeMain(int argc, char* argv[])
         try
         {
             std::vector<NoteInfo> notes;
-            bFound = findBriefInfo( filedataStr, appConfig.entrySignatures, info, appConfig.notesConfig, notes );
+            bFound = findBriefInfo( filedataStr, appConfig.entrySignatures, info, appConfig.notesConfig, notes, filename, fileFolder );
+            notesCollection.addNotes(notes);
         }
         catch(const std::exception &e)
         {

@@ -6,12 +6,14 @@
 
 #include "umba/macro_helpers.h"
 #include "umba/macros.h"
+#include "umba/filename.h"
 #include "umba/format_message.h"
 #include "umba/text_utils.h"
 #include "marty_utf/utf.h"
 
 //
 
+#include <map>
 #include <string>
 #include <vector>
 #include <map>
@@ -63,8 +65,11 @@ struct NoteInfo
     std::string    noteType;
     std::string    noteText;
 
-    std::string    file;
+    std::string    file; // full name
     std::size_t    line;
+
+    std::string    rootSearchFolder; // Каталог поиска, в котором был найден файл
+
 
     bool           hasCheck  = false; // В исходниках заметки был найден маркер
     bool           isChecked = false; // Найденный маркер был checked
@@ -148,17 +153,123 @@ struct NoteInfo
 
 
 //----------------------------------------------------------------------------
+//! Храним тут информацию по каталогу со всеми заметками из всех файлов каталога
+struct FolderNotesCollection
+{
+    std::string                folderName      ; // Каноническое имя
+    std::string                rootSearchFolder; // Каталог поиска, в котором был найден данный каталог, каноническое имя
+
+    std::vector<NoteInfo>      notes;
+
+}; // struct FolderNotesCollection
+
+//----------------------------------------------------------------------------
+
+
+
+//----------------------------------------------------------------------------
+struct NotesCollection
+{
+
+    void addNote(const NoteInfo &note)
+    {
+        using namespace umba::filename;
+
+        auto folderName       = makeCanonical(getPath(note.file));
+
+        auto folderNameForCmp = makeCanonicalForCompare(getPath(note.file));
+
+        std::map<std::string, FolderNotesCollection>::iterator mit = m_map.find(folderNameForCmp);
+        if (mit==m_map.end())
+        {
+            FolderNotesCollection fnc;
+            fnc.folderName       = makeCanonical(getPath(note.file));
+            fnc.rootSearchFolder = makeCanonical(note.rootSearchFolder);
+            fnc.notes.emplace_back(note);
+        }
+        else
+        {
+            mit->second.notes.emplace_back(note);
+        }
+    
+    }
+
+    void addNotes(const std::vector<NoteInfo> &notes)
+    {
+        for(auto && note : notes)
+        {
+            addNote(note);
+        }
+    }
+
+    auto begin ()       { return m_map.begin (); }
+    auto begin () const { return m_map.begin (); }
+    auto cbegin() const { return m_map.cbegin(); }
+
+    auto end   ()       { return m_map.end   (); }
+    auto end   () const { return m_map.end   (); }
+    auto cend  () const { return m_map.cend  (); }
+
+
+protected:
+
+    std::map<std::string, FolderNotesCollection>    m_map;
+};
+
+
+
+//----------------------------------------------------------------------------
 struct NotesConfig
 {
     std::unordered_map<std::string, NoteConfig>  typeConfigs; // --todo-filename, --todo-marker
     std::unordered_set<std::string>              stripSet   ; // --todo-strip
-    std::string                                  targetExt  ; // = "md"; // --todo-ext
-    std::string                                  outputPath ; // --todo-output-path
 
-    std::string                                  singleOutput ; // --notes-single-output
+    std::string                                  targetExt  ; // = "md"; // --todo-ext
+    std::string                                  outputPath ; // --todo-output-path - пишем в одно место, а не распихиваем по каталогам
+
+    std::string                                  singleOutput ; // --notes-single-output  - выводим все заметки в файл данного типа
     std::string                                  titleFormat  ; // --notes-single-output-title-format
     std::string                                  srcInfoFormat; // --notes-source-info-format
-    bool                                         addSourceInfo = true; // TODO: Надо добавить опцию ком. строки для задания данного параметра
+    bool                                         addSourceInfo = true; // TODO: Надо добавить опцию ком. строки для задания данного параметра --notes-source-info
+    bool                                         textNotesFullPath = false; // --text-notes-full-path - используется при сохранении в простой текст
+    // std::size_t                                  notesTextWidth; // Ширина форматирования текста, будем пока использовать descriptionWidth из AppConfig --notes-text-width
+
+    /*
+         Замечания по форматированию заметок.
+
+         В текстовом виде заметки форматируются в двух вариантах:
+         1) Заметки разных типов в одном файле:
+              путь/к/файлу/имя_файла.расш:NN:NoteType
+              Со следующей строки без пропуска идёт текст
+              заметки
+         2) Заметки разных типов в разных файлах, соответственно, в файле только заметки одного типа.
+            В этом случае тип заметки не указывается после имени файла и номера строки.
+
+         Между заметками добавляется пустая строка.
+
+         При генерации заметок в текстовом виде мы можем указывать полное абсолютное имя файла - для того, 
+         чтобы можно в IDE было переходить к этим файлам из списка заметок - это локальная генерация, 
+         которая никогда не попадает в репо. Или же мы можем указывать имя файла относительно базового 
+         каталога поиска. Такой вид заметок можно гитовать, он не зависит от локального расположения клона репы.
+
+         --text-notes-full-path
+
+         Также в текстовом режиме не используется никакое форматирование - нет маркеров списка, нет маркеров-checkBox'ов, 
+         только текст заметки, выровненный на заданную ширину.
+
+         Используем formatTextParas.
+
+         Вопрос. Может, сделать вставку разделительной линии между заметками? Тогда можно разбивать на параграфы двойным переводом строки.
+
+
+         
+
+         Форматирование в MD реализовано ниже в методе formatMarkdownNote, который использует функцию formatTextParas.
+
+         Разбивку на параграфы (двойной перевод строки) надо заменить на "<BR>"
+    
+     */
+
 
 
     NoteConfig findNoteConfig(const std::string &noteType) const
@@ -216,7 +327,7 @@ struct NotesConfig
     }
 
     // Делаем текст 
-    std::string formatNote(const NoteInfo &note) const
+    std::string formatMarkdownNote(const NoteInfo &note, std::size_t textWidth=94) const
     {
         NoteConfig noteCfg = findNoteConfig(note.noteType);
 
@@ -231,12 +342,13 @@ struct NotesConfig
         std::string text = note.noteText;
         for(auto &ch : text)
         {
-            if (ch=='\n' || ch=='\r' || ch=='\t')
+            // Переводы строки потом заменим на <BR>
+            if ( /* ch=='\n' || ch=='\r' || */  ch=='\t')
                 ch = ' ';
         }
 
         text = umba::text_utils::formatTextParas( text
-                                                , 96 // line len
+                                                , textWidth // line len
                                                 , umba::text_utils::TextAlignment::left
                                                 , marty_utf::SymbolLenCalculatorEncodingUtf8()
                                                 );

@@ -48,6 +48,8 @@ inline
 bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entrySignatures, BriefInfo &info
                   , const NotesConfig &notesConfig
                   , std::vector<NoteInfo> &notes
+                  , const std::string & filename
+                  , const std::string & fileFolder
                   )
 {
     auto tokenizerBuilder = getTokenizerBuilder();
@@ -89,6 +91,8 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
             return;
 
         note.line = b.getPosition().lineNumber;
+        note.file             = filename  ;
+        note.rootSearchFolder = fileFolder;
         notePushOrReplaceLastEmpty(note);
     };
 
@@ -146,6 +150,8 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                     if (parseTextNote(commentStr, notesConfig, note))
                                     {
                                         note.line = b.getPosition().lineNumber;
+                                        note.file             = filename  ;
+                                        note.rootSearchFolder = fileFolder;
                                         notePushOrReplaceLastEmpty(note);
                                     }
                                     else
@@ -157,6 +163,8 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                             if (!notes.empty() || !notes.back().empty()) // Есть последняя заметка и она не пустая, надо просто добавить текст
                                             {
                                                 umba::string_plus::trim(commentStr);
+                                                if (commentStr.empty())
+                                                    commentStr = "\n\n"; // пустая строка коментария в тудушке - это отдельный параграф в ней
                                                 notes.back().append(commentStr);
                                             }
                                         }
