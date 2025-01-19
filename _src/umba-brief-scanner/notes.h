@@ -158,6 +158,7 @@ struct NotesConfig
     std::string                                  srcInfoFormat; // --notes-source-info-format
     bool                                         addSourceInfo = true; // TODO: Надо добавить опцию ком. строки для задания данного параметра --notes-source-info
     bool                                         textNotesFullPath = false; // TODO: --text-notes-full-path - используется при сохранении в простой текст
+
     // std::size_t                                  notesTextWidth; // Ширина форматирования текста, будем пока использовать descriptionWidth из AppConfig --notes-text-width
 
     /*

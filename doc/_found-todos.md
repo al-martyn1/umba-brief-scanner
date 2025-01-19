@@ -15,10 +15,7 @@ Generator: Umba-Brief-Scanner
   --notes-source-info.
 
 - `[umba-brief-scanner/notes.h:159]`
-  --text-notes-full-path - используется при сохранении в простой текст
-  std::size_t                                  notesTextWidth; // Ширина
-  форматирования текста, будем пока использовать descriptionWidth из AppConfig
-  --notes-text-width.
+  --text-notes-full-path - используется при сохранении в простой текст.
 
 - `[umba-brief-scanner/notes_impl.h:611]`
   Нужно выводить не тип заметки, а какой-то заголовок.
