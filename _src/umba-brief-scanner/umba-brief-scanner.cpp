@@ -614,7 +614,10 @@ int unsafeMain(int argc, char* argv[])
 
         if (appConfig.getOptMd())
         {
-            infoStream << "---\nTitle: " << titleStr << "\n---\n";
+            infoStream << "---\n"
+                       << "Title: " << titleStr << "\n"
+                       << "Generator: " << MD_META_GENERATOR_NAME << "\n"
+                       << "---\n";
         }
         else if (appConfig.getOptHtml())
         {

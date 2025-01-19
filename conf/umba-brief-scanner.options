@@ -35,6 +35,12 @@
 --notes-single-output-title-format=`[$(Title)]`
 --notes-source-info-format=`[$(File):$(Line)]`
 
+# SEE ALSO
+--notes-filename=see-also:_found-see-also
+--notes-single-output-title=see-also:SEE ALSO
+--notes-marker=see-also:see also
+# --notes-marker=see-also:see
+
 # TODO
 --notes-filename=todo:_found-todos
 --notes-single-output-title=todo:TODO
@@ -44,6 +50,7 @@
 --notes-filename=note:_found-notes
 --notes-single-output-title=note:NOTE
 --notes-marker=note:note
+--notes-marker=note:IMPORTANT NOTE
 
 # UNDONE
 --notes-filename=undone:_found-undones
@@ -96,9 +103,12 @@
 -X=^.?*/*
 
 -X=*/.?*/*
-
 -X=*.git/*^
 -X=*.gitignore^
+-X=*.gitmodules^
+-X=*.options^
+-X=*.example^
+-X=*.template^
 -X=*.bat^
 -X=*.sh^
 -X=*.cfg^

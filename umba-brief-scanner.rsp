@@ -10,8 +10,14 @@
 --split-group
 # doc/_sources_brief.txt
 
---scan-notes
+#--scan-notes
 # --scan-todo is same
 
---notes-output-path=./doc
+#--notes-output-path=./doc
 
+#--exclude-dir=lib
+#--exclude-dir=libs
+#--exclude-dir=_lib
+#--exclude-dir=_libs
+
+--notes-single-output=todo
