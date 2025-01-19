@@ -76,7 +76,7 @@ enum  OutputFormat
     cmCellAllFirst              = cmCellEnd /*!<  */,
     cmCellAllEnd                = cmCellAllFirst + 3*1*4 /*!<  */
 
-}; // enum 
+}; // enum
 //#!
 
 MARTY_CPP_MAKE_ENUM_IS_FLAGS_FOR_NON_FLAGS_ENUM(OutputFormat)

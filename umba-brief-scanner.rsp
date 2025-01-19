@@ -9,3 +9,9 @@
 --update
 --split-group
 # doc/_sources_brief.txt
+
+--scan-notes
+# --scan-todo is same
+
+--notes-output-path=./doc
+

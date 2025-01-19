@@ -42,7 +42,21 @@ void makeSingleLineText( IterType b, IterType e )
     }
 }
 
+inline
+bool isSingleCharText(const std::string &str)
+{
+    if (str.empty())
+        return false;
 
+    auto first = str[0];
+    for(auto ch: str)
+    {
+        if (ch!=first)
+            return false;
+    }
+
+    return true;
+}
 
 inline
 bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entrySignatures, BriefInfo &info
@@ -73,7 +87,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
     //     return !notes.empty() && notes.back().empty();
     // };
 
-    auto notePushOrReplaceLastEmpty = [&](const NoteInfo &note)
+    auto notePushOrReplaceLastEmpty = [&](const NoteInfo &note, bool appendEmptyNote)
     {
         // if (isLastNoteEmpty())
         if (!notes.empty() && notes.back().empty()) // вектор не пуст, но последний элемент - пуст
@@ -81,7 +95,8 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
         else
             notes.emplace_back(note);
 
-        notes.emplace_back(); // Всегда храним в конце вектора заметок одну пустую
+        if (appendEmptyNote)
+            notes.emplace_back();
     };
 
     auto checkPushNoteFromMultilineComment = [&](const std::string &text, InputIteratorType b)
@@ -93,7 +108,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
         note.line = b.getPosition().lineNumber;
         note.file             = filename  ;
         note.rootSearchFolder = fileFolder;
-        notePushOrReplaceLastEmpty(note);
+        notePushOrReplaceLastEmpty(note, true);
     };
 
     // auto noteAppendOr = [&](const NoteInfo &note)
@@ -102,7 +117,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
     //         notes.back() = note;
     //     else
     //         notes.emplace_back(note);
-    //  
+    //
     //     notes.emplace_back(); // Всегда храним в конце вектора заметок одну пустую
     // };
 
@@ -140,6 +155,11 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                             notes.emplace_back();
                                         }
                                     }
+                                    return true;
+                                }
+                                else if (tokenType==UMBA_TOKENIZER_TOKEN_SPACE || tokenType==UMBA_TOKENIZER_TOKEN_TAB)
+                                {
+                                    return true;
                                 }
                                 else if (tokenType>=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_FIRST && tokenType<=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_LAST)
                                 {
@@ -152,15 +172,23 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                         note.line = b.getPosition().lineNumber;
                                         note.file             = filename  ;
                                         note.rootSearchFolder = fileFolder;
-                                        notePushOrReplaceLastEmpty(note);
+                                        notePushOrReplaceLastEmpty(note, false);
                                     }
                                     else
                                     {
                                         // У нас обычный текст
+
+                                        if (isSingleCharText(commentStr))
+                                        {
+                                            if (!notes.empty() && !notes.back().empty()) // Есть последняя заметка и она не пустая
+                                                notes.emplace_back();
+                                            return true;
+                                        }
+
                                         if (lineFeedAfterSingleLineCommentCount<2)
                                         {
                                             // Был только один перевод строки - это продолжение заметки, если она была
-                                            if (!notes.empty() || !notes.back().empty()) // Есть последняя заметка и она не пустая, надо просто добавить текст
+                                            if (!notes.empty() && !notes.back().empty()) // Есть последняя заметка и она не пустая, надо просто добавить текст
                                             {
                                                 umba::string_plus::trim(commentStr);
                                                 if (commentStr.empty())
@@ -169,6 +197,8 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                             }
                                         }
                                     }
+
+                                    lineFeedAfterSingleLineCommentCount = 0;
 
                                     // fileTextNoComments.append(1, '\n'); // Вместо коментария выводим окончание строки
                                     // Или однострочный коментарий не включает в себя перевод строки, и его можно просто игнорировать?
@@ -226,6 +256,10 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                     info.infoText   = makeBriefSingleString(briefText);
 
                                     return true;
+                                }
+                                else
+                                {
+                                    lineFeedAfterSingleLineCommentCount = 3;
                                 }
 
                                 fileTextNoComments += makeTokenText(tokenType, b, e);

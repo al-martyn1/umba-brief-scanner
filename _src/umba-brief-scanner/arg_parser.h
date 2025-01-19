@@ -341,8 +341,10 @@ int operator()( const std::string                               &a           //!
                 return -1;
             }
 
-            // TODO: Хорошо бы переделать, чтобы минус мог быть в списке
-            // заодно надо бы переделать и --exclude-files/--include-files
+            // TODO: (111) Хорошо бы переделать, чтобы минус мог быть элементом списка, очищая его.
+            // (222) заодно надо бы переделать и --exclude-files/--include-files
+            //
+            // (333) Заодно проверяем, как работает заметка в несколько параграфов
             if (opt.optArg=="-")
             {
                 appConfig.excludeDirs.clear();
@@ -404,6 +406,13 @@ int operator()( const std::string                               &a           //!
             {
                 if (argsParser.hasHelpOption) return 0;
                 appConfig.setOptSkipUndocumented(true);
+                return 0;
+            }
+
+        else if (opt.isOption("scan-notes") || opt.isOption("scan-todo") || opt.setDescription("Scan source files for todo/notes."))
+            {
+                if (argsParser.hasHelpOption) return 0;
+                appConfig.setOptTodo(true);
                 return 0;
             }
 
@@ -659,6 +668,14 @@ int operator()( const std::string                               &a           //!
 
             return 0;
         }
+
+        else if (opt.isOption("text-notes-full-path") || opt.setDescription("Add full path to text notes instead of relative."))
+            {
+                if (argsParser.hasHelpOption) return 0;
+                appConfig.notesConfig.textNotesFullPath = true;
+                return 0;
+            }
+        // text-notes-full-path
 
 
 

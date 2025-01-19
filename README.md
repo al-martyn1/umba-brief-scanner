@@ -1,15 +1,15 @@
 # Утилита Umba Brief Scanner
 
-  - [Все umba-утилиты](#user-content-все-umba-утилиты)
-  - [umba-brief-scanner](#user-content-umba-brief-scanner)
-    - [Пример работы утилиты umba-brief-scanner](#user-content-пример-работы-утилиты-umba-brief-scanner)
-  - [Получение исходных текстов утилиты umba-brief-scanner](#user-content-получение-исходных-текстов-утилиты-umba-brief-scanner)
-  - [Сборка и отладка проекта](#user-content-сборка-и-отладка-проекта)
-    - [Извлечение библиотек](#user-content-извлечение-библиотек)
-    - [Генерация сборочных скриптов и сборка](#user-content-генерация-сборочных-скриптов-и-сборка)
-    - [Открытие проекта в IDE](#user-content-открытие-проекта-в-ide)
-      - [Запуск VSCode](#user-content-запуск-vscode)
-      - [Запуск MSVC](#user-content-запуск-msvc)
+- [Все umba-утилиты](#user-content-все-umba-утилиты)
+- [umba-brief-scanner](#user-content-umba-brief-scanner)
+  - [Пример работы утилиты umba-brief-scanner](#user-content-пример-работы-утилиты-umba-brief-scanner)
+- [Получение исходных текстов утилиты umba-brief-scanner](#user-content-получение-исходных-текстов-утилиты-umba-brief-scanner)
+- [Сборка и отладка проекта](#user-content-сборка-и-отладка-проекта)
+  - [Извлечение библиотек](#user-content-извлечение-библиотек)
+  - [Генерация сборочных скриптов и сборка](#user-content-генерация-сборочных-скриптов-и-сборка)
+  - [Открытие проекта в IDE](#user-content-открытие-проекта-в-ide)
+    - [Запуск VSCode](#user-content-запуск-vscode)
+    - [Запуск MSVC](#user-content-запуск-msvc)
 
 
 umba-brief-scanner - одна из утилит пакета umba-tools. Сканирует каталоги проекта и извлекает описания из

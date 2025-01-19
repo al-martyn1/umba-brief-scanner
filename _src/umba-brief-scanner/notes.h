@@ -16,6 +16,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 #include <map>
 #include <set>
 #include <unordered_map>
@@ -93,17 +94,17 @@ struct FolderNotesCollection
 
     std::vector<NoteInfo>      notes;
 
-    std::ostream& getNotesFormatStream(const NotesConfig &cfg, const std::string &noteType) const;
-    std::string   getNotesFormattedText(const std::string &noteType) const;
+    std::ostream& getNotesFormatStream(const NotesConfig &cfg, std::string noteType) const;
+    std::string   getNotesFormattedText(std::string noteType) const;
     void          clearNotesFormattedText() const;
     std::vector<std::string> getFormattedNoteTypesList() const;
 
     // Сортируем по типу, чтобы при выводе в один файл заметки были сгруппированы по типу. Сортируем с сохранением относительного порядка между заметками одного типа
-    void sortNotes(); 
+    void sortNotes();
 
 protected:
 
-    mutable std::unordered_map<std::string, std::ostringstream>  m_noteStreams;
+    mutable std::unordered_map<std::string, std::shared_ptr<std::ostringstream> >  m_noteStreams;
 
 }; // struct FolderNotesCollection
 
@@ -129,7 +130,8 @@ struct NotesCollection
     const_iterator end   () const { return m_map.end   (); }
     const_iterator cend  () const { return m_map.cend  (); }
 
-    bool serializeToFiles(const AppConfig &appCfg) const;
+    bool serializeToFiles(const AppConfig &appCfg, std::vector<std::string> &writtenFiles) const;
+
 
 
 protected:
@@ -155,7 +157,7 @@ struct NotesConfig
     std::string                                  titleFormat  ; // --notes-single-output-title-format
     std::string                                  srcInfoFormat; // --notes-source-info-format
     bool                                         addSourceInfo = true; // TODO: Надо добавить опцию ком. строки для задания данного параметра --notes-source-info
-    bool                                         textNotesFullPath = false; // --text-notes-full-path - используется при сохранении в простой текст
+    bool                                         textNotesFullPath = false; // TODO: --text-notes-full-path - используется при сохранении в простой текст
     // std::size_t                                  notesTextWidth; // Ширина форматирования текста, будем пока использовать descriptionWidth из AppConfig --notes-text-width
 
     /*
@@ -171,14 +173,14 @@ struct NotesConfig
 
          Между заметками добавляется пустая строка.
 
-         При генерации заметок в текстовом виде мы можем указывать полное абсолютное имя файла - для того, 
-         чтобы можно в IDE было переходить к этим файлам из списка заметок - это локальная генерация, 
-         которая никогда не попадает в репо. Или же мы можем указывать имя файла относительно базового 
+         При генерации заметок в текстовом виде мы можем указывать полное абсолютное имя файла - для того,
+         чтобы можно в IDE было переходить к этим файлам из списка заметок - это локальная генерация,
+         которая никогда не попадает в репо. Или же мы можем указывать имя файла относительно базового
          каталога поиска. Такой вид заметок можно гитовать, он не зависит от локального расположения клона репы.
 
          --text-notes-full-path
 
-         Также в текстовом режиме не используется никакое форматирование - нет маркеров списка, нет маркеров-checkBox'ов, 
+         Также в текстовом режиме не используется никакое форматирование - нет маркеров списка, нет маркеров-checkBox'ов,
          только текст заметки, выровненный на заданную ширину.
 
          Используем formatTextParas.
@@ -186,24 +188,24 @@ struct NotesConfig
          Вопрос. Может, сделать вставку разделительной линии между заметками? Тогда можно разбивать на параграфы двойным переводом строки.
 
 
-         
+
 
          Форматирование в MD реализовано ниже в методе formatMarkdownNote, который использует функцию formatTextParas.
 
          Разбивку на параграфы (двойной перевод строки) надо заменить на "<BR>"
-    
+
      */
 
 
-
+    std::string getNoteOutputType(const std::string &noteType) const;
     NoteConfig  findNoteConfig(const std::string &noteType) const;
     std::string formatNoteTitle(const NoteInfo &note, const NoteConfig &noteCfg) const;
     std::string formatNoteTitle(const NoteInfo &note) const;
-    std::string formatNoteSrcInfo(const NoteInfo &note) const;
+    std::string formatNoteSrcInfo(const NoteInfo &note, bool formatMd=true) const;
 
     static void appendNoteText(std::string &text, const std::string &strAppend);
 
-    // Делаем текст 
+    // Делаем текст
     std::string formatNoteToMarkdown( /* const AppConfig &appCfg, */ const NoteInfo &note, std::size_t textWidth=94) const;
     std::string formatNoteToText    ( /* const AppConfig &appCfg, */ const NoteInfo &note, std::size_t textWidth=94) const;
 

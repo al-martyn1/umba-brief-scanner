@@ -1,19 +1,14 @@
 # Brief Description for Project Sources
 
-  - [umba-brief-scanner (Entry points)](#user-content-umba-brief-scanner-entry-points)
-  - [umba-brief-scanner](#user-content-umba-brief-scanner)
+- [umba-brief-scanner (Entry points)](#user-content-umba-brief-scanner-entry-points)
+- [umba-brief-scanner](#user-content-umba-brief-scanner)
 
 
 # umba-brief-scanner (Entry points)
 
  - **main.cpp** - Для тестирования, файл с описанием и main'ом
- - **qt_stub.cpp** - Стаб, для того, чтобы windeployqt подсосал нужный рантайм для MSVC/GCC - а то совсем без Qt он не работает
  - **test0.cpp** - 
  - **test00.cpp** - 
- - **test01.cpp** - Перетащил всю требуху из другого проекта, лишнее отрежу потом
- - **test02.cpp** - Простой тест регулярок по поиску точки входа и brief'а
- - **test03.cpp** - Тест arithmetic_strong_typedef - просто присунул тут по случаю
- - **umba-brief-scanner.cpp** - Утилита umba-brief-scanner - сканирование исходных текстов на C/C++ и получение списка кратких описаний файлов исходных текстов
 
 
 # umba-brief-scanner
@@ -23,7 +18,20 @@
  - **arg_parser.h** - Разбор аргументов командной строки
  - **brief_info.h** - Реализация извлечения brief info из файлов сорцов
  - **commentUtils.h** - Утилитки для разбора коментариев - разбор всякой шляпы типа тупых никому ненужных баннеров
+ - **cpp-tokenizer.h** - Токенизер для плюсов
+ - **enums.h** - 
  - **enums_manual.h** - "Ручные" перечисления - то, что набито ручками, а не сгенерированно при помощи umba-enum-gen
  - **log.h** - Макросы для лога
+ - **mdlex.h** - 
+ - **notes.h** - Заметки (TODO, NOTE, и тп)
+ - **notes_impl.h** - Заметки (TODO, NOTE, и тп)
+ - **qt_stub.cpp** - Стаб, для того, чтобы windeployqt подсосал нужный рантайм для MSVC/GCC - а то совсем без Qt он не работает
  - **signature.h** - Поиск сигнатур, в т.ч. многострочных. Вытащил из MD PP, там они маркерами сниппетов работают
+ - **test01.cpp** - Перетащил всю требуху из другого проекта, лишнее отрежу потом
+ - **test02.cpp** - Простой тест регулярок по поиску точки входа и brief'а
+ - **test03.cpp** - Тест arithmetic_strong_typedef - просто присунул тут по случаю
+ - **test04.cpp** - Тестируем notes
+ - **test05.cpp** - Делаем для теста вывод токенов
+ - **umba-brief-scanner.cpp** - Утилита umba-brief-scanner - сканирование исходных текстов на C/C++ и получение списка кратких описаний файлов исходных текстов
+ - **utils.h** - Разные утилитки
 

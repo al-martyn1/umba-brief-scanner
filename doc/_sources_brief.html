@@ -7,13 +7,8 @@
 <table><tbody>
 <tr><td><br><b>umba-brief-scanner (Entry points)</b><br></td><td></td></tr>
 <tr><td>main.cpp</td><td>Для тестирования, файл с описанием и main&apos;ом</td></tr>
-<tr><td>qt_stub.cpp</td><td>Стаб, для того, чтобы windeployqt подсосал нужный рантайм для MSVC/GCC - а то совсем без Qt он не работает</td></tr>
 <tr><td>test0.cpp</td><td></td></tr>
 <tr><td>test00.cpp</td><td></td></tr>
-<tr><td>test01.cpp</td><td>Перетащил всю требуху из другого проекта, лишнее отрежу потом</td></tr>
-<tr><td>test02.cpp</td><td>Простой тест регулярок по поиску точки входа и brief&apos;а</td></tr>
-<tr><td>test03.cpp</td><td>Тест arithmetic_strong_typedef - просто присунул тут по случаю</td></tr>
-<tr><td>umba-brief-scanner.cpp</td><td>Утилита umba-brief-scanner - сканирование исходных текстов на C/C++ и получение списка кратких описаний файлов исходных текстов</td></tr>
 </tbody></table>
 <table><tbody>
 <tr><td><br><b>umba-brief-scanner</b><br></td><td></td></tr>
@@ -22,9 +17,22 @@
 <tr><td>arg_parser.h</td><td>Разбор аргументов командной строки</td></tr>
 <tr><td>brief_info.h</td><td>Реализация извлечения brief info из файлов сорцов</td></tr>
 <tr><td>commentUtils.h</td><td>Утилитки для разбора коментариев - разбор всякой шляпы типа тупых никому ненужных баннеров</td></tr>
+<tr><td>cpp-tokenizer.h</td><td>Токенизер для плюсов</td></tr>
+<tr><td>enums.h</td><td></td></tr>
 <tr><td>enums_manual.h</td><td>&quot;Ручные&quot; перечисления - то, что набито ручками, а не сгенерированно при помощи umba-enum-gen</td></tr>
 <tr><td>log.h</td><td>Макросы для лога</td></tr>
+<tr><td>mdlex.h</td><td></td></tr>
+<tr><td>notes.h</td><td>Заметки (TODO, NOTE, и тп)</td></tr>
+<tr><td>notes_impl.h</td><td>Заметки (TODO, NOTE, и тп)</td></tr>
+<tr><td>qt_stub.cpp</td><td>Стаб, для того, чтобы windeployqt подсосал нужный рантайм для MSVC/GCC - а то совсем без Qt он не работает</td></tr>
 <tr><td>signature.h</td><td>Поиск сигнатур, в т.ч. многострочных. Вытащил из MD PP, там они маркерами сниппетов работают</td></tr>
+<tr><td>test01.cpp</td><td>Перетащил всю требуху из другого проекта, лишнее отрежу потом</td></tr>
+<tr><td>test02.cpp</td><td>Простой тест регулярок по поиску точки входа и brief&apos;а</td></tr>
+<tr><td>test03.cpp</td><td>Тест arithmetic_strong_typedef - просто присунул тут по случаю</td></tr>
+<tr><td>test04.cpp</td><td>Тестируем notes</td></tr>
+<tr><td>test05.cpp</td><td>Делаем для теста вывод токенов</td></tr>
+<tr><td>umba-brief-scanner.cpp</td><td>Утилита umba-brief-scanner - сканирование исходных текстов на C/C++ и получение списка кратких описаний файлов исходных текстов</td></tr>
+<tr><td>utils.h</td><td>Разные утилитки</td></tr>
 </tbody></table>
 </body>
 </html>

@@ -135,12 +135,12 @@ struct AppConfig
             for(auto &kv : notesConfig.typeConfigs)
                 kv.second.addCheck = bVal;
         };
-        
+
         for(auto &&t : typeList)
         {
-            if (t=="reset" || t=="clr" || t=="clear")
+            if (t=="reset" || t=="clr" || t=="clear" || t=="-")
                 setAll(false);
-            else if (t=="all" || t=="set")
+            else if (t=="all" || t=="set" || t=="+")
                 setAll(true);
             else
                 notesConfig.typeConfigs[t].addCheck = true;
@@ -161,12 +161,12 @@ struct AppConfig
             for(auto &kv : notesConfig.typeConfigs)
                 kv.second.keepCheck = bVal;
         };
-        
+
         for(auto &&t : typeList)
         {
-            if (t=="reset" || t=="clr" || t=="clear")
+            if (t=="reset" || t=="clr" || t=="clear" || t=="-")
                 setAll(false);
-            else if (t=="all" || t=="set")
+            else if (t=="all" || t=="set" || t=="+")
                 setAll(true);
             else
                 notesConfig.typeConfigs[t].keepCheck = true;
@@ -288,18 +288,6 @@ struct AppConfig
         return true;
     }
 
-
-// struct NoteConfig
-// {
-//     std::string                        fileName; // --todo-filename
-//     std::unordered_set<std::string>    markers ; // в нижнем регистре  --todo-marker
-//  
-//     // Text must be ltrimmed
-//     std::string::size_type findMarker(std::string text, std::string *pFoundMarker=0)
-
-
-
-    //------------------------------
 
     //------------------------------
 

@@ -88,7 +88,7 @@ std::string prepareMultilineCommentBannerText(std::string commentText)
 
     // if (!commentLines.empty() && simpleTrim(commentLines.back()).empty())
     //     commentLines.pop_back(); // удаляем последнюю пустую строку
-    //  
+    //
     // if (!commentLines.empty() && simpleTrim(commentLines.front()).empty())
     //     commentLines.erase(commentLines.begin()); // удаляем первую пустую строку
 
@@ -118,10 +118,10 @@ std::string prepareMultilineCommentBannerText(std::string commentText)
 
     for(auto line : commentLines)
     {
-        // Первую строку игнорируем - там может быть начало многострочного коментария, 
-        // и когда символы коментария обрезаются, там может не остаться символа '*', 
+        // Первую строку игнорируем - там может быть начало многострочного коментария,
+        // и когда символы коментария обрезаются, там может не остаться символа '*',
         // который в остальных строках - баннерный
-        if (!lineNo++) 
+        if (!lineNo++)
         {
             continue;
         }

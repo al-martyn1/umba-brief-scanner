@@ -11,8 +11,10 @@
 #include "umba/macro_helpers.h"
 #include "umba/macros.h"
 #include "umba/filename.h"
+#include "umba/filesys.h"
 #include "umba/format_message.h"
 #include "umba/text_utils.h"
+#include "umba/cli_tool_helpers.h"
 #include "marty_utf/utf.h"
 //
 
@@ -101,7 +103,7 @@ bool NoteInfo::needAddCheckToTarget(const NoteConfig &noteCfg, bool *pVal) const
     if (noteCfg.keepCheck && hasCheck)
     {
         if (pVal)
-           *pVal = isChecked; 
+           *pVal = isChecked;
 
         return true;
     }
@@ -109,7 +111,7 @@ bool NoteInfo::needAddCheckToTarget(const NoteConfig &noteCfg, bool *pVal) const
     if (noteCfg.addCheck)
     {
         if (pVal)
-           *pVal = false; 
+           *pVal = false;
 
         return true;
     }
@@ -162,6 +164,7 @@ void NotesCollection::addNote(const NoteInfo &note)
         fnc.folderName       = makeCanonical(getPath(note.file));
         fnc.rootSearchFolder = makeCanonical(note.rootSearchFolder);
         fnc.notes.emplace_back(note);
+        m_map[folderNameForCmp] = fnc;
     }
     else
     {
@@ -186,6 +189,13 @@ void NotesCollection::addNotes(const std::vector<NoteInfo> &notes)
 
 //----------------------------------------------------------------------------
 inline
+std::string NotesConfig::getNoteOutputType(const std::string &noteType) const
+{
+    return !singleOutput.empty() ? singleOutput : noteType;
+}
+
+//----------------------------------------------------------------------------
+inline
 NoteConfig NotesConfig::findNoteConfig(const std::string &noteType) const
 {
     std::unordered_map<std::string, NoteConfig>::const_iterator noteCfgIt = typeConfigs.find(umba::string::tolower_copy(noteType));
@@ -204,7 +214,7 @@ std::string NotesConfig::formatNoteTitle(const NoteInfo &note, const NoteConfig 
 
     UMBA_USED(note);
 
-    if (singleOutput.empty())
+    if (!singleOutput.empty())
         return std::string(); // Когда у нас раздельный output - не выводим тип заметок
 
     return umba::FormatMessage(titleFormat)
@@ -221,19 +231,27 @@ std::string NotesConfig::formatNoteTitle(const NoteInfo &note) const
 
 //----------------------------------------------------------------------------
 inline
-std::string NotesConfig::formatNoteSrcInfo(const NoteInfo &note) const
+std::string NotesConfig::formatNoteSrcInfo(const NoteInfo &note, bool formatMd) const
 {
     // umba::macros::MacroTextFromMap<std::string> mtfm;
     // mtfm.m["FILE"] = note.file;
     // mtfm.m["LINE"] = std::to_string(note.line);
-    //  
+    //
     // return umba::macros::substMacros(srcInfoFormat, mtfm, umba::macros::smf_KeepUnknownVars | umba::macros::smf_uppercaseNames);
 
     if (!addSourceInfo)
         return std::string();
 
-    return umba::FormatMessage(titleFormat)
-          .arg("File", note.file)
+    auto file = !outputPath.empty()
+              ? ( formatMd
+                ? umba::filename::makeRelPath( note.file, note.rootSearchFolder, '/')
+                : note.file
+                )
+              : umba::filename::getFileName(note.file)
+              ;
+
+    return umba::FormatMessage(srcInfoFormat)
+          .arg("File", file)
           .arg("Line", note.line)
           .toString();
 }
@@ -248,16 +266,17 @@ void NotesConfig::appendNoteText(std::string &text, const std::string &strAppend
 }
 
 //----------------------------------------------------------------------------
-// Делаем текст 
+// Делаем текст
 inline
 std::string NotesConfig::formatNoteToMarkdown( /* const AppConfig &appCfg, */ const NoteInfo &note, std::size_t textWidth) const
 {
     NoteConfig noteCfg = findNoteConfig(note.noteType);
 
     std::string firstLine = note.getTargetCheckStr(noteCfg);
-    bool hasCheck = !firstLine.empty();
+    // bool hasCheck = !firstLine.empty();
 
-    appendNoteText(firstLine, formatNoteTitle(note));
+    if (!singleOutput.empty()) // Если выводим все заметки в один файл, надо добавлять тип заметки
+        appendNoteText(firstLine, formatNoteTitle(note));
     appendNoteText(firstLine, formatNoteSrcInfo(note));
 
     // Пока в заметках не поддерживается никакого форматирования
@@ -276,7 +295,7 @@ std::string NotesConfig::formatNoteToMarkdown( /* const AppConfig &appCfg, */ co
                                             , marty_utf::SymbolLenCalculatorEncodingUtf8()
                                             );
 
-    text = umba::text_utils::textAddIndent(text, std::string(6, ' '));
+    text = umba::text_utils::textAddIndent(text, std::string(2, ' '));
 
     if (!text.empty())
     {
@@ -286,10 +305,12 @@ std::string NotesConfig::formatNoteToMarkdown( /* const AppConfig &appCfg, */ co
         }
         else
         {
-            if (hasCheck)
-                text = std::string("- ")     + firstLine + "\n" + text;
-            else
-                text = std::string("-     ") + firstLine + "\n" + text;
+            // if (hasCheck)
+            //     text = std::string("- ") + firstLine + "\n" + text;
+            // else
+            //     text = std::string("- ") + firstLine + "\n" + text;
+
+            text = std::string("- ") + firstLine + "\n" + text;
         }
     }
 
@@ -298,15 +319,19 @@ std::string NotesConfig::formatNoteToMarkdown( /* const AppConfig &appCfg, */ co
 
 //----------------------------------------------------------------------------
 inline
-std::string NotesConfig::formatNoteToText( /* const AppConfig &appCfg, */ const NoteInfo &note, std::size_t textWidth=94) const
+std::string NotesConfig::formatNoteToText( /* const AppConfig &appCfg, */ const NoteInfo &note, std::size_t textWidth) const
 {
     NoteConfig noteCfg = findNoteConfig(note.noteType);
 
     // std::ostringstream oss;
 
-    std::string text = textNotesFullPath 
-                     ? umba::filesystem::makeCanonical(note.file) // Либо полный путь в локальной ФС, с разделителями, принятыми в данной ОС
-                     : umba::filesystem::makeRelPath( note.file, note.rootSearchFolder, '/') // либо относительно каталога, в котором файл найден, с универсальными разделителями '/'
+
+    std::string text = textNotesFullPath
+                     ? umba::filename::makeCanonical(note.file) // Либо полный путь в локальной ФС, с разделителями, принятыми в данной ОС
+                     : ( !outputPath.empty()
+                       ? umba::filename::makeRelPath( note.file, note.rootSearchFolder, '/') // либо относительно каталога, в котором файл найден, с универсальными разделителями '/'
+                       : umba::filename::getFileName(note.file)
+                       )
                      ;
 
     text.append(":");
@@ -318,13 +343,13 @@ std::string NotesConfig::formatNoteToText( /* const AppConfig &appCfg, */ const 
         text.append(note.noteType);
         text.append(":");
     }
-    text.append('\n');
-    text = umba::text_utils::formatTextParas( text
-                                            , textWidth // line len
-                                            , umba::text_utils::TextAlignment::left
-                                            , marty_utf::SymbolLenCalculatorEncodingUtf8()
-                                            );
-    text.append('\n');
+    text.append(1, '\n');
+    text += umba::text_utils::formatTextParas( note.noteText
+                                             , textWidth // line len
+                                             , umba::text_utils::TextAlignment::left
+                                             , marty_utf::SymbolLenCalculatorEncodingUtf8()
+                                             );
+    text.append(1, '\n');
 
     return text;
 }
@@ -335,23 +360,31 @@ std::string NotesConfig::formatNoteToText( /* const AppConfig &appCfg, */ const 
 
 //----------------------------------------------------------------------------
 inline
-std::ostream& FolderNotesCollection::getNotesFormatStream(const NotesConfig &cfg, const std::string &noteType) const
+std::ostream& FolderNotesCollection::getNotesFormatStream(const NotesConfig &cfg, std::string noteType) const
 {
-    if (!cfg.singleOutput.empty())
-        return m_noteStreams[cfg.singleOutput];
+    noteType = cfg.getNoteOutputType(noteType);
+    std::unordered_map<std::string, std::shared_ptr<std::ostringstream> >::const_iterator it = m_noteStreams.find(noteType);
+    if (it!=m_noteStreams.end())
+    {
+        return *it->second;
+    }
 
-    return m_noteStreams[noteType];
+    auto oss = std::make_shared<std::ostringstream>();
+    m_noteStreams[noteType] = oss;
+
+    return *oss;
 }
 
 //----------------------------------------------------------------------------
 inline
-std::string   FolderNotesCollection::getNotesFormattedText(const std::string &noteType) const
+std::string   FolderNotesCollection::getNotesFormattedText(std::string noteType) const
 {
-    std::unordered_map<std::string, std::ostringstream>::const_iterator mit = m_noteStreams.find(noteType);
+    //noteType = cfg.getNoteOutputType(noteType);
+    std::unordered_map<std::string, std::shared_ptr<std::ostringstream> >::const_iterator mit = m_noteStreams.find(noteType);
     if (mit==m_noteStreams.end())
         return std::string();
 
-    return mit->second.str();
+    return mit->second->str();
 }
 
 //----------------------------------------------------------------------------
@@ -367,10 +400,10 @@ std::vector<std::string> FolderNotesCollection::getFormattedNoteTypesList() cons
 {
     std::vector<std::string> resVec; resVec.reserve(m_noteStreams.size());
 
-    std::unordered_map<std::string, std::ostringstream>::const_iterator mit = m_noteStreams.begin();
+    std::unordered_map<std::string, std::shared_ptr<std::ostringstream> >::const_iterator mit = m_noteStreams.begin();
     for(; mit!=m_noteStreams.end(); ++mit)
     {
-        if (mit->second.str().empty())
+        if (mit->second->str().empty())
             continue;
         resVec.emplace_back(mit->first);
     }
@@ -433,7 +466,7 @@ bool noteTextTestForStripsAndStrip( std::string                             &tex
 }
 
 //----------------------------------------------------------------------------
-//! Проверяем текст на предмет 
+//! Проверяем текст на предмет
 inline
 bool noteTextTestForMarkersAndStrip( std::string &text
                                    , const std::unordered_map<std::string, NoteConfig> &noteConfigs
@@ -540,18 +573,21 @@ void NotesCollection::sortNotes()
 
 //----------------------------------------------------------------------------
 inline
-bool NotesCollection::serializeToFiles(const AppConfig &appCfg) const
+bool NotesCollection::serializeToFiles(const AppConfig &appCfg, std::vector<std::string> &writtenFiles) const
 {
+    using namespace umba::filename;
+
     const NotesConfig &notesCfg = appCfg.notesConfig;
 
     // Сначала мы делаем доки для отдельных каталогов в любом случае
 
     // Для каждого каталога мы можем писать все заметкиа в один файл, или же писать в разные, в зависимости от типа
 
-    bool singleOutputMode = !notesCfg.singleOutput.empty();
+    bool bSingleOutputPath = !notesCfg.outputPath.empty();
+    bool bSingleOutputMode = !notesCfg.singleOutput.empty();
     bool bFormatMd = (appCfg.optionFlags&AppConfig::ofMd)!=0;
 
-    std::string noteTypeSectionTitleMarker = std::string(singleOutputMode ? 2 : 1, '#');
+    std::string noteTypeSectionTitleMarker = std::string(bSingleOutputMode ? 2u : 1u, '#');
 
 
     // Форматируем заметки по каталогам, в один или разные потоки
@@ -564,7 +600,7 @@ bool NotesCollection::serializeToFiles(const AppConfig &appCfg) const
 
         for(const auto &note : kv.second.notes)
         {
-            std::ostream& oss = getNotesFormatStream(notesCfg, note.noteType);
+            std::ostream& oss = kv.second.getNotesFormatStream(notesCfg, note.noteType);
 
             if (prevNoteType!=note.noteType)
             {
@@ -574,109 +610,127 @@ bool NotesCollection::serializeToFiles(const AppConfig &appCfg) const
                 if (bFormatMd)
                 {
                     // TODO: !!! Нужно выводить не тип заметки, а какой-то заголовок
-    
-                    oss << "\n" << noteTypeSectionTitleMarker << " " << note.noteType << "\n\n";
-    
-                    // NoteConfig noteCfg = findNoteConfig(note.noteType);
-                    //  
-                    // std::string firstLine = note.getTargetCheckStr(noteCfg);
-                    // bool hasCheck = !firstLine.empty();
-                    //  
-                    // appendNoteText(firstLine, formatNoteTitle(note));
+                    if (bSingleOutputMode)
+                    {
+                        oss << "\n" << noteTypeSectionTitleMarker << " " << note.noteType << "\n\n";
+                    }
                 }
 
             } // if (prevNoteType!=note.noteType)
 
             if (bFormatMd)
-            {
                 oss << notesCfg.formatNoteToMarkdown(note, appCfg.descriptionWidth) << "\n\n";
-            }
             else
-            {
                 oss << notesCfg.formatNoteToText(note, appCfg.descriptionWidth) << "\n\n";
-            }
 
         } // for(const auto &note : kv.second.notes)
 
     }
 
     // Теперь надо пробежаться опять по всем каталогам, и:
-    // если мы хотим сохранять заметки прямо в каталогах - сохраняем их там, 
+    // если мы хотим сохранять заметки прямо в каталогах - сохраняем их там,
     // если мы хотим сохранять заметки в одном каталоге, то при пробежке просто
-    // собираем тексты для единых файлов, и тогда нам надо добавлять перед каждой секцией заголовок, 
+    // собираем тексты для единых файлов, и тогда нам надо добавлять перед каждой секцией заголовок,
     // в который будем помещать путь к каталогу
 
 
+    std::unordered_map<std::string, std::string> singlePathOutputs;
 
-    // std::string formatNoteToMarkdown( /* const AppConfig &appCfg, */ const NoteInfo &note, std::size_t textWidth=94) const;
-    // std::string formatNoteToText    ( /* const AppConfig &appCfg, */ const NoteInfo &note, std::size_t textWidth=94) const;
+    auto targetExt = notesCfg.targetExt;
+    if (targetExt.empty())
+    {
+        if (bFormatMd)
+            targetExt = "md";
+        else
+            targetExt = "txt";
+    }
 
-    // appCfg.notesConfig
-    // appCfg.optionFlags ofHtml ofMd
-    // appCfg.bOverwrite
 
-    return appCfg.bOverwrite;
+    for(const auto &kv : m_map)
+    {
+        auto notesTypeList = kv.second.getFormattedNoteTypesList();
+        for(auto noteType : notesTypeList)
+        {
+            noteType = notesCfg.getNoteOutputType(noteType);
+            auto notesText = kv.second.getNotesFormattedText(noteType);
+
+            if (bSingleOutputPath)
+            {
+                auto &allText = singlePathOutputs[noteType];
+                if (bFormatMd)
+                {
+                    if (!allText.empty())
+                        allText.append(2, '\n');
+
+                    allText.append("# ");
+                    allText.append(makeRelPath( kv.second.folderName, kv.second.rootSearchFolder, '/'));
+                    allText.append(2, '\n');
+                }
+                else
+                {
+                    // allText.append(makeRelPath( kv.second.folderName, kv.second.rootSearchFolder, '/'));
+                    // allText.append(2, '\n');
+                }
+
+                allText.append(notesText);
+
+            }
+            else // write notes to their folder
+            {
+                notesText = bFormatMd ? ("---\nGenerator: Umba-Brief-Scanner\n---\n\n" + notesText) : notesText;
+                notesText = marty_cpp::converLfToOutputFormat(notesText, appCfg.outputLinefeed);
+
+                NoteConfig noteTypeCfg = notesCfg.findNoteConfig(noteType);
+
+                auto notesFolder = makeCanonical(kv.second.folderName);
+                umba::filesys::createDirectoryEx( notesFolder, true /* forceCreatePath */ );
+
+                auto notesFilename = makeCanonical(appendExt(appendPath(kv.second.folderName, noteTypeCfg.fileName), targetExt));
+                umba::cli_tool_helpers::writeOutput( notesFilename, umba::cli_tool_helpers::IoFileType::regularFile // outputFileType
+                                                   , encoding::ToUtf8(), encoding::FromUtf8()
+                                                   , notesText, std::string() // bomData
+                                                   , true /* fromFile */, true /* utfSource */ , appCfg.bOverwrite
+                                                   );
+                writtenFiles.emplace_back(notesFilename);
+            }
+        }
+    }
+
+    if (bSingleOutputPath)
+    {
+        for(const auto &kv : singlePathOutputs)
+        {
+            auto noteType = kv.first;
+            NoteConfig noteTypeCfg = notesCfg.findNoteConfig(noteType);
+
+            auto
+            notesText = bFormatMd ? ("---\nGenerator: Umba-Brief-Scanner\n---\n\n" + kv.second) : kv.second;
+            notesText = marty_cpp::converLfToOutputFormat(notesText, appCfg.outputLinefeed);
+
+            auto notesFolder = makeCanonical(notesCfg.outputPath);
+            umba::filesys::createDirectoryEx( notesFolder, true /* forceCreatePath */ );
+
+            auto notesFilename = makeCanonical(appendExt(appendPath(notesCfg.outputPath, noteTypeCfg.fileName), targetExt));
+            umba::cli_tool_helpers::writeOutput( notesFilename, umba::cli_tool_helpers::IoFileType::regularFile // outputFileType
+                                               , encoding::ToUtf8(), encoding::FromUtf8()
+                                               , notesText, std::string() // bomData
+                                               , true /* fromFile */, true /* utfSource */ , appCfg.bOverwrite
+                                               );
+            writtenFiles.emplace_back(notesFilename);
+        }
+    }
+
+    for(const auto &kv : m_map)
+    {
+        kv.second.clearNotesFormattedText();
+    }
+
+    return true;
 }
 
 
-// struct NotesConfig
-// {
-//     std::unordered_map<std::string, NoteConfig>  typeConfigs; // --todo-filename, --todo-marker
-//     std::unordered_set<std::string>              stripSet   ; // --todo-strip
-//  
-//     std::string                                  targetExt  ; // = "md"; // --todo-ext
-//     std::string                                  outputPath ; // --todo-output-path - пишем в одно место, а не распихиваем по каталогам
-//  
-//     std::string                                  singleOutput ; // --notes-single-output  - выводим все заметки в файл данного типа
-//     std::string                                  titleFormat  ; // --notes-single-output-title-format
-//     std::string                                  srcInfoFormat; // --notes-source-info-format
-//     bool                                         addSourceInfo = true; // TODO: Надо добавить опцию ком. строки для задания данного параметра --notes-source-info
-//     bool                                         textNotesFullPath = false; // --text-notes-full-path - используется при сохранении в простой текст
 
 
-// struct FolderNotesCollection
-// {
-//     std::string                folderName      ; // Каноническое имя
-//     std::string                rootSearchFolder; // Каталог поиска, в котором был найден данный каталог, каноническое имя
-//  
-//     std::vector<NoteInfo>      notes;
-//  
-//     std::ostream& getNotesFormatStream(const NotesConfig &cfg, const std::string &noteType) const;
-//     std::string   getNotesFormattedText(const std::string &noteType) const;
-//     void          clearNotesFormattedText() const;
-//     std::vector<std::string> getFormattedNoteTypesList() const;
-//  
-//     // Сортируем по типу, чтобы при выводе в один файл заметки были сгруппированы по типу. Сортируем с сохранением относительного порядка между заметками одного типа
-//     void sortNotes(); 
-//  
-// protected:
-//  
-//     mutable std::unordered_map<std::string, std::ostringstream>  m_noteStreams;
-//  
-// }; // struct FolderNotesCollection
-
-
-
-// struct NoteInfo
-// {
-//     std::string    noteType;
-//     std::string    noteText;
-//  
-//     std::string    file; // full name
-//     std::size_t    line;
-//  
-//     std::string    rootSearchFolder; // Каталог поиска, в котором был найден файл
-//  
-//  
-//     bool           hasCheck  = false; // В исходниках заметки был найден маркер
-//     bool           isChecked = false; // Найденный маркер был checked
-//  
-//  
-//     void append(const std::string &s);
-//     bool empty() const;
-//     bool needAddCheckToTarget(const NoteConfig &noteCfg, bool *pVal=0) const;
-//     bool needAddCheckToTarget(const NoteConfig &noteCfg, char &ch) const;
-//     std::string getTargetCheckStr(const NoteConfig &noteCfg) const;
 
 
 

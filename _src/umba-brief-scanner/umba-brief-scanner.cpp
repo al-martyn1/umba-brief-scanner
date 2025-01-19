@@ -160,22 +160,22 @@ int unsafeMain(int argc, char* argv[])
             //     // По умолчанию VSCode задаёт текущим каталогом тот, где лежит бинарник
             //     rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\..\\"));
             //     //argsParser.args.push_back("--batch-output-root=C:/work/temp/mdpp-test");
-            //  
+            //
             // }
             // else
             // {
             //     //rootPath = umba::filename::makeCanonical(umba::filename::appendPath<std::string>(cwd, "..\\..\\..\\"));
             // }
-            //  
+            //
             // //#endif
-            //  
+            //
             // if (!rootPath.empty())
             //     rootPath = umba::filename::appendPathSepCopy(rootPath);
-            //  
+            //
             // argsParser.args.clear();
-            //  
+            //
             // argsParser.args.push_back("--verbose=detailed");
-            //  
+            //
             // // argsParser.args.push_back("--batch-exclude-dir=_libs,libs,_lib,lib,tests,test,rc,_generators,_distr_conf,src,.msvc2019,boost,icons");
             // argsParser.args.push_back("@" + rootPath + "\\umba-brief-scanner.rsp");
             // argsParser.args.push_back("--overwrite");
@@ -217,7 +217,12 @@ int unsafeMain(int argc, char* argv[])
             argsParser.args.push_back("@" + rootPath + "/umba-brief-scanner.rsp");
             argsParser.args.push_back(rootPath + "/doc/_sources_brief.txt");
 
+
+            // argsParser.args.push_back("--md");
             argsParser.args.push_back("--scan=" + rootPath + "/_src");
+
+            argsParser.args.push_back("--scan-notes");
+            argsParser.args.push_back("--notes-output-path=" + rootPath + "/doc");
 
 // --scan=src
 // --scan=_libs\unicont
@@ -547,6 +552,35 @@ int unsafeMain(int argc, char* argv[])
     // Нет доксификации или режим доксификации инвалидный
     if (!doxyficationMode)
     {
+        if (appConfig.getOptTodo())
+        {
+            try
+            {
+                //if (!foundFiles.empty())
+                if (appConfig.testVerbosity(VerbosityLevel::detailed))
+                    umba::info_log::printSectionHeader(logMsg, "Writing collected notes:");
+                std::vector<std::string> writtenFiles;
+                notesCollection.sortNotes();
+                notesCollection.serializeToFiles(appConfig, writtenFiles);
+
+                if (appConfig.testVerbosity(VerbosityLevel::detailed))
+                {
+                    if (writtenFiles.empty())
+                        logMsg << "Note: there is no notes files written\n";
+                    else
+                    {
+                        for(auto &&f: writtenFiles)
+                            logMsg << "  " << f << "\n";
+                    }
+                }
+            }
+            catch(const std::runtime_error &e)
+            {
+                LOG_ERR_OPT << e.what() << "\n";
+                return 1;
+            }
+
+        }
 
         std::ofstream infoStream;
         if (!appConfig.getOptNoOutput())
@@ -752,7 +786,7 @@ int unsafeMain(int argc, char* argv[])
                         try
                         {
                             // Не будем париться - первая строка может свисать справа, ну и фик с ним
-    
+
                             //TODO: !!! Не корректно определяется длина строк в многобайтной кодировке
                             //          Мой поток вывода (umba::SimpleFormatter) - также некорректно работает с многобайтной кодировкой,
                             //          но это обычно не проблема, если имена файлов  исходников используют только английский алфавит.
@@ -760,7 +794,7 @@ int unsafeMain(int argc, char* argv[])
                             //          так и многобайтной (UTF-8, например, и в линуксе это обычно уже стандарт)
                             //          Поэтому, если где-то используются русскоязычные описания и используется форматирование, то лучше
                             //          сделать его побольше - не 80, а 120 символов шириной, например.
-    
+
                             textWithIndent = umba::text_utils::textAddIndent( formattedParas, std::string(fnw+3u, ' '), std::string() );
                         }
                         catch(const std::exception &e)

@@ -113,8 +113,8 @@ UMBA_MAIN()
         inputFiles.emplace_back("C:\\work\\projects\\auxware\\protogen\\tests\\test01.ptg");
         //inputFiles.emplace_back("F:\\_github\\umba-tools\\protogen\\tests\\test01.ptg");
 
-        
-        
+
+
     }
 
 
