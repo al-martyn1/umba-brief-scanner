@@ -1,3 +1,5 @@
+#pragma once
+
 /*! \file
     \brief Информация о приложении umba-brief-scanner и его версии - название, описание, версия, время/дата, домашняя страница
  */
@@ -17,3 +19,4 @@ const char *appistrPath   = "";
     const char *appSubPath    = "bin/umba-brief-scanner";
 #endif
 
+#define MD_META_GENERATOR_NAME "Umba Brief Scanner"

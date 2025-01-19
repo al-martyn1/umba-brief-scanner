@@ -5,6 +5,7 @@
 #pragma once
 
 #include "app_config.h"
+#include "app_ver_config.h"
 #include "log.h"
 //
 
@@ -252,7 +253,7 @@ std::string NotesConfig::formatNoteSrcInfo(const NoteInfo &note, bool formatMd) 
 
     return umba::FormatMessage(srcInfoFormat)
           .arg("File", file)
-          .arg("Line", note.line)
+          .arg("Line", note.line+1)
           .toString();
 }
 
@@ -293,6 +294,7 @@ std::string NotesConfig::formatNoteToMarkdown( /* const AppConfig &appCfg, */ co
                                             , textWidth // line len
                                             , umba::text_utils::TextAlignment::left
                                             , marty_utf::SymbolLenCalculatorEncodingUtf8()
+                                            , false
                                             );
 
     text = umba::text_utils::textAddIndent(text, std::string(2, ' '));
@@ -335,7 +337,7 @@ std::string NotesConfig::formatNoteToText( /* const AppConfig &appCfg, */ const 
                      ;
 
     text.append(":");
-    text.append(std::to_string(note.line));
+    text.append(std::to_string(note.line+1));
     text.append(":");
 
     if (!singleOutput.empty()) // Если выводим все заметки в один файл, надо добавлять тип заметки
@@ -348,6 +350,7 @@ std::string NotesConfig::formatNoteToText( /* const AppConfig &appCfg, */ const 
                                              , textWidth // line len
                                              , umba::text_utils::TextAlignment::left
                                              , marty_utf::SymbolLenCalculatorEncodingUtf8()
+                                             , false
                                              );
     text.append(1, '\n');
 
@@ -654,6 +657,9 @@ bool NotesCollection::serializeToFiles(const AppConfig &appCfg, std::vector<std:
             noteType = notesCfg.getNoteOutputType(noteType);
             auto notesText = kv.second.getNotesFormattedText(noteType);
 
+            if (umba::string_plus::trim_copy(notesText).empty()) // !!! С какого-то перепугу у нас иногда вылезают ацстые заметки, надо разобраться
+                continue;
+
             if (bSingleOutputPath)
             {
                 auto &allText = singlePathOutputs[noteType];
@@ -677,7 +683,7 @@ bool NotesCollection::serializeToFiles(const AppConfig &appCfg, std::vector<std:
             }
             else // write notes to their folder
             {
-                notesText = bFormatMd ? ("---\nGenerator: Umba-Brief-Scanner\n---\n\n" + notesText) : notesText;
+                notesText = bFormatMd ? ("---\nGenerator: " MD_META_GENERATOR_NAME "\n---\n\n" + notesText) : notesText;
                 notesText = marty_cpp::converLfToOutputFormat(notesText, appCfg.outputLinefeed);
 
                 NoteConfig noteTypeCfg = notesCfg.findNoteConfig(noteType);
@@ -704,7 +710,7 @@ bool NotesCollection::serializeToFiles(const AppConfig &appCfg, std::vector<std:
             NoteConfig noteTypeCfg = notesCfg.findNoteConfig(noteType);
 
             auto
-            notesText = bFormatMd ? ("---\nGenerator: Umba-Brief-Scanner\n---\n\n" + kv.second) : kv.second;
+            notesText = bFormatMd ? ("---\nGenerator: " MD_META_GENERATOR_NAME "\n---\n\n" + kv.second) : kv.second;
             notesText = marty_cpp::converLfToOutputFormat(notesText, appCfg.outputLinefeed);
 
             auto notesFolder = makeCanonical(notesCfg.outputPath);
