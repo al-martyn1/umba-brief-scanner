@@ -10,6 +10,12 @@
 --split-group
 # doc/_sources_brief.txt
 
+--exclude-dir=encoding
+--exclude-dir=marty_cpp
+--exclude-dir=sfmt
+--exclude-dir=umba
+--exclude-dir=marty_decimal
+
 #--scan-notes
 # --scan-todo is same
 
@@ -20,4 +26,4 @@
 #--exclude-dir=_lib
 #--exclude-dir=_libs
 
---notes-single-output=todo
+#--notes-single-output=todo
