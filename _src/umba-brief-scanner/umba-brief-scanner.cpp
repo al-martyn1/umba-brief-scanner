@@ -224,6 +224,8 @@ int unsafeMain(int argc, char* argv[])
             argsParser.args.push_back("--scan-notes");
             argsParser.args.push_back("--notes-output-path=" + rootPath + "/doc");
 
+            argsParser.args.push_back("--main");
+
 // --scan=src
 // --scan=_libs\unicont
 // --scan=_libs\unicont_boost

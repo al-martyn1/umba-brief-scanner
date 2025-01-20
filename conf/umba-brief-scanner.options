@@ -141,6 +141,9 @@
 -X=*.*xml^
 -X=*.yml^
 -X=*.sln^
+-X=*.vcproj^
+-X=*.vcxproj^
+-X=*.vcxproj.filters^
 -X=*.pro^
 -X=*.am^
 -X=*.svd^

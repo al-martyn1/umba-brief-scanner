@@ -1,5 +1,6 @@
 # Brief Description for Project Sources
 
+- [_libs/marty_decimal/tests/src (Entry points)](#user-content-_libsmarty_decimaltestssrc-entry-points)
 - [_libs/umba (Entry points)](#user-content-_libsumba-entry-points)
 - [_src/umba-brief-scanner (Entry points)](#user-content-_srcumba-brief-scanner-entry-points)
 - [_libs/encoding/compact_enc_det](#user-content-_libsencodingcompact_enc_det)
@@ -13,6 +14,10 @@
 - [_libs/marty_cpp](#user-content-_libsmarty_cpp-1)
 - [_libs/marty_cpp/warnings](#user-content-_libsmarty_cppwarnings)
 - [_libs/marty_decimal](#user-content-_libsmarty_decimal)
+- [_libs/marty_decimal/tests/src](#user-content-_libsmarty_decimaltestssrc)
+- [_libs/marty_decimal/tests/vcxproj](#user-content-_libsmarty_decimaltestsvcxproj)
+- [_libs/marty_decimal/tests/zulibs/marty_cpp](#user-content-_libsmarty_decimaltestszulibsmarty_cpp)
+- [_libs/marty_decimal](#user-content-_libsmarty_decimal-1)
 - [_libs/marty_decimal/warnings](#user-content-_libsmarty_decimalwarnings)
 - [_libs/marty_utf](#user-content-_libsmarty_utf)
 - [_libs/sfmt](#user-content-_libssfmt)
@@ -21,9 +26,12 @@
 - [_libs/umba](#user-content-_libsumba-1)
 - [_libs/umba/warnings](#user-content-_libsumbawarnings)
 - [_libs/umba](#user-content-_libsumba-2)
-- [_libs/umba_tokenizer/doc.3dp](#user-content-_libsumba_tokenizerdoc3dp)
 - [_src/umba-brief-scanner](#user-content-_srcumba-brief-scanner)
 
+
+# _libs/marty_decimal/tests/src (Entry points)
+
+ - **safe_main.h** - 
 
 # _libs/umba (Entry points)
 
@@ -124,6 +132,28 @@
  - **marty_int_decimal.h** - 
  - **marty_int_decimal_impl.h** - 
  - **marty_relops_impl.h** - 
+
+# _libs/marty_decimal/tests/src
+
+ - **benchmark_tests.cpp** - Тесты производительности и сравнение доморощеного Decimal, double и cpp_dec_float (вариант с хранилищем в std::basic_string)
+ - **cpp.h** - 
+ - **pi_test.cpp** - Тест производительности доморощеного Decimal на вычислении числа Пи
+ - **regression_tests.cpp** - Decimal type regression tests
+
+# _libs/marty_decimal/tests/vcxproj
+
+ - **benchmark_tests.vcxproj** - 
+ - **benchmark_tests.vcxproj.filters** - 
+ - **pi_test.vcxproj** - 
+ - **regression_tests.vcxproj** - 
+ - **regression_tests.vcxproj.filters** - 
+
+# _libs/marty_decimal/tests/zulibs/marty_cpp
+
+ - **marty_cpp.h** - 
+
+# _libs/marty_decimal
+
  - **undef_min_max.h** - 
 
 # _libs/marty_decimal/warnings
@@ -148,7 +178,6 @@
 
  - **CMakeCCompilerId.c** - 
  - **CMakeCXXCompilerId.cpp** - 
- - **_brief.html** - 
  - **algoritms.h** - Различные колхозные алгоритмы
  - **alloca.h** - Совместимая версия alloca/_alloca
  - **arithmetic_strong_typedef.h** - Какая-то шляпа, уже и не помню. Вроде оставлена чисто для совместимости
@@ -350,12 +379,6 @@
  - **zz_i_char_writer_term_utils.h** - ZZ Какие-то консольные хелперы
  - **zz_inc_windows.h** - ZZ Правильный порядок инклюдов для винды
  - **zz_mcu_low_level.h** - ZZ Microcontroller Unit Low Level definitions
-
-# _libs/umba_tokenizer/doc.3dp
-
- - **Keith_Cooper_Linda_Torczon-Engineering_a_Compiler-EN.pdf** - 
- - **Redkaya_professiya.pdf** - 
- - **Креншоу_Iforth.pdf** - 
 
 # _src/umba-brief-scanner
 
