@@ -24,6 +24,8 @@
 #include "umba/macro_helpers.h"
 #include "umba/macros.h"
 #include "umba/info_log.h"
+#include "umba/filename.h"
+#include "umba/filesys.h"
 #include "umba/filesys_scanners.h"
 
 #include "umba/time_service.h"
@@ -571,7 +573,7 @@ int unsafeMain(int argc, char* argv[])
             {
                 //if (!foundFiles.empty())
                 if (appConfig.testVerbosity(VerbosityLevel::detailed))
-                    umba::info_log::printSectionHeader(logMsg, "Writing collected notes:");
+                    umba::info_log::printSectionHeader(logMsg, "Writing collected notes");
                 std::vector<std::string> writtenFiles;
                 notesCollection.sortNotes();
                 notesCollection.serializeToFiles(appConfig, writtenFiles);
@@ -612,7 +614,8 @@ int unsafeMain(int argc, char* argv[])
                 //bool isPathFile(const StringType &path)
             }
 
-
+            auto outputFolder = umba::filename::makeCanonical(umba::filename::getPath(appConfig.outputName));
+            umba::filesys::createDirectoryEx( outputFolder, true /* forceCreatePath */ );
             infoStream.open( appConfig.outputName, std::ios_base::out | std::ios_base::trunc );
             if (!infoStream)
             {
