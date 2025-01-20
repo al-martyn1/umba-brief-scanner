@@ -69,7 +69,8 @@ struct AppConfig
     static const unsigned                    ofSkipUndocumented      = 0x0040; // Skip undocumented files
     static const unsigned                    ofRemovePath            = 0x0080; // Remove path from output names
 
-    static const unsigned                    ofSplitGroups           = 0x0200; // Remove path from output names
+    static const unsigned                    ofSplitGroups           = 0x0200; // Split to to groups by path
+    static const unsigned                    ofSplitMain             = 0x0400; // Put entry points to separate groups
 
     static const unsigned                    ofHtml                  = 0x1000; // Print output in html format
     static const unsigned                    ofMd                    = 0x2000; // Print output in md format, overrides html option
@@ -344,6 +345,7 @@ struct AppConfig
             case ofSkipUndocumented      : return "Skip undocumented";
             case ofRemovePath            : return "Remove path from file names in output";
             case ofSplitGroups           : return "Split to groups";
+            case ofSplitMain             : return "Put entry points to separate groups";
             case ofTodo                  : return "Scan for TODOs";
 
             default                      : return "Multiple flags taken!!!";
@@ -361,6 +363,7 @@ struct AppConfig
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SkipUndocumented)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(RemovePath)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SplitGroups)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SplitMain)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Todo)
 
 
@@ -449,6 +452,7 @@ struct AppConfig
         s << "    " << getOptNameString(ofSkipUndocumented)    << ": " << getOptValAsString(optionFlags&ofSkipUndocumented) << "\n";
         s << "    " << getOptNameString(ofRemovePath)          << ": " << getOptValAsString(optionFlags&ofRemovePath) << "\n";
         s << "    " << getOptNameString(ofSplitGroups)         << ": " << getOptValAsString(optionFlags&ofSplitGroups) << "\n";
+        s << "    " << getOptNameString(ofSplitMain)           << ": " << getOptValAsString(optionFlags&ofSplitMain) << "\n";
         s << "    " << getOptNameString(ofTodo)                << ": " << getOptValAsString(optionFlags&ofTodo) << "\n";
 
         s << "\n";

@@ -367,12 +367,19 @@ int operator()( const std::string                               &a           //!
                 return 0;
             }
 
-        else if (opt.isOption("main") || opt.setDescription("Print only main files (whish contains main or other entry point)."))
+        else if (opt.isOption("main-only") || opt.isOption("main") || opt.setDescription("Print only main files (whish contains main or other entry point)."))
             {
                 if (argsParser.hasHelpOption) return 0;
                 appConfig.setOptMain(true);
                 return 0;
             }
+
+        // else if (opt.isOption("split-main") || opt.setDescription("Put entry points to separate groups."))
+        //     {
+        //         if (argsParser.hasHelpOption) return 0;
+        //         appConfig.setOptMain(true);
+        //         return 0;
+        //     }
 
         else if (opt.isOption("remove-path") || opt.setDescription("Remove path from file names while ghenerating output."))
             {
