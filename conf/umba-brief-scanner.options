@@ -35,16 +35,18 @@
 --notes-single-output-title-format=`[$(Title)]`
 --notes-source-info-format=`[$(File):$(Line)]`
 
+# TODO
+--notes-filename=todo:_found-todos
+--notes-single-output-title=todo:TODO
+--notes-marker=todo:todo
+--notes-keep-check=todo
+--notes-add-check=todo
+
 # SEE ALSO
 --notes-filename=see-also:_found-see-also
 --notes-single-output-title=see-also:SEE ALSO
 --notes-marker=see-also:see also
 # --notes-marker=see-also:see
-
-# TODO
---notes-filename=todo:_found-todos
---notes-single-output-title=todo:TODO
---notes-marker=todo:todo
 
 # NOTE
 --notes-filename=note:_found-notes
@@ -81,21 +83,26 @@
 --exclude-dirs=_mdtxt,_mdtxt_,mdtxt_
 --exclude-dirs=_mdtext,_mdtext_,mdtext_
 --exclude-dirs=_markdown,_markdown_,markdown_
---exclude-dirs=doc,doc.dox,doc.doxy,doc.doxygen,.dox,.doxy,.doxygen,dox,doxy,doxygen
+--exclude-dirs=doc.dox,doc.doxy,doc.doxygen,.dox,.doxy,.doxygen,dox,doxy,doxygen
+--exclude-dirs=doc,doc.misc,doc.3dp,doc.drafts,doc.tmp,doc.notes
+--exclude-dirs=wiki,.wiki
 #--exclude-dirs=_text,_text_,text_
 
 --exclude-dir=.out,.build,.git,.gitignore,.bat,.sh,.cmake,.distr
+--exclude-dir=.hex,hex
 --exclude-dir=.vscode,.vs
 --exclude-dir=config,conf
 --exclude-dir=.config,.conf
+--exclude-dir=log,logs
+--exclude-dir=.log,.logs
 --exclude-dir=msvc,msvc2017,msvc2019
 --exclude-dir=.msvc,.msvc2017,.msvc2019
 --exclude-dir=prj_msvc,prj_msvc2017,prj_msvc2019
 --exclude-dir=.prj_msvc,.prj_msvc2017,.prj_msvc2019
 --exclude-dir=_prj_msvc,_prj_msvc2017,_prj_msvc2019
 --exclude-dir=inc,include
---exclude-dir=test,tests
---exclude-dir=.test,.tests
+# --exclude-dir=test,tests
+# --exclude-dir=.test,.tests
 --exclude-dir=temp,tmp
 --exclude-dir=.temp,.tmp
 
@@ -114,6 +121,9 @@
 -X=*.cfg^
 -X=*.ini^
 -X=*.txt^
+-X=*.pdf^
+-X=*.rul^
+-X=*.classes^
 -X=*.log^
 -X=*.tlog^
 -X=*.recipe^
@@ -126,6 +136,8 @@
 -X=*.markdown_^
 -X=*._markdown^
 -X=*._markdown_^
+-X=*.htm^
+-X=*.html^
 -X=*.*xml^
 -X=*.yml^
 -X=*.sln^
