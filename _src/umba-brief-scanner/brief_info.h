@@ -155,10 +155,12 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                             notes.emplace_back();
                                         }
                                     }
+                                    fileTextNoComments += makeTokenText(tokenType, b, e);
                                     return true;
                                 }
                                 else if (tokenType==UMBA_TOKENIZER_TOKEN_SPACE || tokenType==UMBA_TOKENIZER_TOKEN_TAB)
                                 {
+                                    fileTextNoComments += makeTokenText(tokenType, b, e);
                                     return true;
                                 }
                                 else if (tokenType>=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_FIRST && tokenType<=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_LAST)

@@ -219,12 +219,14 @@ int unsafeMain(int argc, char* argv[])
 
 
             // argsParser.args.push_back("--md");
-            argsParser.args.push_back("--scan=" + rootPath + "/_src");
+            // argsParser.args.push_back("--scan=" + rootPath + "/_src");
+            argsParser.args.push_back("--scan=F:\\_github\\mca\\roboware\\src");
+            
 
             argsParser.args.push_back("--scan-notes");
             argsParser.args.push_back("--notes-output-path=" + rootPath + "/doc");
 
-            argsParser.args.push_back("--main");
+            //argsParser.args.push_back("--main");
 
 // --scan=src
 // --scan=_libs\unicont
@@ -485,6 +487,7 @@ int unsafeMain(int argc, char* argv[])
             continue;
         }
 
+
         //auto filedataStr = std::string(filedata.begin(), filedata.end());
 
         size_t bomSize = 0;
@@ -522,6 +525,14 @@ int unsafeMain(int argc, char* argv[])
 
         try
         {
+            #if 0
+            auto nameOnly = umba::filename::getFileName(filename);
+            if (nameOnly=="main.cpp")
+            {
+                UMBA_DEBUGBREAK();
+            }
+            #endif
+
             std::vector<NoteInfo> notes;
             bFound = findBriefInfo( filedataStr, appConfig.entrySignatures, info, appConfig.notesConfig, notes, filename, fileFolder );
             notesCollection.addNotes(notes);
