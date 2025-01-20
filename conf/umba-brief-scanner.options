@@ -121,9 +121,12 @@
 -X=*.cfg^
 -X=*.ini^
 -X=*.txt^
+-X=*.PDF^
 -X=*.pdf^
 -X=*.rul^
 -X=*.classes^
+-X=*.NET^
+-X=*.net^
 -X=*.log^
 -X=*.tlog^
 -X=*.recipe^
