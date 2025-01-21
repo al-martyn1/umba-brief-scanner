@@ -1,8 +1,8 @@
-#pragma once
-
 /*! \file
     \brief Информация о приложении umba-brief-scanner и его версии - название, описание, версия, время/дата, домашняя страница
  */
+
+#pragma once
 
 std::string appFullName   = "Umba Brief Scanner";
 std::string appVersion    = "1.0";
