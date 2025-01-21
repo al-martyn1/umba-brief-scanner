@@ -19,6 +19,9 @@
 --entry-point=BOOL APIENTRY DLLEntryPoint(
 --entry-point=BOOL DLLEntryPoint(
 
+--entry-point=UMBA_APP_MAIN()
+--entry-point=UMBA_MAIN()
+
 
 # Сканирование заметок в сорцах
 # --notes-output-path - задаётся путь - пользователем

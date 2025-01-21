@@ -633,7 +633,7 @@ int unsafeMain(int argc, char* argv[])
             infoStream << "---\n"
                        << "Title: " << titleStr << "\n"
                        << "Generator: " << MD_META_GENERATOR_NAME << "\n"
-                       << "---\n";
+                       << "---\n\n";
         }
         else if (appConfig.getOptHtml())
         {
@@ -676,8 +676,16 @@ int unsafeMain(int argc, char* argv[])
             //std::map<std::string, BriefInfo>
             for( const auto& [name,info] : briefInfo)
             {
-                if (info.entryPoint!=bMain)
+                // Если мы выводим только точки входа - то printInfo не вызывается
+                //
+
+                //if (!appConfig.getOptMain())
+                // if (info.entryPoint!=bMain)
+                //     continue;
+
+                if (bMain && info.entryPoint!=bMain)
                     continue;
+
 
                 if (appConfig.getOptSkipUndocumented())
                 {
@@ -760,15 +768,18 @@ int unsafeMain(int argc, char* argv[])
                     }
                 }
 
+                std::string fileNameToPrint = relName;
+                if (appConfig.getOptSplitGroups())
+                    fileNameToPrint = umba::filename::getFileName(relName); // Если у нас разделено на группы, то путь уже есть в заголовке группы, и выводим только имя файла, без пути
 
                 if (appConfig.getOptMd())
                 {
-                    uinfoStream << " - **" << relName << "** - " << info.infoText << "\n";
+                    uinfoStream << "- `" << fileNameToPrint << "` - " << info.infoText << "\n";
                 }
                 else if (appConfig.getOptHtml())
                 {
                     //TODO: !!! Add HTML output here
-                    uinfoStream << "<tr><td>" << htmlEscape(relName) << "</td><td>" << htmlEscape(info.infoText) << "</td></tr>\n";
+                    uinfoStream << "<tr><td>" << htmlEscape(fileNameToPrint) << "</td><td>" << htmlEscape(info.infoText) << "</td></tr>\n";
                 }
                 else // txt
                 {
@@ -776,7 +787,7 @@ int unsafeMain(int argc, char* argv[])
 
                     if (appConfig.descriptionWidth==0)
                     {
-                        uinfoStream << width(fnw) << left << relName << " - " << infoText << "\n";
+                        uinfoStream << width(fnw) << left << fileNameToPrint << " - " << infoText << "\n";
                     }
                     else
                     {
@@ -873,7 +884,10 @@ int unsafeMain(int argc, char* argv[])
 
         //infoStream << "##### 1\n";
 
-        printInfo(true);
+        if (appConfig.getOptMain())
+        {
+            printInfo(true);
+        }
 
         if (!appConfig.getOptMain())
         {
