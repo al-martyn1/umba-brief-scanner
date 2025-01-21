@@ -14,6 +14,6 @@ Generator: Umba Brief Scanner
 - `[_src/umba-brief-scanner/test05.cpp:298]`
   Inform about exception
 
-- `[_src/umba-brief-scanner/umba-brief-scanner.cpp:925]`
+- `[_src/umba-brief-scanner/umba-brief-scanner.cpp:939]`
   конец обработки брифов
 

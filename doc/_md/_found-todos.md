@@ -34,10 +34,10 @@ Generator: Umba Brief Scanner
 - [ ] `[_src/umba-brief-scanner/test01.cpp:280]`
   Add HTML line break here
 
-- [ ] `[_src/umba-brief-scanner/umba-brief-scanner.cpp:770]`
+- [ ] `[_src/umba-brief-scanner/umba-brief-scanner.cpp:781]`
   Add HTML output here
 
-- [ ] `[_src/umba-brief-scanner/umba-brief-scanner.cpp:809]`
+- [ ] `[_src/umba-brief-scanner/umba-brief-scanner.cpp:820]`
   Не корректно определяется длина строк в многобайтной кодировке Мой поток вывода
   (umba::SimpleFormatter) - также некорректно работает с многобайтной кодировкой,
   но это обычно не проблема, если имена файлов  исходников используют только
@@ -47,6 +47,6 @@ Generator: Umba Brief Scanner
   русскоязычные описания и используется форматирование, то лучше сделать его
   побольше - не 80, а 120 символов шириной, например.
 
-- [ ] `[_src/umba-brief-scanner/umba-brief-scanner.cpp:888]`
+- [ ] `[_src/umba-brief-scanner/umba-brief-scanner.cpp:902]`
   Add HTML line break here
 
