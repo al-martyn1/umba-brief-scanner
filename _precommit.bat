@@ -6,5 +6,7 @@ if exist "%~dp0\_found-*.txt" del /Q /F "%~dp0\_found-*.txt"
 @rem set BRIEF_EXTRA_OPTS_TXT=--scan-notes "--notes-output-path=%~dp0\doc\_md"
 @set BRIEF_EXTRA_OPTS_MD=--scan-notes "--notes-output-path=%~dp0\doc\_md"
 
+@set UMBA_MDPP_EXTRA_OPTIONS="--batch-generate-page-index" "--batch-page-index-file=doc/Index.md"
+
 @rem call "%~dp0\.bat\fix_tabs.bat"
 @call "%~dp0\.bat\gen-doc.bat"

@@ -2,14 +2,6 @@
 Generator: Umba Brief Scanner
 ---
 
-# _libs/marty_utf
-
-- [ ] `[_libs/marty_utf/utf_impl.h:723]`
-  Надо бы сделать: UTF-32 из string. UTF-32 из wstring. string  из UTF-32.
-  wstring из UTF-32.
-
-
-
 # _src/umba-brief-scanner
 
 - [ ] `[_src/umba-brief-scanner/arg_parser.h:344]`

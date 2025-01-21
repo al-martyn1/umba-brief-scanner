@@ -12,9 +12,10 @@
 
 --exclude-dir=encoding
 --exclude-dir=marty_cpp
+--exclude-dir=marty_decimal
+--exclude-dir=marty_utf
 --exclude-dir=sfmt
 --exclude-dir=umba
---exclude-dir=marty_decimal
 
 #--scan-notes
 # --scan-todo is same

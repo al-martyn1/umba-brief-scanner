@@ -5,11 +5,6 @@ Generator: Umba Brief Scanner
 
 
 
-# _libs/marty_utf
-
-- `utf.h` - 
-- `utf_impl.h` - 
-
 # _src/umba-brief-scanner
 
 - `app_config.h` - Класс, задающий параметры работы приложения umba-brief-scanner. Настраивается опциями командной строки.
