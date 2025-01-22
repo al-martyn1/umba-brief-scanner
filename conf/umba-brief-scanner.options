@@ -150,6 +150,7 @@
 -X=*.vcproj^
 -X=*.vcxproj^
 -X=*.vcxproj.filters^
+-X=*.csproj^
 -X=*.pro^
 -X=*.am^
 -X=*.svd^
