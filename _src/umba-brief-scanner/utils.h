@@ -79,7 +79,7 @@ StringType getTokenNameString(umba::tokenizer::payload_type p)
         case UMBA_TOKENIZER_TOKEN_CTRL_CC_PP_START                            : return umba::string_plus::make_string<StringType>("pp");
         case UMBA_TOKENIZER_TOKEN_CTRL_CC_PP_END                              : return umba::string_plus::make_string<StringType>("pp");
 
-        case UMBA_TOKENIZER_TOKEN_RAW_CHAR                                    : return umba::string_plus::make_string<StringType>("raw");
+        case UMBA_TOKENIZER_TOKEN_RAW_DATA                                    : return umba::string_plus::make_string<StringType>("raw");
 
 
         // case : return umba::string_plus::make_string<StringType>("");

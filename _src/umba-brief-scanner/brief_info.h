@@ -11,7 +11,7 @@
 //
 #include "umba/tokenizer.h"
 //
-#include "umba/tokenizer/lang/cpp.h"
+#include "umba/tokenizer/lexers/cpp.h"
 
 #include "cpp-tokenizer.h"
 
@@ -165,8 +165,8 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                 }
                                 else if (tokenType>=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_FIRST && tokenType<=UMBA_TOKENIZER_TOKEN_OPERATOR_SINGLE_LINE_COMMENT_LAST)
                                 {
-                                    auto commentData = std::get<typename tokenizer_type::CommentData>(parsedData);
-                                    auto commentStr  = std::string(commentData.data);
+                                    auto commentData = std::get<typename tokenizer_type::CommentDataHolder>(parsedData);
+                                    auto commentStr  = std::string(commentData.pData->value);
 
                                     NoteInfo note;
                                     if (parseTextNote(commentStr, notesConfig, note))
@@ -208,8 +208,8 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                                 }
                                 else if (tokenType==UMBA_TOKENIZER_TOKEN_OPERATOR_MULTI_LINE_COMMENT)
                                 {
-                                    auto commentData = std::get<typename tokenizer_type::CommentData>(parsedData);
-                                    auto commentStr  = std::string(commentData.data);
+                                    auto commentData = std::get<typename tokenizer_type::CommentDataHolder>(parsedData);
+                                    auto commentStr  = std::string(commentData.pData->value);
 
                                     if (commentStr.empty())
                                         return checkPushNoteFromMultilineComment(commentStr, b), true; // Просто пропускаем пустые коментарии
@@ -269,7 +269,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
                             };
 
 
-    auto tokenizer = umba::tokenizer::makeTokenizerCpp( tokenizerBuilder
+    auto tokenizer = umba::tokenizer::cpp::makeTokenizer( tokenizerBuilder
                                                       , tokenHandler
                                                       );
 
@@ -288,7 +288,7 @@ bool findBriefInfo( std::string fileText, const std::vector<TextSignature> &entr
 
     if (bOk)
     {
-        bOk = tokenizer.tokenizeFinalize(itEnd);
+        bOk = tokenizer.tokenizeFinalize(it, itEnd);
     }
 
     fileTextNoComments = marty_cpp::normalizeCrLfToLf(fileTextNoComments, 0);

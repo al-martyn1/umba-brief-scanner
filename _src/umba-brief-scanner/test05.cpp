@@ -11,7 +11,7 @@
 #include "umba/tokenizer/token_filters.h"
 #include "umba/app_main.h"
 //
-#include "umba/tokenizer/lang/plantuml.h"
+#include "umba/tokenizer/lexers/plantuml.h"
 //
 #include "umba/debug_helpers.h"
 
@@ -162,7 +162,7 @@ UMBA_MAIN()
 
 
     //auto tokenizer = protogen::makeTokenizerProtogen(tokenizerBuilder, tokenHandler);
-    auto tokenizer = umba::tokenizer::makeTokenizerCpp(tokenizerBuilder
+    auto tokenizer = umba::tokenizer::cpp::makeTokenizer(tokenizerBuilder
         , tokenHandler
     );
     //tokenizer.setRawMode()
@@ -258,7 +258,7 @@ UMBA_MAIN()
 
             if (bOk)
             {
-                bOk = tokenizer.tokenizeFinalize(itEnd);
+                bOk = tokenizer.tokenizeFinalize(it, itEnd);
             }
 
             //if (bOk)

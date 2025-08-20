@@ -7,13 +7,13 @@
 //
 #include "umba/tokenizer.h"
 //
-#include "umba/tokenizer/lang/cpp.h"
+#include "umba/tokenizer/lexers/cpp.h"
 
 
 inline
 const auto& getTokenizerBuilder()
 {
-    static auto tokenizerBuilder = umba::tokenizer::makeTokenizerBuilderCpp<char>();
+    static auto tokenizerBuilder = umba::tokenizer::cpp::makeTokenizerBuilder<char>();
     return tokenizerBuilder;
 }
 

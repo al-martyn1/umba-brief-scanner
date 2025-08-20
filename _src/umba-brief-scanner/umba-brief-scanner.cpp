@@ -555,8 +555,8 @@ int unsafeMain(int argc, char* argv[])
 
         if (appConfig.testVerbosity(VerbosityLevel::detailed))
         {
-            logMsg << (info.briefFound ? '+' : '-')
-                   << (info.entryPoint ? 'E' : ' ')
+            logMsg << (info.briefFound ? "+" : "-")
+                   << (info.entryPoint ? "E" : " ")
                    << "    " << filename
                    << "\n";
         }
