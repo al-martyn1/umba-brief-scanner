@@ -345,14 +345,52 @@ int operator()( const std::string                               &a           //!
             // (222) заодно надо бы переделать и --exclude-files/--include-files
             //
             // (333) Заодно проверяем, как работает заметка в несколько параграфов
-            if (opt.optArg=="-")
-            {
-                appConfig.excludeDirs.clear();
-            }
-            else
+            // if (opt.optArg=="-")
+            // {
+            //     appConfig.excludeDirs.clear();
+            //     // std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
+            //     // //appConfig.excludeDirs.clear();
+            //     // for(const auto li: lst)
+            //     // {
+            //     //     auto pos = std::find()
+            //     //     erase( iterator pos );
+            //     // }
+            // }
+            // else
             {
                 std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
-                appConfig.excludeDirs.insert(appConfig.excludeDirs.end(), lst.begin(), lst.end());
+                for(auto li: lst)
+                {
+                    if (li=="-")
+                    {
+                        appConfig.excludeDirs.clear();
+                    }
+                    else if (!li.empty())
+                    {
+                        bool bRemove = false;
+                        if (li[0]=='-')
+                        {
+                            li.erase(0, 1);
+                            bRemove = true;
+                        }
+                        else if (li[0]=='+')
+                        {
+                            li.erase(0, 1);
+                        }
+
+                        if (bRemove)
+                        {
+                            auto it = std::find(appConfig.excludeDirs.begin(), appConfig.excludeDirs.end(), li);
+                            if (it!=appConfig.excludeDirs.end())
+                                appConfig.excludeDirs.erase(it);
+                        }
+                        else
+                        {
+                            appConfig.excludeDirs.emplace_back(li);
+                        }
+                    }
+                }
+                //appConfig.excludeDirs.insert(appConfig.excludeDirs.end(), lst.begin(), lst.end());
             }
 
             return 0;
