@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 set(UMBA_STATIC_RUNTIME ON)
-set(UMBA_USE_BOOST      ON)
+set(UMBA_USE_BOOST      OFF)
 
 include(${CMAKE_CURRENT_LIST_DIR}/.cmake/umba.cmake)
 
