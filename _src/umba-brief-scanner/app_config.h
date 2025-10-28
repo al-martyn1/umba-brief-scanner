@@ -63,20 +63,22 @@ struct AppConfig
 {
 
     //------------------------------
-    static const unsigned                    ofEmptyOptionFlags      = 0x0000;
-    static const unsigned                    ofNoOutput              = 0x0010; // Do not actually write output files
-    static const unsigned                    ofMain                  = 0x0020; // Print only main files (whish contains main or other entry point)
-    static const unsigned                    ofSkipUndocumented      = 0x0040; // Skip undocumented files
-    static const unsigned                    ofRemovePath            = 0x0080; // Remove path from output names
+    static const unsigned                    ofEmptyOptionFlags      = 0x00000000;
+    static const unsigned                    ofNoOutput              = 0x00000010; // Do not actually write output files
+    static const unsigned                    ofMain                  = 0x00000020; // Print only main files (whish contains main or other entry point)
+    static const unsigned                    ofSkipUndocumented      = 0x00000040; // Skip undocumented files
+    static const unsigned                    ofRemovePath            = 0x00000080; // Remove path from output names
 
-    static const unsigned                    ofSplitGroups           = 0x0200; // Split to to groups by path
-    static const unsigned                    ofSplitMain             = 0x0400; // Put entry points to separate groups
+    static const unsigned                    ofSplitGroups           = 0x00000200; // Split to to groups by path
+    static const unsigned                    ofSplitMain             = 0x00000400; // Put entry points to separate groups
 
-    static const unsigned                    ofHtml                  = 0x1000; // Print output in html format
-    static const unsigned                    ofMd                    = 0x2000; // Print output in md format, overrides html option
+    static const unsigned                    ofHtml                  = 0x00001000; // Print output in html format
+    static const unsigned                    ofMd                    = 0x00002000; // Print output in md format, overrides html option
 
-    static const unsigned                    ofTodo                  = 0x4000; // Scan for todo
+    static const unsigned                    ofTodo                  = 0x00004000; // Scan for todo
 
+    static const unsigned                    ofMetaTitle             = 0x00010000;
+    static const unsigned                    ofMetaGenerator         = 0x00020000;
 
     //------------------------------
     // !!! Не забывать копировать и/или подготавливать поля класса в функции getAdjustedConfig
@@ -347,6 +349,8 @@ struct AppConfig
             case ofSplitGroups           : return "Split to groups";
             case ofSplitMain             : return "Put entry points to separate groups";
             case ofTodo                  : return "Scan for TODOs";
+            case ofMetaTitle             : return "Add 'Title' metatag";
+            case ofMetaGenerator         : return "Add 'Generator' metatag";
 
             default                      : return "Multiple flags taken!!!";
         }
@@ -365,6 +369,8 @@ struct AppConfig
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SplitGroups)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SplitMain)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Todo)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(MetaTitle)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(MetaGenerator)
 
 
     void setOptQuet(bool q) { UMBA_USED(q); setVerbosityLevel(VerbosityLevel::quet); }
@@ -454,6 +460,8 @@ struct AppConfig
         s << "    " << getOptNameString(ofSplitGroups)         << ": " << getOptValAsString(optionFlags&ofSplitGroups) << "\n";
         s << "    " << getOptNameString(ofSplitMain)           << ": " << getOptValAsString(optionFlags&ofSplitMain) << "\n";
         s << "    " << getOptNameString(ofTodo)                << ": " << getOptValAsString(optionFlags&ofTodo) << "\n";
+        s << "    " << getOptNameString(ofMetaTitle)           << ": " << getOptValAsString(optionFlags&ofMetaTitle) << "\n";
+        s << "    " << getOptNameString(ofMetaGenerator)       << ": " << getOptValAsString(optionFlags&ofMetaGenerator) << "\n";
 
         s << "\n";
 

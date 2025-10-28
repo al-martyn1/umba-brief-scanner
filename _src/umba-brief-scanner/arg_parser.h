@@ -398,6 +398,83 @@ int operator()( const std::string                               &a           //!
 
 
 
+        else if ( opt.setParam("?MODE",true)
+               || opt.isOption("meta-title")
+               || opt.setDescription("Add 'title' meta."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+
+            appConfig.setOptMetaTitle(boolVal);
+            return 0;
+        }
+
+        else if ( opt.setParam("?MODE",true)
+               || opt.isOption("meta-generator")
+               || opt.setDescription("Add 'generator' meta."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+
+            appConfig.setOptMetaGenerator(boolVal);
+            return 0;
+        }
+
+        else if ( opt.setParam("?MODE",true)
+               || opt.isOption("meta")
+               || opt.setDescription("Add 'title' and 'generator' meta."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+
+            appConfig.setOptMetaTitle(boolVal);
+            appConfig.setOptMetaGenerator(boolVal);
+            return 0;
+        }
+
+        else if ( opt.isOption("no-meta-title")
+               || opt.setDescription("Don't add 'title' meta."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            appConfig.setOptMetaTitle(false);
+            return 0;
+        }
+
+        else if ( opt.isOption("no-meta-generator")
+               || opt.setDescription("Don't add 'generator' meta."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            appConfig.setOptMetaGenerator(false);
+            return 0;
+        }
+
+        else if ( opt.isOption("no-meta")
+               || opt.setDescription("Don't add 'title' and 'generator' meta."))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            appConfig.setOptMetaTitle(false);
+            appConfig.setOptMetaGenerator(false);
+            return 0;
+        }
+
         else if (opt.isOption("no-output") || opt.isOption("dry-run") || opt.setDescription("Do not actually write output files. Simulation mode. Behave normally, but do not copy/creater/update any files."))
             {
                 if (argsParser.hasHelpOption) return 0;
